@@ -1,0 +1,54 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiTramite_Back", "MiTramite_Back\MiTramite_Back.csproj", "{B3206877-250F-FC67-E205-DC14D6D5AD10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiTramite_Shared", "MiTramite_Shared\MiTramite_Shared.csproj", "{616A311D-42E8-8391-3407-C71392273B53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiTramite_Domain", "MiTramite_Domain\MiTramite_Domain.csproj", "{743A1A69-DC24-2FD9-5FCA-DA6400AF9BC8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MiTramite_Front", "MiTramite_Front", "{7B2C712A-8652-02ED-08F5-1E02D32E85F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAMiTramiteGestion", "MiTramite_Front\WAMiTramiteGestion\WAMiTramiteGestion.csproj", "{1342298F-5617-61BF-9C89-F3CB8F74A0F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAMiTramite", "MiTramite_Front\WAMiTramite\WAMiTramite.csproj", "{31F20880-CE6F-5FD9-269E-77F66C05C6C8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B3206877-250F-FC67-E205-DC14D6D5AD10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3206877-250F-FC67-E205-DC14D6D5AD10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3206877-250F-FC67-E205-DC14D6D5AD10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3206877-250F-FC67-E205-DC14D6D5AD10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{616A311D-42E8-8391-3407-C71392273B53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{616A311D-42E8-8391-3407-C71392273B53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{616A311D-42E8-8391-3407-C71392273B53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{616A311D-42E8-8391-3407-C71392273B53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{743A1A69-DC24-2FD9-5FCA-DA6400AF9BC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{743A1A69-DC24-2FD9-5FCA-DA6400AF9BC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{743A1A69-DC24-2FD9-5FCA-DA6400AF9BC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{743A1A69-DC24-2FD9-5FCA-DA6400AF9BC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1342298F-5617-61BF-9C89-F3CB8F74A0F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1342298F-5617-61BF-9C89-F3CB8F74A0F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1342298F-5617-61BF-9C89-F3CB8F74A0F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1342298F-5617-61BF-9C89-F3CB8F74A0F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31F20880-CE6F-5FD9-269E-77F66C05C6C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31F20880-CE6F-5FD9-269E-77F66C05C6C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31F20880-CE6F-5FD9-269E-77F66C05C6C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31F20880-CE6F-5FD9-269E-77F66C05C6C8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1342298F-5617-61BF-9C89-F3CB8F74A0F7} = {7B2C712A-8652-02ED-08F5-1E02D32E85F9}
+		{31F20880-CE6F-5FD9-269E-77F66C05C6C8} = {7B2C712A-8652-02ED-08F5-1E02D32E85F9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {42F35742-151B-437F-A10D-CAD697F15437}
+	EndGlobalSection
+EndGlobal
