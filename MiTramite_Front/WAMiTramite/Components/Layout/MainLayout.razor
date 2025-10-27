@@ -1,32 +1,85 @@
 ﻿@inherits LayoutComponentBase
 
-<!-- Navbar superior sencillo con logo y botones Registro / Iniciar sesión (copiado desde WAMiTramiteGestion) -->
+<!-- Navbar con diseño de Gestora Nacional -->
 <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="https://www.gestora.bo/img/logos/logoslogan.png" alt="Gestora La Paz" width="200" height="46"
-                    class="my-2" />
+                <div class="d-flex align-items-center">
+                    <div class="me-3"
+                        style="width: 40px; height: 40px; background: linear-gradient(135deg, #1a365d, #3182ce, #63b3ed); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
+                        MT
+                    </div>
+                    <div>
+                        <div style="font-size: 1.25rem; font-weight: 700; color: white; line-height: 1;">MiTrámite</div>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.8); line-height: 1;">La Paz Digital
+                        </div>
+                    </div>
+                    <div>
+                        <img src="https://www.gestora.bo/img/logos/logoslogan.png" alt="Logo Gestora Nacional"
+                            style="height: 30px; margin-left: 10px;" class="bg-white rounded m-2 px-2 py-1" />
+                    </div>
+                </div>
             </a>
 
-            <div class="d-flex ms-auto">
-                <a class="btn btn-outline-primary me-2" href="/register">Registro</a>
-                <a class="btn btn-primary" href="/login">Iniciar sesión</a>
+            <div class="d-flex ms-auto align-items-center">
+                <a class="btn btn-outline-light me-2" href="/register">Registro</a>
+                <a class="btn btn-light" href="/login">Iniciar sesión</a>
             </div>
         </div>
     </nav>
 </header>
 
-<main class="py-4">
-    <div class="container">
-        <article class="content">
-            @Body
-        </article>
-    </div>
+<main>
+    <article class="content">
+        @Body
+    </article>
 </main>
 
+<!-- Footer inspirado en sitios gubernamentales -->
+<footer style="background: linear-gradient(135deg, #1a365d, #2c5282); color: white; padding: 2rem 0; margin-top: 3rem;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="me-3"
+                        style="width: 40px; height: 40px; background: linear-gradient(135deg, #1a365d, #3182ce, #63b3ed); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
+                        MT
+                    </div>
+                    <div>
+                        <div style="font-size: 1.1rem; font-weight: 600;">MiTrámite La Paz</div>
+                        <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">Gobierno Digital Transparente
+                        </div>
+                    </div>
+                </div>
+                <p style="color: rgba(255,255,255,0.9); font-size: 0.9rem;">
+                    Plataforma oficial del Gobierno Autónomo Municipal de La Paz para la gestión digital de trámites
+                    ciudadanos.
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="mb-3">
+                    <h6 style="color: white; margin-bottom: 1rem;">Enlaces útiles</h6>
+                    <div class="d-flex flex-column" style="gap: 0.5rem;">
+                        <a href="#" style="color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.9rem;">📞
+                            Soporte técnico</a>
+                        <a href="#" style="color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.9rem;">❓
+                            Preguntas frecuentes</a>
+                        <a href="#" style="color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.9rem;">📋
+                            Guías de trámites</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 1.5rem 0;">
+        <div class="text-center" style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">
+            © 2024 Gobierno Autónomo Municipal de La Paz. Todos los derechos reservados.
+        </div>
+    </div>
+</footer>
+
 <div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
+    Un error inesperado ha ocurrido.
+    <a href="." class="reload">Recargar</a>
     <span class="dismiss">🗙</span>
 </div>
