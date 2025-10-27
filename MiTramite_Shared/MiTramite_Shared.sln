@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiTramite_Shared", "MiTramite_Shared.csproj", "{88EEE6C3-9385-1EA3-B7E4-6AB4DC42553B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{88EEE6C3-9385-1EA3-B7E4-6AB4DC42553B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88EEE6C3-9385-1EA3-B7E4-6AB4DC42553B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88EEE6C3-9385-1EA3-B7E4-6AB4DC42553B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88EEE6C3-9385-1EA3-B7E4-6AB4DC42553B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7C46C505-90AE-43B1-8548-5BD4B44901A7}
+	EndGlobalSection
+EndGlobal
