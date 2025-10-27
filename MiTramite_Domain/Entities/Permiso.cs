@@ -8,5 +8,7 @@ namespace MiTramite_Domain.Entities
         public int IdPermiso { get; set; }
         public string Nombre { get; set; } = null!;
         public string Descripcion { get; set; } = null!;
+
+        public ICollection<RolPermiso> RolPermisos { get; set; } = new List<RolPermiso>();
     }
 }

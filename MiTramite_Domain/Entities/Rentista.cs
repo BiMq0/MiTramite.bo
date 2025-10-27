@@ -18,4 +18,6 @@ public class Rentista
     public ActivityStatus Activo { get; set; } = ActivityStatus.Activo;
 
     public ICollection<Archivo> Archivos { get; set; } = new List<Archivo>();
+
+    public ICollection<SolicitudTramite> SolicitudesTramite { get; set; } = new List<SolicitudTramite>();
 }

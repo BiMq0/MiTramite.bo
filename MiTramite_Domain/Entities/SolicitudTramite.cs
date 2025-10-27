@@ -9,12 +9,12 @@ namespace MiTramite_Domain.Entities
     public class SolicitudTramite
     {
         [Key]
-        public long IdTramite { get; set; }
+        public long IdSolicitudTramite { get; set; }
         public int IdTipoTramite { get; set; }
         public long IdRentista { get; set; }
         public long IdFuncionario { get; set; }
         public DateTime FechaSolicitud { get; set; }
-        public int IdEstado { get; set; }
+        public int IdEstadoTramite { get; set; }
         public bool Reasignado { get; set; }
 
         public TipoTramite TipoTramite { get; set; } = null!;

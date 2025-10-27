@@ -25,6 +25,6 @@ namespace MiTramite_Domain.Entities
 
         public Rol? Rol { get; set; }
         public ICollection<SolicitudTramite> SolicitudesAsignadas { get; set; } = new List<SolicitudTramite>();
-        public ICollection<Incumplimiento> Incumplimiento { get; set; } = new List<Incumplimiento>();
+        public ICollection<Incumplimiento> Incumplimientos { get; set; } = new List<Incumplimiento>();
     }
 }

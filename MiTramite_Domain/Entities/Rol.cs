@@ -11,5 +11,6 @@ namespace MiTramite_Domain.Entities
         public decimal Salario { get; set; }
         public ICollection<RolPermiso> RolPermisos { get; set; } = new List<RolPermiso>();
         public ICollection<RolOpcion> RolOpciones { get; set; } = new List<RolOpcion>();
+        public ICollection<Funcionario> Funcionarios { get; set; } = new List<Funcionario>();
     }
 }
