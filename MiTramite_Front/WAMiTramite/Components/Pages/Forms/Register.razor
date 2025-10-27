@@ -1,0 +1,205 @@
+@page "/register"
+@rendermode InteractiveServer
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-white text-center py-4" style="background-color: #1a365d;">
+                    <h3 class="mb-0 text-white">
+                        <i class="bi bi-person-plus-fill me-2"></i>
+                        Crear Cuenta
+                    </h3>
+                    <p class="mb-0 mt-2 opacity-75">Regístrate para acceder a los trámites digitales</p>
+                </div>
+
+                <div class="card-body p-4">
+                    <EditForm Model="@registerModel" OnValidSubmit="@HandleRegistration">
+                        <DataAnnotationsValidator />
+
+                        <!-- Cédula de Identidad -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-card-text me-1"></i>
+                                Cédula de Identidad
+                            </label>
+                            <InputText @bind-Value="registerModel.CI" class="form-control"
+                                placeholder="Ej: 1234567 LP" />
+                            <ValidationMessage For="@(() => registerModel.CI)" class="text-danger small" />
+                        </div>
+
+                        <!-- Nombres -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-person me-1"></i>
+                                Nombres
+                            </label>
+                            <InputText @bind-Value="registerModel.Nombres" class="form-control"
+                                placeholder="Ingresa tus nombres" />
+                            <ValidationMessage For="@(() => registerModel.Nombres)" class="text-danger small" />
+                        </div>
+
+                        <!-- Apellidos -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-person-badge me-1"></i>
+                                    Apellido Paterno
+                                </label>
+                                <InputText @bind-Value="registerModel.ApellidoPaterno" class="form-control"
+                                    placeholder="Apellido paterno" />
+                                <ValidationMessage For="@(() => registerModel.ApellidoPaterno)"
+                                    class="text-danger small" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-person-badge me-1"></i>
+                                    Apellido Materno
+                                </label>
+                                <InputText @bind-Value="registerModel.ApellidoMaterno" class="form-control"
+                                    placeholder="Apellido materno" />
+                                <ValidationMessage For="@(() => registerModel.ApellidoMaterno)"
+                                    class="text-danger small" />
+                            </div>
+                        </div>
+
+                        <!-- Fecha de Nacimiento -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-calendar-date me-1"></i>
+                                Fecha de Nacimiento
+                            </label>
+                            <InputDate @bind-Value="registerModel.FechaNacimiento" class="form-control" />
+                            <ValidationMessage For="@(() => registerModel.FechaNacimiento)" class="text-danger small" />
+                        </div>
+
+                        <!-- Correo Electrónico -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-envelope me-1"></i>
+                                Correo Electrónico
+                            </label>
+                            <InputText @bind-Value="registerModel.Correo" type="email" class="form-control"
+                                placeholder="tu@email.com" />
+                            <ValidationMessage For="@(() => registerModel.Correo)" class="text-danger small" />
+                        </div>
+
+                        <!-- Contraseña -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-lock me-1"></i>
+                                Contraseña
+                            </label>
+                            <InputText @bind-Value="registerModel.PasswordHash" type="password" class="form-control"
+                                placeholder="Ingresa tu contraseña" />
+                            <ValidationMessage For="@(() => registerModel.PasswordHash)" class="text-danger small" />
+                            <div class="form-text">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Usa al menos 8 caracteres con letras y números
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Términos y condiciones -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="terms" @bind="acceptTerms">
+                                <label class="form-check-label" for="terms">
+                                    Acepto los <a href="#" class="text-primary">términos y condiciones</a>
+                                    y la política de privacidad
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg"
+                                disabled="@(!acceptTerms || isSubmitting)">
+                                @if (isSubmitting)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    <span>Creando cuenta...</span>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-person-plus me-2"></i>
+                                    <span>Crear Cuenta</span>
+                                }
+                            </button>
+
+                            <button type="button" class="btn btn-outline-secondary"
+                                @onclick="@(() => NavigateToLogin())">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                ¿Ya tienes cuenta? Inicia sesión
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+
+            <!-- Información adicional -->
+            <div class="text-center mt-4">
+                <div class="card bg-light border-0">
+                    <div class="card-body py-3">
+                        <small class="text-muted">
+                            <i class="bi bi-shield-check text-success me-1"></i>
+                            Tus datos personales están protegidos y son utilizados únicamente para la gestión de
+                            trámites municipales
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private RegisterModel registerModel = new();
+    private bool acceptTerms = false;
+    private bool isSubmitting = false;
+
+    public class RegisterModel
+    {
+        public string CI { get; set; } = string.Empty;
+        public string Nombres { get; set; } = string.Empty;
+        public string ApellidoPaterno { get; set; } = string.Empty;
+        public string ApellidoMaterno { get; set; } = string.Empty;
+        public DateTime FechaNacimiento { get; set; } = DateTime.Today.AddYears(-18);
+        public string Correo { get; set; } = string.Empty;
+        public string PasswordHash { get; set; } = string.Empty;
+    }
+
+    private async Task HandleRegistration()
+    {
+        isSubmitting = true;
+
+        try
+        {
+            // TODO: Aquí se implementará la lógica de registro
+            await Task.Delay(2000); // Simular proceso de registro
+
+            // Por ahora solo mostramos un mensaje
+            Console.WriteLine($"Registro: {registerModel.Nombres} {registerModel.ApellidoPaterno}");
+
+            // Redirigir al login o dashboard después del registro exitoso
+            NavigateToLogin();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error en registro: {ex.Message}");
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private void NavigateToLogin()
+    {
+        Navigation.NavigateTo("/login");
+    }
+
+    [Inject]
+    private NavigationManager Navigation { get; set; } = default!;
+}

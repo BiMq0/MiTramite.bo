@@ -1,5 +1,4 @@
 ﻿@inherits LayoutComponentBase
-
 <!-- Navbar con diseño de Gestora Nacional -->
 <header>
     <nav class="navbar navbar-expand-lg">
@@ -21,17 +20,12 @@
                     </div>
                 </div>
             </a>
-
-            <div class="d-flex ms-auto align-items-center">
-                <a class="btn btn-outline-light me-2" href="/register">Registro</a>
-                <a class="btn btn-light" href="/login">Iniciar sesión</a>
-            </div>
         </div>
     </nav>
 </header>
 
 <main>
-    <article class="content">
+    <article class="container-fluid p-0" style="padding: 0 !important;">
         @Body
     </article>
 </main>
