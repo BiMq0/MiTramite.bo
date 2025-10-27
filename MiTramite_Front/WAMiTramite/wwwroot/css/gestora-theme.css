@@ -1,19 +1,19 @@
 /* Tema basado en Gestora Nacional de Bolivia */
 /* Paleta de colores institucionales */
 :root {
-    /* Paleta principal azul/celeste/blanco */
-    --primary-blue: #1a365d;
-    --primary-light-blue: #3182ce;
-    --primary-celeste: #63b3ed;
-    --primary-white: #ffffff;
-    
-    /* Colores de apoyo */
-    --dark-blue: #1a365d;
-    --light-blue: #e6f3ff;
-    --gray-dark: #2d3748;
-    --gray-medium: #4a5568;
-    --gray-light: #e2e8f0;
-    --gray-lighter: #f7fafc;
+  /* Paleta principal azul/celeste/blanco */
+  --primary-blue: #1a365d;
+  --primary-light-blue: #3182ce;
+  --primary-celeste: #63b3ed;
+  --primary-white: #ffffff;
+
+  /* Colores de apoyo */
+  --dark-blue: #1a365d;
+  --light-blue: #e6f3ff;
+  --gray-dark: #2d3748;
+  --gray-medium: #4a5568;
+  --gray-light: #e2e8f0;
+  --gray-lighter: #f7fafc;
 
   /* Colores semánticos */
   --success: #38a169;
@@ -98,13 +98,18 @@ h6 {
 }
 
 .section-title::after {
-    content: '';
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, var(--primary-blue), var(--primary-light-blue), var(--primary-celeste));
-    display: block;
-    margin: var(--spacing-md) auto 0;
-    border-radius: 2px;
+  content: "";
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--primary-blue),
+    var(--primary-light-blue),
+    var(--primary-celeste)
+  );
+  display: block;
+  margin: var(--spacing-md) auto 0;
+  border-radius: 2px;
 }
 
 /* Botones mejorados */
@@ -121,27 +126,31 @@ h6 {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-light-blue));
-    color: white;
-    border-color: var(--primary-blue);
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue),
+    var(--primary-light-blue)
+  );
+  color: white;
+  border-color: var(--primary-blue);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue));
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-outline-primary {
-    background: transparent;
-    color: var(--primary-blue);
-    border-color: var(--primary-blue);
+  background: transparent;
+  color: var(--primary-blue);
+  border-color: var(--primary-blue);
 }
 
 .btn-outline-primary:hover {
-    background: var(--primary-blue);
-    color: white;
-    transform: translateY(-1px);
+  background: var(--primary-blue);
+  color: white;
+  transform: translateY(-1px);
 }
 
 .btn-light {
@@ -237,9 +246,9 @@ h6 {
 }
 
 .feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-    border-top-color: var(--primary-light-blue);
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-top-color: var(--primary-light-blue);
 }
 
 .feature-card h5 {
@@ -262,8 +271,12 @@ h6 {
 }
 
 .how-step .badge {
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-celeste));
-    color: white;
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue),
+    var(--primary-celeste)
+  );
+  color: white;
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -305,14 +318,14 @@ h6 {
 }
 
 .accordion-button:not(.collapsed) {
-    background: var(--primary-blue);
-    color: white;
-    box-shadow: none;
+  background: var(--primary-blue);
+  color: white;
+  box-shadow: none;
 }
 
 .accordion-button:focus {
-    box-shadow: 0 0 0 0.25rem rgba(26, 54, 93, 0.25);
-    border-color: var(--primary-blue);
+  box-shadow: 0 0 0 0.25rem rgba(26, 54, 93, 0.25);
+  border-color: var(--primary-blue);
 }
 
 .accordion-body {
@@ -322,11 +335,15 @@ h6 {
 
 /* CTA final */
 .contact-cta {
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-light-blue));
-    color: white;
-    padding: var(--spacing-xl);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-lg);
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue),
+    var(--primary-light-blue)
+  );
+  color: white;
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
 }
 
 .contact-cta h4 {
@@ -390,8 +407,8 @@ h6 {
 /* Estados de focus para accesibilidad */
 .btn:focus,
 .accordion-button:focus {
-    outline: 2px solid var(--primary-celeste);
-    outline-offset: 2px;
+  outline: 2px solid var(--primary-celeste);
+  outline-offset: 2px;
 }
 
 /* Mejoras adicionales */
