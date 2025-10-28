@@ -2,11 +2,21 @@
 @page "/user/{ActivePage?}"
 @using WAMiTramite.Components.Pages.UserComponents
 @rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
 
 <div class="d-flex vh-100 m-0 p-0">
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay @(sidebarOpen ? "show" : "")" @onclick="ToggleSidebar"></div>
+
     <!-- Sidebar -->
-    <div class="sidebar text-white"
-        style="width: 280px; min-height: 100vh; background: linear-gradient(135deg, #1a365d, #2c5282);">
+    <div class="sidebar text-white @(sidebarOpen ? "show" : "")"
+        style="background: linear-gradient(135deg, #1a365d, #2c5282);">
+        <div class="sidebar-header d-lg-none">
+            <button class="btn btn-link text-white p-2" @onclick="ToggleSidebar">
+                <i class="bi bi-x fs-4"></i>
+            </button>
+        </div>
+
         <div class="p-3">
             <!-- User Info -->
             <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-light border-opacity-25">
@@ -26,28 +36,28 @@
             <nav class="nav flex-column">
                 <button
                     class="nav-link text-white d-flex align-items-center py-3 px-3 border-0 bg-transparent @(GetActiveClass("dashboard"))"
-                    @onclick="@(() => SetActivePage("dashboard"))">
+                    @onclick="@(() => SetActivePageAndClose("dashboard"))">
                     <i class="bi bi-speedometer2 me-3 fs-5"></i>
                     <span>Dashboard</span>
                 </button>
 
                 <button
                     class="nav-link text-white d-flex align-items-center py-3 px-3 border-0 bg-transparent @(GetActiveClass("nuevo-tramite"))"
-                    @onclick="@(() => SetActivePage("nuevo-tramite"))">
+                    @onclick="@(() => SetActivePageAndClose("nuevo-tramite"))">
                     <i class="bi bi-file-earmark-plus me-3 fs-5"></i>
                     <span>Nuevo Trámite</span>
                 </button>
 
                 <button
                     class="nav-link text-white d-flex align-items-center py-3 px-3 border-0 bg-transparent @(GetActiveClass("mis-tramites"))"
-                    @onclick="@(() => SetActivePage("mis-tramites"))">
+                    @onclick="@(() => SetActivePageAndClose("mis-tramites"))">
                     <i class="bi bi-list-check me-3 fs-5"></i>
                     <span>Mis Trámites</span>
                 </button>
 
                 <button
                     class="nav-link text-white d-flex align-items-center py-3 px-3 border-0 bg-transparent @(GetActiveClass("mis-documentos"))"
-                    @onclick="@(() => SetActivePage("mis-documentos"))">
+                    @onclick="@(() => SetActivePageAndClose("mis-documentos"))">
                     <i class="bi bi-folder2-open me-3 fs-5"></i>
                     <span>Mis Documentos</span>
                 </button>
@@ -68,18 +78,25 @@
         <!-- Header -->
         <header class="bg-white border-bottom px-4 py-3">
             <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h4 class="mb-0 text-primary">@GetPageTitle()</h4>
-                    <small class="text-muted">@GetPageSubtitle()</small>
+                <div class="d-flex align-items-center">
+                    <!-- Burger menu button -->
+                    <button class="btn btn-link d-lg-none me-3 p-0" @onclick="ToggleSidebar">
+                        <i class="bi bi-list fs-4" style="color: #1a365d;"></i>
+                    </button>
+                    <div>
+                        <h4 class="mb-0" style="color: #1a365d;">@GetPageTitle()</h4>
+                        <small class="text-muted d-none d-md-inline">@GetPageSubtitle()</small>
+                    </div>
                 </div>
                 <div class="d-flex align-items-center">
-                    <div class="me-3">
+                    <div class="me-3 d-none d-md-block">
                         <small class="text-muted">Último acceso: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</small>
                     </div>
                     <div class="dropdown">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            style="border-color: #1a365d; color: #1a365d;">
                             <i class="bi bi-person-circle me-1"></i>
-                            Mi Cuenta
+                            <span class="d-none d-sm-inline">Mi Cuenta</span>
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Perfil</a></li>
@@ -96,7 +113,7 @@
         </header>
 
         <!-- Page Content -->
-        <main class="flex-grow-1 p-4 bg-light overflow-auto">
+        <main class="flex-grow-1 p-4 bg-light overflow-auto main-content">
             @switch (activePage.ToLower())
             {
                 case "dashboard":
@@ -121,8 +138,11 @@
 
 <style>
     .sidebar {
+        width: 280px;
+        min-height: 100vh;
         transition: all 0.3s ease;
         position: relative;
+        z-index: 1000;
     }
 
     .nav-link {
@@ -141,12 +161,100 @@
         background-color: rgba(255, 255, 255, 0.2) !important;
         font-weight: 600;
     }
+
+    .mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .sidebar-header {
+        display: flex;
+        justify-content: flex-end;
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Responsive styles */
+    @@media (max-width: 991.98px) {
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .sidebar.show {
+            left: 0;
+        }
+
+        .mobile-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .main-content {
+            margin-left: 0 !important;
+        }
+    }
+
+    @@media (min-width: 992px) {
+        .sidebar {
+            position: relative;
+            left: 0 !important;
+        }
+
+        .mobile-overlay {
+            display: none !important;
+        }
+
+        .sidebar-header {
+            display: none;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .container-fluid {
+            padding: 0.5rem;
+        }
+
+        header {
+            padding: 0.75rem 1rem !important;
+        }
+
+        .main-content {
+            padding: 1rem !important;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        header {
+            padding: 0.5rem !important;
+        }
+
+        .main-content {
+            padding: 0.5rem !important;
+        }
+
+        h4 {
+            font-size: 1.1rem !important;
+        }
+    }
 </style>
 
 @code {
     [Parameter] public string? ActivePage { get; set; }
 
     private string activePage = "dashboard";
+    private bool sidebarOpen = false;
 
     protected override void OnInitialized()
     {
@@ -157,6 +265,19 @@
     {
         activePage = page;
         Navigation.NavigateTo($"/user/{page}");
+    }
+
+    private void SetActivePageAndClose(string page)
+    {
+        activePage = page;
+        sidebarOpen = false;
+        Navigation.NavigateTo($"/user/{page}");
+    }
+
+    private void ToggleSidebar()
+    {
+        sidebarOpen = !sidebarOpen;
+        StateHasChanged();
     }
 
     private string GetActiveClass(string page)

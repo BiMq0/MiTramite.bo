@@ -1,9 +1,10 @@
 @rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
 
 <div class="container-fluid">
     <div class="row">
         <!-- Tabla de documentos -->
-        <div class="col-md-@(documentoSeleccionado != null ? "7" : "12")">
+        <div class="col-12">
             <div class="card">
                 <div class="card-header bg-light">
                     <div class="d-flex justify-content-between align-items-center">
@@ -12,13 +13,18 @@
                             Mis Documentos (@documentos.Count)
                         </h6>
                         <div class="d-flex gap-2">
-                            <button class="btn btn-outline-success btn-sm" @onclick="SubirDocumento">
+                            <button class="btn btn-sm text-white"
+                                style="background: linear-gradient(135deg, #38a169, #48bb78); border: none;"
+                                @onclick="SubirDocumento">
                                 <i class="bi bi-cloud-upload me-1"></i>
-                                Subir Documento
+                                <span class="d-none d-sm-inline">Subir Documento</span>
+                                <span class="d-sm-none">Subir</span>
                             </button>
-                            <button class="btn btn-outline-primary btn-sm" @onclick="ActualizarDocumentos">
+                            <button class="btn btn-sm text-white"
+                                style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;"
+                                @onclick="ActualizarDocumentos">
                                 <i class="bi bi-arrow-clockwise me-1"></i>
-                                Actualizar
+                                <span class="d-none d-sm-inline">Actualizar</span>
                             </button>
                         </div>
                     </div>
@@ -40,7 +46,7 @@
                                 {
                                     @foreach (var documento in documentos)
                                     {
-                                        <tr class="@(documentoSeleccionado?.Id == documento.Id ? "table-active" : "")">
+                                        <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <i
@@ -66,15 +72,19 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <button class="btn btn-outline-primary btn-sm"
-                                                        @onclick="@(() => VerDocumento(documento))" title="Ver documento">
+                                                    <button class="btn btn-sm text-white"
+                                                        style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;"
+                                                        @onclick="@(() => AbrirDocumentoEnNuevaPestaña(documento))"
+                                                        title="Ver documento">
                                                         <i class="bi bi-eye"></i>
                                                     </button>
-                                                    <button class="btn btn-outline-success btn-sm"
+                                                    <button class="btn btn-sm text-white"
+                                                        style="background: linear-gradient(135deg, #38a169, #48bb78); border: none;"
                                                         @onclick="@(() => DescargarDocumento(documento.Id))" title="Descargar">
                                                         <i class="bi bi-download"></i>
                                                     </button>
-                                                    <button class="btn btn-outline-danger btn-sm"
+                                                    <button class="btn btn-sm text-white"
+                                                        style="background: linear-gradient(135deg, #e53e3e, #fc8181); border: none;"
                                                         @onclick="@(() => EliminarDocumento(documento.Id))" title="Eliminar">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
@@ -91,7 +101,9 @@
                                             <div>No hay documentos subidos</div>
                                             <small>Los documentos que subas aparecerán aquí</small>
                                             <div class="mt-3">
-                                                <button class="btn btn-primary btn-sm" @onclick="SubirDocumento">
+                                                <button class="btn btn-sm text-white"
+                                                    style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;"
+                                                    @onclick="SubirDocumento">
                                                     <i class="bi bi-cloud-upload me-1"></i>
                                                     Subir primer documento
                                                 </button>
@@ -106,73 +118,12 @@
             </div>
         </div>
 
-        <!-- Visor de documentos -->
-        @if (documentoSeleccionado != null)
-        {
-            <div class="col-md-5">
-                <div class="card">
-                    <div class="card-header bg-light">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0">
-                                <i class="bi bi-eye me-2"></i>
-                                Vista Previa
-                            </h6>
-                            <button class="btn btn-outline-secondary btn-sm" @onclick="CerrarVisor">
-                                <i class="bi bi-x"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="p-3 border-bottom bg-light">
-                            <div class="small">
-                                <strong>@documentoSeleccionado.TipoDocumento</strong>
-                                <br>
-                                <span class="text-muted">@documentoSeleccionado.NombreArchivo</span>
-                            </div>
-                        </div>
 
-                        <div style="height: 500px;">
-                            @if (documentoSeleccionado.Extension.ToLower() == ".pdf")
-                            {
-                                <iframe src="@documentoSeleccionado.UrlArchivo"
-                                    style="width: 100%; height: 100%; border: none;">
-                                </iframe>
-                            }
-                            else if (IsImageFile(documentoSeleccionado.Extension))
-                            {
-                                <div class="d-flex align-items-center justify-content-center h-100 p-3">
-                                    <img src="@documentoSeleccionado.UrlArchivo" class="img-fluid"
-                                        alt="@documentoSeleccionado.NombreArchivo" style="max-height: 100%;">
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="d-flex align-items-center justify-content-center h-100 text-muted">
-                                    <div class="text-center">
-                                        <i class="bi bi-file-earmark display-1 mb-3"></i>
-                                        <div>Vista previa no disponible</div>
-                                        <small>@documentoSeleccionado.Extension.ToUpper()</small>
-                                        <div class="mt-3">
-                                            <button class="btn btn-primary btn-sm"
-                                                @onclick="@(() => DescargarDocumento(documentoSeleccionado.Id))">
-                                                <i class="bi bi-download me-1"></i>
-                                                Descargar para ver
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
     </div>
 </div>
 
 @code {
     private List<DocumentoViewModel> documentos = new();
-    private DocumentoViewModel? documentoSeleccionado = null;
 
     protected override void OnInitialized()
     {
@@ -259,16 +210,17 @@ UrlArchivo = ""
         return imageExtensions.Contains(extension.ToLower());
     }
 
-    private void VerDocumento(DocumentoViewModel documento)
+    private async Task AbrirDocumentoEnNuevaPestaña(DocumentoViewModel documento)
     {
-        documentoSeleccionado = documento;
-        StateHasChanged();
-    }
-
-    private void CerrarVisor()
-    {
-        documentoSeleccionado = null;
-        StateHasChanged();
+        if (!string.IsNullOrWhiteSpace(documento.UrlArchivo))
+        {
+            await JSRuntime.InvokeVoidAsync("open", documento.UrlArchivo, "_blank");
+        }
+        else
+        {
+            // Si no hay URL, intentar descargar el documento
+            DescargarDocumento(documento.Id);
+        }
     }
 
     private void SubirDocumento()
@@ -298,10 +250,6 @@ UrlArchivo = ""
 
         // Simulación de eliminación
         documentos.RemoveAll(d => d.Id == documentoId);
-        if (documentoSeleccionado?.Id == documentoId)
-        {
-            documentoSeleccionado = null;
-        }
         StateHasChanged();
     }
 
@@ -317,3 +265,77 @@ UrlArchivo = ""
         public string UrlArchivo { get; set; } = string.Empty;
     }
 }
+
+<style>
+    /* Responsive styles for MisDocumentos */
+    @@media (max-width: 768px) {
+        .d-flex.gap-2 {
+            flex-direction: column;
+            gap: 0.5rem !important;
+        }
+
+        .btn-sm {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .table-responsive {
+            font-size: 0.875rem;
+        }
+
+        .card-header h6 {
+            font-size: 0.9rem;
+        }
+
+        .btn-group {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .btn-group .btn {
+            border-radius: 0.25rem !important;
+            margin-bottom: 0.25rem;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .container-fluid {
+            padding: 0.5rem;
+        }
+
+        .card-header {
+            padding: 0.75rem;
+        }
+
+        .card-header .d-flex {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+
+        .card-header .d-flex>div:last-child {
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.5rem 0.25rem;
+            font-size: 0.8rem;
+        }
+
+        .table th:nth-child(3),
+        .table th:nth-child(4),
+        .table td:nth-child(3),
+        .table td:nth-child(4) {
+            display: none;
+        }
+
+        .fw-semibold {
+            font-size: 0.85rem;
+        }
+
+        .small {
+            font-size: 0.75rem !important;
+        }
+    }
+</style>

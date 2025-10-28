@@ -3,17 +3,19 @@
 <div class="container-fluid">
     <!-- Filtros y búsqueda -->
     <div class="row mb-4">
-        <div class="col-md-8">
+        <div class="col-md-8 col-12">
             <div class="input-group">
-                <span class="input-group-text">
+                <span class="input-group-text"
+                    style="background-color: rgba(26, 54, 93, 0.1); border-color: #1a365d; color: #1a365d;">
                     <i class="bi bi-search"></i>
                 </span>
                 <input type="text" class="form-control" placeholder="Buscar por ID, tipo de trámite o funcionario..."
-                    @bind="filtroTexto" @oninput="FiltrarTramites">
+                    style="border-color: #1a365d;" @bind="filtroTexto" @oninput="FiltrarTramites">
             </div>
         </div>
-        <div class="col-md-4">
-            <select class="form-select" @bind="filtroEstado" @bind:after="FiltrarTramites">
+        <div class="col-md-4 col-12">
+            <select class="form-select" style="border-color: #1a365d;" @bind="filtroEstado"
+                @bind:after="FiltrarTramites">
                 <option value="">Todos los estados</option>
                 <option value="En Proceso">En Proceso</option>
                 <option value="Completado">Completado</option>
@@ -30,13 +32,15 @@
             <div class="card">
                 <div class="card-header bg-light">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0">
+                        <h6 class="mb-0" style="color: #1a365d;">
                             <i class="bi bi-list-check me-2"></i>
                             Historial de Trámites (@tramitesFiltrados.Count)
                         </h6>
-                        <button class="btn btn-outline-primary btn-sm" @onclick="ActualizarTramites">
+                        <button class="btn btn-sm text-white"
+                            style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;"
+                            @onclick="ActualizarTramites">
                             <i class="bi bi-arrow-clockwise me-1"></i>
-                            Actualizar
+                            <span class="d-none d-sm-inline">Actualizar</span>
                         </button>
                     </div>
                 </div>
@@ -102,13 +106,15 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <button class="btn btn-outline-primary btn-sm"
+                                                    <button class="btn btn-sm text-white"
+                                                        style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;"
                                                         @onclick="@(() => VerDetalle(tramite.IdSolicitud))" title="Ver detalle">
                                                         <i class="bi bi-eye"></i>
                                                     </button>
                                                     @if (tramite.Estado == "Completado")
                                                     {
-                                                        <button class="btn btn-outline-success btn-sm"
+                                                        <button class="btn btn-sm text-white"
+                                                            style="background: linear-gradient(135deg, #38a169, #48bb78); border: none;"
                                                             @onclick="@(() => DescargarResultado(tramite.IdSolicitud))"
                                                             title="Descargar resultado">
                                                             <i class="bi bi-download"></i>
@@ -116,7 +122,8 @@
                                                     }
                                                     @if (tramite.Estado == "Pendiente")
                                                     {
-                                                        <button class="btn btn-outline-warning btn-sm"
+                                                        <button class="btn btn-sm text-white"
+                                                            style="background: linear-gradient(135deg, #d69e2e, #f6e05e); border: none;"
                                                             @onclick="@(() => CompletarDocumentos(tramite.IdSolicitud))"
                                                             title="Completar documentos">
                                                             <i class="bi bi-file-earmark-plus"></i>
@@ -223,11 +230,11 @@ Reasignado = true
     {
         return estado switch
         {
-            "Completado" => "bg-success",
-            "En Proceso" => "bg-primary",
-            "Pendiente" => "bg-warning",
-            "En Revisión" => "bg-info",
-            "Rechazado" => "bg-danger",
+            "Completado" => "badge-success",
+            "En Proceso" => "badge-primary",
+            "Pendiente" => "badge-warning",
+            "En Revisión" => "badge-info",
+            "Rechazado" => "badge-danger",
             _ => "bg-secondary"
         };
     }
@@ -282,3 +289,162 @@ Reasignado = true
         public bool Reasignado { get; set; }
     }
 }
+
+<style>
+    /* Custom badge styles with gradients */
+    .badge-success {
+        background: linear-gradient(135deg, #38a169, #48bb78) !important;
+        color: white;
+    }
+
+    .badge-primary {
+        background: linear-gradient(135deg, #1a365d, #3182ce) !important;
+        color: white;
+    }
+
+    .badge-warning {
+        background: linear-gradient(135deg, #d69e2e, #f6e05e) !important;
+        color: white;
+    }
+
+    .badge-info {
+        background: linear-gradient(135deg, #3182ce, #63b3ed) !important;
+        color: white;
+    }
+
+    .badge-danger {
+        background: linear-gradient(135deg, #e53e3e, #fc8181) !important;
+        color: white;
+    }
+
+    /* Responsive styles for MisTramites */
+    @@media (max-width: 992px) {
+
+        .row.mb-4 .col-md-8,
+        .row.mb-4 .col-md-4 {
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .container-fluid {
+            padding: 0.5rem;
+        }
+
+        .card-header {
+            padding: 0.75rem;
+        }
+
+        .card-header .d-flex {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+
+        .card-header .d-flex>button {
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+
+        .table-responsive {
+            font-size: 0.875rem;
+        }
+
+        .btn-group {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .btn-group .btn {
+            border-radius: 0.25rem !important;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Hide less important columns on mobile */
+        .table th:nth-child(3),
+        .table th:nth-child(4),
+        .table th:nth-child(6),
+        .table td:nth-child(3),
+        .table td:nth-child(4),
+        .table td:nth-child(6) {
+            display: none;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .card-header h6 {
+            font-size: 0.9rem;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.5rem 0.25rem;
+            font-size: 0.8rem;
+        }
+
+        /* Show only essential columns on very small screens */
+        .table th:nth-child(2),
+        .table td:nth-child(2) {
+            max-width: 120px;
+            word-wrap: break-word;
+        }
+
+        .fw-semibold {
+            font-size: 0.75rem;
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            padding: 0.25rem 0.4rem;
+        }
+
+        code {
+            font-size: 0.7rem;
+        }
+
+        /* Stack filters vertically */
+        .row.mb-4 {
+            flex-direction: column;
+        }
+
+        .input-group {
+            margin-bottom: 0.75rem;
+        }
+
+        .form-select {
+            margin-bottom: 0.75rem;
+        }
+    }
+
+    /* Button hover effects */
+    .btn-group .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: all 0.2s ease;
+    }
+
+    /* Enhanced table row hover */
+    .table-hover tbody tr:hover {
+        background-color: rgba(26, 54, 93, 0.05);
+    }
+
+    /* Improved badge visibility */
+    .badge {
+        font-weight: 600;
+        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+        border-radius: 0.5rem;
+    }
+
+    /* Better code styling */
+    code.text-primary {
+        background-color: rgba(26, 54, 93, 0.1);
+        color: #1a365d !important;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-weight: 600;
+    }
+</style>
