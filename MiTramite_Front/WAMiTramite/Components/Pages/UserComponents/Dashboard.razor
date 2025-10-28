@@ -4,22 +4,22 @@
     <!-- Header de bienvenida -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card bg-primary text-white">
+            <div class="card text-white" style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);">
                 <div class="card-body py-4">
                     <div class="row align-items-center">
                         <div class="col-md-8">
-                            <h3 class="mb-1">
+                            <h3 class="mb-1 text-white">
                                 <i class="bi bi-house-door me-2"></i>
                                 ¡Bienvenido!
                             </h3>
-                            <p class="mb-0 opacity-75">
+                            <p class="mb-0 text-white" style="opacity: 0.9;">
                                 Gestiona todos tus trámites municipales de forma rápida y segura.
                             </p>
                         </div>
                         <div class="col-md-4 text-end">
                             <div class="bg-white bg-opacity-25 rounded p-3">
                                 <div class="text-white-50 small">Último acceso</div>
-                                <div class="fw-semibold">@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</div>
+                                <div class="fw-semibold text-white">@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</div>
                             </div>
                         </div>
                     </div>
@@ -39,10 +39,10 @@
         <div class="col-md-4 mb-3">
             <div class="card h-100 border-0 shadow-sm hover-card">
                 <div class="card-body text-center py-4">
-                    <i class="bi bi-file-earmark-plus display-4 text-primary mb-3"></i>
-                    <h6 class="card-title">Nuevo Trámite</h6>
+                    <i class="bi bi-file-earmark-plus display-4 mb-3" style="color: #1a365d;"></i>
+                    <h6 class="card-title" style="color: #1a365d;">Nuevo Trámite</h6>
                     <p class="card-text small text-muted">Inicia un nuevo trámite municipal</p>
-                    <button class="btn btn-primary btn-sm"
+                    <button class="btn btn-sm text-white" style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;"
                         @onclick="@(() => NavigateToPage("nuevo-tramite"))">Comenzar</button>
                 </div>
             </div>
@@ -50,10 +50,10 @@
         <div class="col-md-4 mb-3">
             <div class="card h-100 border-0 shadow-sm hover-card">
                 <div class="card-body text-center py-4">
-                    <i class="bi bi-search display-4 text-info mb-3"></i>
-                    <h6 class="card-title">Consultar Estado</h6>
+                    <i class="bi bi-search display-4 mb-3" style="color: #1a365d;"></i>
+                    <h6 class="card-title" style="color: #1a365d;">Consultar Estado</h6>
                     <p class="card-text small text-muted">Verifica el estado de tus trámites</p>
-                    <button class="btn btn-info btn-sm"
+                    <button class="btn btn-sm text-white" style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;"
                         @onclick="@(() => NavigateToPage("mis-tramites"))">Consultar</button>
                 </div>
             </div>
@@ -61,11 +61,11 @@
         <div class="col-md-4 mb-3">
             <div class="card h-100 border-0 shadow-sm hover-card">
                 <div class="card-body text-center py-4">
-                    <i class="bi bi-folder2-open display-4 text-success mb-3"></i>
-                    <h6 class="card-title">Mis Documentos</h6>
+                    <i class="bi bi-folder2-open display-4 mb-3" style="color: #1a365d;"></i>
+                    <h6 class="card-title" style="color: #1a365d;">Mis Documentos</h6>
                     <p class="card-text small text-muted">Accede a tus documentos subidos</p>
-                    <button class="btn btn-success btn-sm" @onclick="@(() => NavigateToPage("mis-documentos"))">Ver
-                        Documentos</button>
+                    <button class="btn btn-sm text-white" style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;" 
+                        @onclick="@(() => NavigateToPage("mis-documentos"))">Ver Documentos</button>
                 </div>
             </div>
         </div>
@@ -156,6 +156,52 @@
     .hover-card:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .btn-gradient {
+        background: linear-gradient(135deg, #1a365d, #3182ce);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+        background: linear-gradient(135deg, #0f2027, #1a365d);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(26, 54, 93, 0.4);
+    }
+
+    /* Responsive styles */
+    @@media (max-width: 768px) {
+        .container-fluid {
+            padding: 1rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .display-4 {
+            font-size: 2rem !important;
+        }
+        
+        .row.align-items-center .col-md-4 {
+            margin-top: 1rem;
+            text-align: center !important;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .card-body {
+            padding: 1rem !important;
+        }
+        
+        .col-md-4.text-end {
+            text-align: center !important;
+        }
+        
+        .bg-white.bg-opacity-25 {
+            margin-top: 1rem;
+        }
     }
 </style>
 
