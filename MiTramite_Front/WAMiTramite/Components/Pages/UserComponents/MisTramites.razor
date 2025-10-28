@@ -1,0 +1,284 @@
+@rendermode InteractiveServer
+
+<div class="container-fluid">
+    <!-- Filtros y búsqueda -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control" placeholder="Buscar por ID, tipo de trámite o funcionario..."
+                    @bind="filtroTexto" @oninput="FiltrarTramites">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <select class="form-select" @bind="filtroEstado" @bind:after="FiltrarTramites">
+                <option value="">Todos los estados</option>
+                <option value="En Proceso">En Proceso</option>
+                <option value="Completado">Completado</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Rechazado">Rechazado</option>
+                <option value="En Revisión">En Revisión</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Tabla de trámites -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">
+                            <i class="bi bi-list-check me-2"></i>
+                            Historial de Trámites (@tramitesFiltrados.Count)
+                        </h6>
+                        <button class="btn btn-outline-primary btn-sm" @onclick="ActualizarTramites">
+                            <i class="bi bi-arrow-clockwise me-1"></i>
+                            Actualizar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">ID Solicitud</th>
+                                    <th scope="col">Tipo de Trámite</th>
+                                    <th scope="col">Funcionario Asignado</th>
+                                    <th scope="col">Fecha</th>
+                                    <th scope="col">Estado</th>
+                                    <th scope="col">Reasignado</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (tramitesFiltrados.Any())
+                                {
+                                    @foreach (var tramite in tramitesFiltrados)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <code class="text-primary">@tramite.IdSolicitud</code>
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">@tramite.TipoTramite</div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-secondary bg-opacity-25 rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                        style="width: 32px; height: 32px;">
+                                                        <i class="bi bi-person text-secondary"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="small fw-semibold">@tramite.FuncionarioAsignado</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="small">@tramite.Fecha.ToString("dd/MM/yyyy")</div>
+                                                <div class="small text-muted">@tramite.Fecha.ToString("HH:mm")</div>
+                                            </td>
+                                            <td>
+                                                <span class="badge @GetEstadoBadgeClass(tramite.Estado)">
+                                                    <i class="bi @GetEstadoIcon(tramite.Estado) me-1"></i>
+                                                    @tramite.Estado
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if (tramite.Reasignado)
+                                                {
+                                                    <span class="badge bg-warning">
+                                                        <i class="bi bi-arrow-repeat me-1"></i>
+                                                        Sí
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted small">No</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button class="btn btn-outline-primary btn-sm"
+                                                        @onclick="@(() => VerDetalle(tramite.IdSolicitud))" title="Ver detalle">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    @if (tramite.Estado == "Completado")
+                                                    {
+                                                        <button class="btn btn-outline-success btn-sm"
+                                                            @onclick="@(() => DescargarResultado(tramite.IdSolicitud))"
+                                                            title="Descargar resultado">
+                                                            <i class="bi bi-download"></i>
+                                                        </button>
+                                                    }
+                                                    @if (tramite.Estado == "Pendiente")
+                                                    {
+                                                        <button class="btn btn-outline-warning btn-sm"
+                                                            @onclick="@(() => CompletarDocumentos(tramite.IdSolicitud))"
+                                                            title="Completar documentos">
+                                                            <i class="bi bi-file-earmark-plus"></i>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center py-5 text-muted">
+                                            <i class="bi bi-inbox display-4 mb-3"></i>
+                                            <div>No se encontraron trámites</div>
+                                            <small>Los trámites aparecerán aquí una vez que los inicies</small>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string filtroTexto = string.Empty;
+    private string filtroEstado = string.Empty;
+    private List<TramiteViewModel> tramites = new();
+    private List<TramiteViewModel> tramitesFiltrados = new();
+
+    protected override void OnInitialized()
+    {
+        CargarTramitesDemo();
+        tramitesFiltrados = tramites;
+    }
+
+    private void CargarTramitesDemo()
+    {
+        // Datos de demostración - en producción vendrían del backend
+        tramites = new List<TramiteViewModel>
+{
+new() {
+IdSolicitud = "TR-2024-001",
+TipoTramite = "Afiliación de Trabajador Dependiente",
+FuncionarioAsignado = "María González Pérez",
+Fecha = DateTime.Now.AddDays(-5),
+Estado = "En Proceso",
+Reasignado = false
+},
+new() {
+IdSolicitud = "TR-2024-002",
+TipoTramite = "Acceso a Renta Dignidad",
+FuncionarioAsignado = "Carlos Mamani Quispe",
+Fecha = DateTime.Now.AddDays(-10),
+Estado = "Completado",
+Reasignado = true
+},
+new() {
+IdSolicitud = "TR-2024-003",
+TipoTramite = "Afiliación de Trabajador Dependiente",
+FuncionarioAsignado = "Ana Lucia Vargas",
+Fecha = DateTime.Now.AddDays(-15),
+Estado = "Pendiente",
+Reasignado = false
+},
+new() {
+IdSolicitud = "TR-2024-004",
+TipoTramite = "Acceso a Renta Dignidad",
+FuncionarioAsignado = "Jorge Luis Mendoza",
+Fecha = DateTime.Now.AddDays(-20),
+Estado = "En Revisión",
+Reasignado = false
+},
+new() {
+IdSolicitud = "TR-2024-005",
+TipoTramite = "Afiliación de Trabajador Dependiente",
+FuncionarioAsignado = "Patricia Condori Silva",
+Fecha = DateTime.Now.AddDays(-25),
+Estado = "Rechazado",
+Reasignado = true
+}
+};
+    }
+
+    private void FiltrarTramites()
+    {
+        tramitesFiltrados = tramites.Where(t =>
+        (string.IsNullOrEmpty(filtroTexto) ||
+        t.IdSolicitud.Contains(filtroTexto, StringComparison.OrdinalIgnoreCase) ||
+        t.TipoTramite.Contains(filtroTexto, StringComparison.OrdinalIgnoreCase) ||
+        t.FuncionarioAsignado.Contains(filtroTexto, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrEmpty(filtroEstado) || t.Estado == filtroEstado)
+        ).ToList();
+
+        StateHasChanged();
+    }
+
+    private string GetEstadoBadgeClass(string estado)
+    {
+        return estado switch
+        {
+            "Completado" => "bg-success",
+            "En Proceso" => "bg-primary",
+            "Pendiente" => "bg-warning",
+            "En Revisión" => "bg-info",
+            "Rechazado" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetEstadoIcon(string estado)
+    {
+        return estado switch
+        {
+            "Completado" => "bi-check-circle-fill",
+            "En Proceso" => "bi-clock-fill",
+            "Pendiente" => "bi-exclamation-triangle-fill",
+            "En Revisión" => "bi-eye-fill",
+            "Rechazado" => "bi-x-circle-fill",
+            _ => "bi-question-circle-fill"
+        };
+    }
+
+    private void ActualizarTramites()
+    {
+        // TODO: Implementar actualización desde el backend
+        Console.WriteLine("Actualizando trámites...");
+        // Simular actualización
+        CargarTramitesDemo();
+        FiltrarTramites();
+    }
+
+    private void VerDetalle(string idSolicitud)
+    {
+        // TODO: Implementar navegación a página de detalle
+        Console.WriteLine($"Ver detalle del trámite: {idSolicitud}");
+    }
+
+    private void DescargarResultado(string idSolicitud)
+    {
+        // TODO: Implementar descarga de resultado
+        Console.WriteLine($"Descargar resultado del trámite: {idSolicitud}");
+    }
+
+    private void CompletarDocumentos(string idSolicitud)
+    {
+        // TODO: Implementar navegación a completar documentos
+        Console.WriteLine($"Completar documentos del trámite: {idSolicitud}");
+    }
+
+    public class TramiteViewModel
+    {
+        public string IdSolicitud { get; set; } = string.Empty;
+        public string TipoTramite { get; set; } = string.Empty;
+        public string FuncionarioAsignado { get; set; } = string.Empty;
+        public DateTime Fecha { get; set; }
+        public string Estado { get; set; } = string.Empty;
+        public bool Reasignado { get; set; }
+    }
+}
