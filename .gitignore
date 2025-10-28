@@ -72,7 +72,6 @@ $RECYCLE.BIN/
 *.runtimeconfig.json
 
 ## Archivos de Blazor y WebAssembly
-wwwroot/
 node_modules/
 dist/
 build/

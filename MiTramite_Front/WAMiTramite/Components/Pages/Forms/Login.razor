@@ -1,0 +1,185 @@
+@page "/login"
+@rendermode InteractiveServer
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center text-white"
+                    style="background-color: #1a365d; color: white; padding: 1.5rem;">
+                    <h3 class="mb-0 text-white">
+                        <i class="bi bi-box-arrow-in-right me-2 text-white"></i>
+                        Iniciar Sesión
+                    </h3>
+                    <p class="mb-0 mt-2 opacity-75">Accede a tu cuenta de trámites digitales</p>
+                </div>
+
+                <div class="card-body p-4">
+                    <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
+                        <DataAnnotationsValidator />
+
+                        <!-- Correo Electrónico -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-envelope me-1"></i>
+                                Correo Electrónico
+                            </label>
+                            <InputText @bind-Value="loginModel.Correo" type="email" class="form-control form-control-lg"
+                                placeholder="tu@email.com" autocomplete="username" />
+                            <ValidationMessage For="@(() => loginModel.Correo)" class="text-danger small" />
+                        </div>
+
+                        <!-- Contraseña -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-lock me-1"></i>
+                                Contraseña
+                            </label>
+                            <div class="input-group">
+                                <InputText @bind-Value="loginModel.Password"
+                                    type="@(showPassword ? "text" : "password")" class="form-control form-control-lg"
+                                    placeholder="Ingresa tu contraseña" autocomplete="current-password" />
+                                <button class="btn btn-outline-secondary" type="button"
+                                    @onclick="@(() => showPassword = !showPassword)">
+                                    <i class="bi @(showPassword ? "bi-eye-slash" : "bi-eye")"></i>
+                                </button>
+                            </div>
+                            <ValidationMessage For="@(() => loginModel.Password)" class="text-danger small" />
+                        </div>
+
+                        <!-- Recordar sesión y olvidé contraseña -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="rememberMe" @bind="rememberMe">
+                                    <label class="form-check-label" for="rememberMe">
+                                        <small>Recordarme</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-6 text-end">
+                                <a href="#" class="small text-primary text-decoration-none">
+                                    ¿Olvidaste tu contraseña?
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Mensaje de error -->
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                @errorMessage
+                                <button type="button" class="btn-close"
+                                    @onclick="@(() => errorMessage = string.Empty)"></button>
+                            </div>
+                        }
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg" disabled="@isSubmitting">
+                                @if (isSubmitting)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    <span>Verificando...</span>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                                    <span>Iniciar Sesión</span>
+                                }
+                            </button>
+
+                            <button type="button" class="btn btn-outline-secondary"
+                                @onclick="@(() => NavigateToRegister())">
+                                <i class="bi bi-person-plus me-2"></i>
+                                ¿No tienes cuenta? Regístrate
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <div class="card bg-light border-0">
+                    <div class="card-body py-3">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Si tienes problemas para acceder, puedes contactar al soporte técnico
+                        </small>
+                        <br>
+                        <small class="text-muted">
+                            <i class="bi bi-telephone me-1"></i>
+                            Teléfono: (591-2) 650-1000 |
+                            <i class="bi bi-envelope me-1"></i>
+                            Email: soporte@lapaz.bo
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginModel loginModel = new();
+    private bool rememberMe = false;
+    private bool showPassword = false;
+    private bool isSubmitting = false;
+    private string errorMessage = string.Empty;
+
+    public class LoginModel
+    {
+        public string Correo { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+
+    private async Task HandleLogin()
+    {
+        isSubmitting = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            // TODO: Aquí se implementará la lógica de autenticación
+            await Task.Delay(1500); // Simular proceso de autenticación
+
+            // Validación básica temporal
+            if (string.IsNullOrWhiteSpace(loginModel.Correo) || string.IsNullOrWhiteSpace(loginModel.Password))
+            {
+                errorMessage = "Por favor completa todos los campos";
+                return;
+            }
+
+            // Simulación de login (remover cuando se implemente la lógica real)
+            if (loginModel.Correo.Contains("@") && loginModel.Password.Length >= 6)
+            {
+                Console.WriteLine($"Login exitoso: {loginModel.Correo}");
+
+                // Redirigir al dashboard o página principal
+                Navigation.NavigateTo("/user/dashboard");
+            }
+            else
+            {
+                errorMessage = "Credenciales incorrectas. Verifica tu email y contraseña.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Ocurrió un error al iniciar sesión. Intenta nuevamente.";
+            Console.WriteLine($"Error en login: {ex.Message}");
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private void NavigateToRegister()
+    {
+        Navigation.NavigateTo("/register");
+    }
+
+    [Inject]
+    private NavigationManager Navigation { get; set; } = default!;
+}

@@ -1,0 +1,442 @@
+/* Tema basado en Gestora Nacional de Bolivia */
+/* Paleta de colores institucionales */
+:root {
+  /* Paleta principal azul/celeste/blanco */
+  --primary-blue: #1a365d;
+  --primary-light-blue: #3182ce;
+  --primary-celeste: #63b3ed;
+  --primary-white: #ffffff;
+
+  /* Colores de apoyo */
+  --dark-blue: #1a365d;
+  --light-blue: #e6f3ff;
+  --gray-dark: #2d3748;
+  --gray-medium: #4a5568;
+  --gray-light: #e2e8f0;
+  --gray-lighter: #f7fafc;
+
+  /* Colores semánticos */
+  --success: #38a169;
+  --warning: #d69e2e;
+  --error: #e53e3e;
+  --info: #3182ce;
+
+  /* Tipografía */
+  --font-primary: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --font-secondary: Georgia, "Times New Roman", serif;
+
+  /* Espaciado */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
+
+  /* Bordes y sombras */
+  --border-radius: 0.375rem;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Reset y base */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-primary);
+  line-height: 1.6;
+  color: var(--gray-dark);
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+}
+
+/* Estilos de texto mejorados */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: var(--spacing-md);
+  color: var(--dark-blue);
+}
+
+.display-4 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--dark-blue);
+}
+
+.lead {
+  font-size: 1.125rem;
+  font-weight: 400;
+  color: var(--gray-medium);
+}
+
+.muted-small {
+  color: var(--gray-medium);
+  font-size: 0.95rem;
+}
+
+.text-muted-small {
+  color: var(--gray-medium);
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: var(--spacing-xxl);
+  color: var(--dark-blue);
+  position: relative;
+}
+
+.section-title::after {
+  content: "";
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--primary-blue),
+    var(--primary-light-blue),
+    var(--primary-celeste)
+  );
+  display: block;
+  margin: var(--spacing-md) auto 0;
+  border-radius: 2px;
+}
+
+/* Botones mejorados */
+.btn {
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.2s ease-in-out;
+  border: 2px solid transparent;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue),
+    var(--primary-light-blue)
+  );
+  color: white;
+  border-color: var(--primary-blue);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-outline-primary {
+  background: transparent;
+  color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+
+.btn-outline-primary:hover {
+  background: var(--primary-blue);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.btn-light {
+  background: white;
+  color: var(--dark-blue);
+  border-color: white;
+}
+
+.btn-light:hover {
+  background: var(--gray-lighter);
+  transform: translateY(-1px);
+}
+
+.btn-outline-light {
+  background: transparent;
+  color: white;
+  border-color: white;
+}
+
+.btn-outline-light:hover {
+  background: white;
+  color: var(--dark-blue);
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+}
+
+/* Secciones principales */
+.hero {
+  background: linear-gradient(135deg, var(--dark-blue) 0%, #2c5282 100%);
+  color: white;
+  padding: var(--spacing-xxl) 0;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")
+    repeat;
+  z-index: 1;
+}
+
+.hero .container {
+  position: relative;
+  z-index: 2;
+}
+
+.hero h1 {
+  color: white;
+  margin-bottom: var(--spacing-lg);
+}
+
+.hero .lead {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: var(--spacing-xl);
+}
+
+.hero-cta {
+  margin-bottom: var(--spacing-lg);
+}
+
+.hero-illus {
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+}
+
+/* Sección de características */
+.features {
+  padding: var(--spacing-xxl) 0;
+  background: var(--gray-lighter);
+}
+
+.feature-card {
+  background: white;
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  height: 100%;
+  transition: all 0.3s ease;
+  border-top: 4px solid transparent;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-top-color: var(--primary-light-blue);
+}
+
+.feature-card h5 {
+  color: var(--dark-blue);
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Sección "Cómo funciona" */
+.how {
+  padding: var(--spacing-xxl) 0;
+  background: white;
+}
+
+.how-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-lg);
+  text-align: left;
+}
+
+.how-step .badge {
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue),
+    var(--primary-celeste)
+  );
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-md);
+}
+
+.how-step h6 {
+  color: var(--dark-blue);
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Sección FAQ */
+.faq {
+  padding: var(--spacing-xxl) 0;
+  background: var(--gray-lighter);
+}
+
+.accordion-item {
+  border: none;
+  margin-bottom: var(--spacing-sm);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.accordion-button {
+  background: white;
+  color: var(--dark-blue);
+  font-weight: 500;
+  border: none;
+  padding: var(--spacing-lg);
+}
+
+.accordion-button:not(.collapsed) {
+  background: var(--primary-blue);
+  color: white;
+  box-shadow: none;
+}
+
+.accordion-button:focus {
+  box-shadow: 0 0 0 0.25rem rgba(26, 54, 93, 0.25);
+  border-color: var(--primary-blue);
+}
+
+.accordion-body {
+  background: white;
+  border-top: 1px solid var(--gray-light);
+}
+
+/* CTA final */
+.contact-cta {
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue),
+    var(--primary-light-blue)
+  );
+  color: white;
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+}
+
+.contact-cta h4 {
+  color: white;
+  font-weight: 600;
+}
+
+.contact-cta p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Utilidades responsivas */
+@media (max-width: 768px) {
+  .hero {
+    padding: var(--spacing-xl) 0;
+    min-height: auto;
+  }
+
+  .display-4 {
+    font-size: 2rem;
+  }
+
+  .hero-cta {
+    flex-direction: column;
+    gap: var(--spacing-sm) !important;
+  }
+
+  .hero-cta .btn {
+    width: 100%;
+  }
+
+  .contact-cta {
+    text-align: center;
+  }
+
+  .how-step {
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.feature-card,
+.how-step,
+.accordion-item {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Estados de focus para accesibilidad */
+.btn:focus,
+.accordion-button:focus {
+  outline: 2px solid var(--primary-celeste);
+  outline-offset: 2px;
+}
+
+/* Mejoras adicionales */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* Footer implícito */
+section:last-child {
+  background: linear-gradient(135deg, var(--dark-blue), #2c5282);
+  color: white;
+}
+
+/* Estilos de imagen placeholder */
+.hero-illus {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.125rem;
+}
+
+.hero-illus::before {
+  content: "🏛️ Gobierno Digital";
+  font-size: 3rem;
+}
