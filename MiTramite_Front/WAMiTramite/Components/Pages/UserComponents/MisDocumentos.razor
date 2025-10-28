@@ -1,0 +1,319 @@
+@rendermode InteractiveServer
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Tabla de documentos -->
+        <div class="col-md-@(documentoSeleccionado != null ? "7" : "12")">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">
+                            <i class="bi bi-folder2-open me-2"></i>
+                            Mis Documentos (@documentos.Count)
+                        </h6>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-success btn-sm" @onclick="SubirDocumento">
+                                <i class="bi bi-cloud-upload me-1"></i>
+                                Subir Documento
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm" @onclick="ActualizarDocumentos">
+                                <i class="bi bi-arrow-clockwise me-1"></i>
+                                Actualizar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">Tipo de Documento</th>
+                                    <th scope="col">Nombre del Archivo</th>
+                                    <th scope="col">Fecha de Subida</th>
+                                    <th scope="col">Tamaño</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (documentos.Any())
+                                {
+                                    @foreach (var documento in documentos)
+                                    {
+                                        <tr class="@(documentoSeleccionado?.Id == documento.Id ? "table-active" : "")">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i
+                                                        class="bi @GetDocumentIcon(documento.TipoDocumento) me-2 text-primary fs-5"></i>
+                                                    <div>
+                                                        <div class="fw-semibold">@documento.TipoDocumento</div>
+                                                        <small class="text-muted">@documento.Descripcion</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="small">
+                                                    <div class="fw-semibold">@documento.NombreArchivo</div>
+                                                    <small class="text-muted">@documento.Extension.ToUpper()</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="small">@documento.FechaSubida.ToString("dd/MM/yyyy")</div>
+                                                <div class="small text-muted">@documento.FechaSubida.ToString("HH:mm")</div>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">@FormatFileSize(documento.Tamano)</small>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button class="btn btn-outline-primary btn-sm"
+                                                        @onclick="@(() => VerDocumento(documento))" title="Ver documento">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-success btn-sm"
+                                                        @onclick="@(() => DescargarDocumento(documento.Id))" title="Descargar">
+                                                        <i class="bi bi-download"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-danger btn-sm"
+                                                        @onclick="@(() => EliminarDocumento(documento.Id))" title="Eliminar">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center py-5 text-muted">
+                                            <i class="bi bi-cloud-upload display-4 mb-3"></i>
+                                            <div>No hay documentos subidos</div>
+                                            <small>Los documentos que subas aparecerán aquí</small>
+                                            <div class="mt-3">
+                                                <button class="btn btn-primary btn-sm" @onclick="SubirDocumento">
+                                                    <i class="bi bi-cloud-upload me-1"></i>
+                                                    Subir primer documento
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visor de documentos -->
+        @if (documentoSeleccionado != null)
+        {
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">
+                                <i class="bi bi-eye me-2"></i>
+                                Vista Previa
+                            </h6>
+                            <button class="btn btn-outline-secondary btn-sm" @onclick="CerrarVisor">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="p-3 border-bottom bg-light">
+                            <div class="small">
+                                <strong>@documentoSeleccionado.TipoDocumento</strong>
+                                <br>
+                                <span class="text-muted">@documentoSeleccionado.NombreArchivo</span>
+                            </div>
+                        </div>
+
+                        <div style="height: 500px;">
+                            @if (documentoSeleccionado.Extension.ToLower() == ".pdf")
+                            {
+                                <iframe src="@documentoSeleccionado.UrlArchivo"
+                                    style="width: 100%; height: 100%; border: none;">
+                                </iframe>
+                            }
+                            else if (IsImageFile(documentoSeleccionado.Extension))
+                            {
+                                <div class="d-flex align-items-center justify-content-center h-100 p-3">
+                                    <img src="@documentoSeleccionado.UrlArchivo" class="img-fluid"
+                                        alt="@documentoSeleccionado.NombreArchivo" style="max-height: 100%;">
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                    <div class="text-center">
+                                        <i class="bi bi-file-earmark display-1 mb-3"></i>
+                                        <div>Vista previa no disponible</div>
+                                        <small>@documentoSeleccionado.Extension.ToUpper()</small>
+                                        <div class="mt-3">
+                                            <button class="btn btn-primary btn-sm"
+                                                @onclick="@(() => DescargarDocumento(documentoSeleccionado.Id))">
+                                                <i class="bi bi-download me-1"></i>
+                                                Descargar para ver
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<DocumentoViewModel> documentos = new();
+    private DocumentoViewModel? documentoSeleccionado = null;
+
+    protected override void OnInitialized()
+    {
+        CargarDocumentosDemo();
+    }
+
+    private void CargarDocumentosDemo()
+    {
+        // Datos de demostración - en producción vendrían del backend
+        documentos = new List<DocumentoViewModel>
+{
+new() {
+Id = 1,
+TipoDocumento = "Cédula de Identidad",
+Descripcion = "Documento de identificación personal",
+NombreArchivo = "cedula_juan_perez.pdf",
+Extension = ".pdf",
+FechaSubida = DateTime.Now.AddDays(-10),
+Tamano = 2048576, // 2MB
+UrlArchivo = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" // PDF de ejemplo
+},
+new() {
+Id = 2,
+TipoDocumento = "Certificado de Nacimiento",
+Descripcion = "Certificado oficial de nacimiento",
+NombreArchivo = "certificado_nacimiento.jpg",
+Extension = ".jpg",
+FechaSubida = DateTime.Now.AddDays(-5),
+Tamano = 1536000, // 1.5MB
+UrlArchivo = "https://via.placeholder.com/800x600/007bff/ffffff?text=Certificado+de+Nacimiento"
+},
+new() {
+Id = 3,
+TipoDocumento = "Contrato de Trabajo",
+Descripcion = "Contrato laboral vigente",
+NombreArchivo = "contrato_trabajo_2024.pdf",
+Extension = ".pdf",
+FechaSubida = DateTime.Now.AddDays(-3),
+Tamano = 1024000, // 1MB
+UrlArchivo = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+},
+new() {
+Id = 4,
+TipoDocumento = "Comprobante de Domicilio",
+Descripcion = "Factura de servicios básicos",
+NombreArchivo = "factura_luz_noviembre.docx",
+Extension = ".docx",
+FechaSubida = DateTime.Now.AddDays(-1),
+Tamano = 512000, // 512KB
+UrlArchivo = ""
+}
+};
+    }
+
+    private string GetDocumentIcon(string tipoDocumento)
+    {
+        return tipoDocumento.ToLower() switch
+        {
+            var t when t.Contains("cedula") => "bi-card-text",
+            var t when t.Contains("certificado") => "bi-award",
+            var t when t.Contains("contrato") => "bi-file-earmark-text",
+            var t when t.Contains("comprobante") => "bi-receipt",
+            var t when t.Contains("factura") => "bi-receipt",
+            _ => "bi-file-earmark"
+        };
+    }
+
+    private string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+
+    private bool IsImageFile(string extension)
+    {
+        string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
+        return imageExtensions.Contains(extension.ToLower());
+    }
+
+    private void VerDocumento(DocumentoViewModel documento)
+    {
+        documentoSeleccionado = documento;
+        StateHasChanged();
+    }
+
+    private void CerrarVisor()
+    {
+        documentoSeleccionado = null;
+        StateHasChanged();
+    }
+
+    private void SubirDocumento()
+    {
+        // TODO: Implementar subida de documentos
+        Console.WriteLine("Abrir modal de subida de documentos");
+    }
+
+    private void ActualizarDocumentos()
+    {
+        // TODO: Implementar actualización desde el backend
+        Console.WriteLine("Actualizando documentos...");
+        CargarDocumentosDemo();
+        StateHasChanged();
+    }
+
+    private void DescargarDocumento(int documentoId)
+    {
+        // TODO: Implementar descarga de documento
+        Console.WriteLine($"Descargar documento ID: {documentoId}");
+    }
+
+    private void EliminarDocumento(int documentoId)
+    {
+        // TODO: Implementar eliminación con confirmación
+        Console.WriteLine($"Eliminar documento ID: {documentoId}");
+
+        // Simulación de eliminación
+        documentos.RemoveAll(d => d.Id == documentoId);
+        if (documentoSeleccionado?.Id == documentoId)
+        {
+            documentoSeleccionado = null;
+        }
+        StateHasChanged();
+    }
+
+    public class DocumentoViewModel
+    {
+        public int Id { get; set; }
+        public string TipoDocumento { get; set; } = string.Empty;
+        public string Descripcion { get; set; } = string.Empty;
+        public string NombreArchivo { get; set; } = string.Empty;
+        public string Extension { get; set; } = string.Empty;
+        public DateTime FechaSubida { get; set; }
+        public long Tamano { get; set; }
+        public string UrlArchivo { get; set; } = string.Empty;
+    }
+}
