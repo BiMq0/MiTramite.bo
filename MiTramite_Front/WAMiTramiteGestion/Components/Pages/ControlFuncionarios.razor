@@ -1,0 +1,210 @@
+﻿@page "/controlfuncionarios"
+
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar shadow">
+        <div class="sidebar-header text-center mb-4">
+            <h3 class="fw-bold text-light">Gerente</h3>
+            <hr class="bg-light opacity-25">
+        </div>
+
+        <nav class="nav flex-column">
+            <a class="nav-link" href="/dashboardgerente">🏠 Inicio</a>
+            <a class="nav-link" href="#">📋 Trámites Generales</a>
+            <a class="nav-link" href="#">📊 Reportes</a>
+            <a class="nav-link active" href="/controlfuncionarios">👥 Control de Funcionarios</a>
+            <a class="nav-link" href="#">⚙️ Configuración</a>
+            <a class="nav-link text-danger mt-auto" href="/">🚪 Cerrar Sesión</a>
+        </nav>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="content animate-fadein">
+        <div class="container-fluid px-4">
+            <h2 class="fw-bold text-success mb-4 mt-3">👥 Control de Funcionarios</h2>
+
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-success text-white py-3">
+                    <h4 class="fw-bold mb-0">Lista de Funcionarios Registrados</h4>
+                </div>
+
+                <div class="card-body bg-light">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <input type="text" class="form-control w-50 shadow-sm border-success" placeholder="🔍 Buscar funcionario..." />
+                        <button class="btn btn-success shadow-sm px-3">
+                            ➕ Nuevo Funcionario
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle shadow-sm table-borderless rounded-3">
+                            <thead class="table-success text-secondary">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Foto</th>
+                                    <th>Nombre Completo</th>
+                                    <th>Cargo</th>
+                                    <th>Correo</th>
+                                    <th>Estado</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white">
+                                <tr>
+                                    <td>1</td>
+                                    <td><img src="https://cdn-icons-png.flaticon.com/512/219/219970.png" class="rounded-circle shadow-sm" width="45" /></td>
+                                    <td>Juan Pérez</td>
+                                    <td><span class="badge bg-info text-dark">Funcionario</span></td>
+                                    <td>juanperez@gestora.bo</td>
+                                    <td><span class="badge bg-success">Activo</span></td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary me-2 shadow-sm">✏️ Editar</button>
+                                        <button class="btn btn-sm btn-outline-danger shadow-sm">🚫 Desactivar</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td><img src="https://cdn-icons-png.flaticon.com/512/219/219969.png" class="rounded-circle shadow-sm" width="45" /></td>
+                                    <td>María López</td>
+                                    <td><span class="badge bg-info text-dark">Funcionario</span></td>
+                                    <td>marialopez@gestora.bo</td>
+                                    <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary me-2 shadow-sm">✏️ Editar</button>
+                                        <button class="btn btn-sm btn-outline-danger shadow-sm">🚫 Desactivar</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td><img src="https://cdn-icons-png.flaticon.com/512/219/219972.png" class="rounded-circle shadow-sm" width="45" /></td>
+                                    <td>Pedro Rojas</td>
+                                    <td><span class="badge bg-info text-dark">Funcionario</span></td>
+                                    <td>pedrorojas@gestora.bo</td>
+                                    <td><span class="badge bg-danger">Inactivo</span></td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary me-2 shadow-sm">✏️ Editar</button>
+                                        <button class="btn btn-sm btn-outline-success shadow-sm">✅ Activar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white text-muted text-center small">
+                    <em>Última actualización: 28 de octubre de 2025</em>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    /* Layout general */
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+        background-color: #f8f9fa;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        width: 250px;
+        background: linear-gradient(180deg, #198754, #0f5132);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem 1rem;
+    }
+
+    .nav-link {
+        color: #ffffffcc;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+            color: #fff;
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.25);
+            font-weight: 600;
+            color: #fff;
+        }
+
+    /* Contenido principal */
+    .content {
+        flex-grow: 1;
+        padding: 2rem;
+        background-color: #f5f7fb;
+    }
+
+    /* Tabla y tarjeta */
+    .table {
+        border-collapse: separate;
+        border-spacing: 0 0.6rem;
+    }
+
+        .table tbody tr:hover {
+            background-color: #e8f5e9;
+            transform: scale(1.01);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+        }
+
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.45rem 0.6rem;
+        border-radius: 0.6rem;
+    }
+
+    button.btn-sm {
+        font-size: 0.85rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+        button.btn-sm:hover {
+            transform: scale(1.05);
+        }
+
+    .card {
+        border-radius: 1rem;
+    }
+
+    .card-header {
+        border-bottom: 3px solid #146c43;
+    }
+
+    /* Animación */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fadein {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    /* Responsivo */
+    @@media (max-width: 768px) {
+        .sidebar {
+            display: none;
+        }
+
+        .content {
+            padding: 1rem;
+        }
+    }
+</style>

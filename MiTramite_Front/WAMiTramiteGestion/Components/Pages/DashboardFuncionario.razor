@@ -1,0 +1,194 @@
+﻿@page "/dashboardfuncionario"
+
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar shadow">
+        <div class="sidebar-header text-center mb-4">
+            <h3 class="fw-bold text-light">Funcionario</h3>
+            <hr class="bg-light opacity-25">
+        </div>
+
+        <nav class="nav flex-column">
+            <a class="nav-link active" href="#">🏠 Inicio</a>
+            <a class="nav-link" href="#">📄 Trámites Pendientes</a>
+            <a class="nav-link" href="#">📊 Reportes</a>
+            <a class="nav-link" href="#">⚙️ Configuración</a>
+            <a class="nav-link text-danger mt-auto" href="/">🚪 Cerrar Sesión</a>
+        </nav>
+    </aside>
+
+    <!-- Main content -->
+    <main class="content">
+        <div class="container-fluid px-4">
+            <h2 class="fw-bold text-primary mb-4 mt-3">Panel del Funcionario</h2>
+
+            <div class="card border-0 shadow p-4 animate-fadein">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold text-primary mb-0">📁 Trámites Recientes</h4>
+                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                        Ver todos
+                    </button>
+                </div>
+
+                <!-- Tabla moderna -->
+                <div class="table-wrapper">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tipo de Trámite</th>
+                                <th>Nombre del Solicitante</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Afiliación</td>
+                                <td>Juan Pérez</td>
+                                <td>2025-10-20</td>
+                                <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+                                <td><button class="btn btn-sm btn-primary">Revisar</button></td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Renta Dignidad</td>
+                                <td>María López</td>
+                                <td>2025-10-21</td>
+                                <td><span class="badge bg-success">Aprobado</span></td>
+                                <td><button class="btn btn-sm btn-secondary">Ver</button></td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Actualización de Datos</td>
+                                <td>Pedro Rojas</td>
+                                <td>2025-10-22</td>
+                                <td><span class="badge bg-danger">Rechazado</span></td>
+                                <td><button class="btn btn-sm btn-outline-danger">Detalles</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    /* Layout general */
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+        background-color: #f8f9fa;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        width: 250px;
+        background: linear-gradient(180deg, #007bff, #0056b3);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem 1rem;
+    }
+
+    .sidebar-header h3 {
+        font-size: 1.4rem;
+    }
+
+    .nav-link {
+        color: #ffffffcc;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.25);
+            font-weight: 600;
+            color: #fff;
+        }
+
+    /* Contenido principal */
+    .content {
+        flex-grow: 1;
+        padding: 2rem;
+        background-color: #f5f7fb;
+    }
+
+    /* Tarjetas */
+    .card {
+        border-radius: 1rem;
+        background: #fff;
+    }
+
+    /* Tabla personalizada */
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+    }
+
+        .custom-table thead {
+            background: #007bff;
+            color: white;
+            font-weight: 600;
+        }
+
+        .custom-table th,
+        .custom-table td {
+            padding: 12px 18px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .custom-table tbody tr:hover {
+            background-color: #f1f7ff;
+            transition: background 0.3s ease;
+        }
+
+    /* Animación */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fadein {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    /* Responsivo */
+    @@media (max-width: 768px) {
+        .sidebar {
+            display: none;
+        }
+
+        .content {
+            padding: 1rem;
+        }
+    }
+</style>
