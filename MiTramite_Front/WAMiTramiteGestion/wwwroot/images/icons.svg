@@ -1,0 +1,36 @@
+<!-- Iconos SVG para la plataforma gubernamental -->
+<svg style="display: none;">
+  <defs>
+    <!-- Icono de gobierno -->
+    <symbol id="icon-government" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+      <path fill="white" d="M7 10h2v7H7zm4-3h2v10h-2zm4 5h2v5h-2z"/>
+    </symbol>
+    
+    <!-- Icono de trámites -->
+    <symbol id="icon-documents" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+      <path fill="white" d="M8 12h8v1H8zm0 2h8v1H8zm0 2h5v1H8z"/>
+    </symbol>
+    
+    <!-- Icono de transparencia -->
+    <symbol id="icon-transparency" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z"/>
+    </symbol>
+    
+    <!-- Icono de seguridad -->
+    <symbol id="icon-security" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H15.5C16.3,11 17,11.4 17,12V16C17,16.6 16.6,17 16,17H8C7.4,17 7,16.6 7,16V12C7,11.4 7.4,11 8,11H8.5V10C8.5,8.6 9.6,7 12,7M12,8.2C10.2,8.2 9.8,9.2 9.8,10V11H14.2V10C14.2,9.2 13.8,8.2 12,8.2Z"/>
+    </symbol>
+    
+    <!-- Icono de atención ciudadana -->
+    <symbol id="icon-support" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z"/>
+    </symbol>
+    
+    <!-- Icono de pasos -->
+    <symbol id="icon-steps" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+    </symbol>
+  </defs>
+</svg>
