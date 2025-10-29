@@ -73,7 +73,6 @@ $RECYCLE.BIN/
 
 ## Archivos de Blazor y WebAssembly
 node_modules/
-dist/
 build/
 
 ## Archivos de configuración de Docker
