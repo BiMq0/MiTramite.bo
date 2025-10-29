@@ -1,0 +1,122 @@
+﻿@page "/dashboardgerente"
+
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar shadow">
+        <div class="sidebar-header text-center mb-4">
+            <h3 class="fw-bold text-light">Gerente</h3>
+            <hr class="bg-light opacity-25">
+        </div>
+
+        <nav class="nav flex-column">
+            <a class="nav-link active" href="#">🏠 Inicio</a>
+            <a class="nav-link" href="#">📋 Trámites Generales</a>
+            <a class="nav-link" href="#">📊 Reportes</a>
+            <a class="nav-link" href="/controlfuncionarios">👥 Control de Funcionarios</a>
+            <a class="nav-link" href="#">⚙️ Configuración</a>
+            <a class="nav-link text-danger mt-auto" href="/">🚪 Cerrar Sesión</a>
+        </nav>
+    </aside>
+
+    <!-- Main content -->
+    <main class="content">
+        <div class="container-fluid px-4">
+            <h2 class="fw-bold text-primary mb-4 mt-3">Panel del Gerente</h2>
+
+            <div class="card border-0 shadow p-4 animate-fadein">
+                <h4 class="fw-bold text-primary mb-3">📈 Resumen General</h4>
+                <p>Bienvenido al panel de supervisión. Desde aquí puedes revisar reportes, ver trámites activos y controlar al personal administrativo.</p>
+
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="info-card bg-primary text-white shadow-sm p-3 rounded">
+                            <h5>Trámites Pendientes</h5>
+                            <h3>32</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-card bg-success text-white shadow-sm p-3 rounded">
+                            <h5>Trámites Aprobados</h5>
+                            <h3>105</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-card bg-warning text-dark shadow-sm p-3 rounded">
+                            <h5>Funcionarios Activos</h5>
+                            <h3>14</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+        background-color: #f8f9fa;
+    }
+
+    .sidebar {
+        width: 250px;
+        background: linear-gradient(180deg, #198754, #0f5132);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem 1rem;
+    }
+
+    .nav-link {
+        color: #ffffffcc;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+            color: #fff;
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.25);
+            font-weight: 600;
+        }
+
+    .content {
+        flex-grow: 1;
+        padding: 2rem;
+        background-color: #f5f7fb;
+    }
+
+    .info-card {
+        border-radius: 0.75rem;
+        text-align: center;
+        transition: transform 0.2s ease;
+    }
+
+        .info-card:hover {
+            transform: scale(1.05);
+        }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fadein {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+</style>
