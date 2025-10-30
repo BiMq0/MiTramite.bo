@@ -1,4 +1,4 @@
-﻿@page "/dashboardfuncionario"
+﻿@page "/tramites-pendientes"
 
 <div class="dashboard-container">
     <!-- Sidebar -->
@@ -9,35 +9,29 @@
         </div>
 
         <nav class="nav flex-column">
-            <NavLink class="nav-link" href="/dashboardfuncionario" Match="NavLinkMatch.All">🏠 Inicio</NavLink>
-            <NavLink class="nav-link" href="/tramites-pendientes">📄 Trámites Pendientes</NavLink>
+            <NavLink class="nav-link" href="/dashboardfuncionario">🏠 Inicio</NavLink>
+            <NavLink class="nav-link active" href="/tramites-pendientes">📄 Trámites Pendientes</NavLink>
             <NavLink class="nav-link" href="/reportes">📊 Reportes</NavLink>
             <NavLink class="nav-link" href="/configuracion">⚙️ Configuración</NavLink>
             <NavLink class="nav-link text-danger mt-auto" href="/">🚪 Cerrar Sesión</NavLink>
         </nav>
     </aside>
 
-    <!-- Main content -->
+    <!-- Contenido -->
     <main class="content">
         <div class="container-fluid px-4">
-            <h2 class="fw-bold text-primary mb-4 mt-3">Panel del Funcionario</h2>
+            <h2 class="fw-bold text-primary mb-4 mt-3">📄 Trámites Pendientes</h2>
 
             <div class="card border-0 shadow p-4 animate-fadein">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="fw-bold text-primary mb-0">📁 Trámites Recientes</h4>
-                    <button class="btn btn-sm btn-gradient rounded-pill px-3">
-                        Ver todos
-                    </button>
-                </div>
+                <p>Listado de trámites que están actualmente pendientes de revisión o aprobación.</p>
 
-                <!-- Tabla moderna -->
-                <div class="table-wrapper">
+                <div class="table-wrapper mt-3">
                     <table class="custom-table">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Tipo de Trámite</th>
-                                <th>Nombre del Solicitante</th>
+                                <th>Solicitante</th>
                                 <th>Fecha</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
@@ -46,27 +40,19 @@
                         <tbody>
                             <tr>
                                 <td>1</td>
-                                <td>Afiliación</td>
-                                <td>Juan Pérez</td>
-                                <td>2025-10-20</td>
+                                <td>Actualización de Datos</td>
+                                <td>Lucía Ramos</td>
+                                <td>2025-10-25</td>
                                 <td><span class="badge bg-warning text-dark">Pendiente</span></td>
                                 <td><button class="btn btn-sm btn-gradient">Revisar</button></td>
                             </tr>
                             <tr>
                                 <td>2</td>
-                                <td>Renta Dignidad</td>
-                                <td>María López</td>
-                                <td>2025-10-21</td>
-                                <td><span class="badge bg-success">Aprobado</span></td>
-                                <td><button class="btn btn-sm btn-secondary">Ver</button></td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Actualización de Datos</td>
-                                <td>Pedro Rojas</td>
-                                <td>2025-10-22</td>
-                                <td><span class="badge bg-danger">Rechazado</span></td>
-                                <td><button class="btn btn-sm btn-outline-danger">Detalles</button></td>
+                                <td>Afiliación</td>
+                                <td>José Fernández</td>
+                                <td>2025-10-26</td>
+                                <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+                                <td><button class="btn btn-sm btn-gradient">Revisar</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -77,28 +63,24 @@
 </div>
 
 <style>
-    /* Layout general */
+    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
     .dashboard-container {
         display: flex;
         min-height: 100vh;
         background-color: #f8f9fa;
+        font-family: 'Inter', sans-serif;
     }
 
-    /* Sidebar azul */
     .sidebar {
         width: 250px;
-        background: linear-gradient(180deg, #1a365d 0%, #2c5282 100%);
+        background: linear-gradient(180deg, #1a365d, #2c5282);
         color: white;
         display: flex;
         flex-direction: column;
         padding: 1.5rem 1rem;
     }
 
-    .sidebar-header h3 {
-        font-size: 1.4rem;
-    }
-
-    /* Navegación azul */
     .nav-link {
         color: #ffffffcc;
         padding: 0.75rem 1rem;
@@ -109,33 +91,26 @@
     }
 
         .nav-link:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
+            background: rgba(255,255,255,0.2);
             transform: translateX(5px);
+            color: #fff;
         }
 
         .nav-link.active {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255,255,255,0.25);
             font-weight: 600;
             color: #fff;
         }
 
-    /* Contenido principal */
     .content {
         flex-grow: 1;
         padding: 2rem;
         background-color: #f5f7fb;
     }
 
-    /* Tarjetas */
     .card {
         border-radius: 1rem;
         background: #fff;
-    }
-
-    /* Tabla personalizada */
-    .table-wrapper {
-        overflow-x: auto;
     }
 
     .custom-table {
@@ -153,33 +128,28 @@
             font-weight: 600;
         }
 
-        .custom-table th,
-        .custom-table td {
+        .custom-table th, .custom-table td {
             padding: 12px 18px;
-            text-align: left;
             border-bottom: 1px solid #e9ecef;
         }
 
         .custom-table tbody tr:hover {
             background-color: #f1f7ff;
-            transition: background 0.3s ease;
         }
 
-    /* Botones */
     .btn-gradient {
         background: linear-gradient(135deg, #1a365d, #3182ce);
         border: none;
         color: white;
-        transition: all 0.3s ease;
+        transition: 0.3s;
     }
 
         .btn-gradient:hover {
             background: linear-gradient(135deg, #0f2027, #1a365d);
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(26, 54, 93, 0.4);
+            box-shadow: 0 4px 12px rgba(26,54,93,0.4);
         }
 
-    /* Animación */
     @@keyframes fadeIn {
         from {
             opacity: 0;
@@ -196,7 +166,6 @@
         animation: fadeIn 0.8s ease-in-out;
     }
 
-    /* Responsivo */
     @@media (max-width: 768px) {
         .sidebar {
             display: none;

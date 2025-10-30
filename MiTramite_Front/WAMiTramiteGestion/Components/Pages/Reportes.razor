@@ -1,0 +1,99 @@
+﻿@page "/reportes"
+
+<div class="dashboard-container">
+    <aside class="sidebar shadow">
+        <div class="sidebar-header text-center mb-4">
+            <h3 class="fw-bold text-light">Funcionario</h3>
+            <hr class="bg-light opacity-25">
+        </div>
+
+        <nav class="nav flex-column">
+            <NavLink class="nav-link" href="/dashboardfuncionario">🏠 Inicio</NavLink>
+            <NavLink class="nav-link" href="/tramites-pendientes">📄 Trámites Pendientes</NavLink>
+            <NavLink class="nav-link active" href="/reportes">📊 Reportes</NavLink>
+            <NavLink class="nav-link" href="/configuracion">⚙️ Configuración</NavLink>
+            <NavLink class="nav-link text-danger mt-auto" href="/">🚪 Cerrar Sesión</NavLink>
+        </nav>
+    </aside>
+
+    <main class="content">
+        <div class="container-fluid px-4">
+            <h2 class="fw-bold text-primary mb-4 mt-3">📊 Reportes</h2>
+
+            <div class="card border-0 shadow p-4 animate-fadein">
+                <p>Visualiza los reportes de trámites procesados y su estado actual.</p>
+
+                <div class="row text-center mt-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="info-card bg-primary text-white p-4 rounded shadow-sm">
+                            <h5>Trámites Totales</h5>
+                            <h3>187</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="info-card bg-success text-white p-4 rounded shadow-sm">
+                            <h5>Aprobados</h5>
+                            <h3>142</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="info-card bg-warning text-dark p-4 rounded shadow-sm">
+                            <h5>Pendientes</h5>
+                            <h3>45</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    /* mismo estilo del dashboardfuncionario */
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+        background-color: #f8f9fa;
+    }
+
+    .sidebar {
+        width: 250px;
+        background: linear-gradient(180deg, #1a365d, #2c5282);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem 1rem;
+    }
+
+    .nav-link {
+        color: #ffffffcc;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+            color: #fff;
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.25);
+            font-weight: 600;
+            color: #fff;
+        }
+
+    .content {
+        flex-grow: 1;
+        padding: 2rem;
+        background-color: #f5f7fb;
+    }
+
+    .info-card:hover {
+        transform: scale(1.05);
+        transition: transform 0.2s;
+    }
+</style>

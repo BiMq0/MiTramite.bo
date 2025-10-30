@@ -1,0 +1,102 @@
+﻿@page "/configuracion"
+
+<div class="dashboard-container">
+    <aside class="sidebar shadow">
+        <div class="sidebar-header text-center mb-4">
+            <h3 class="fw-bold text-light">Funcionario</h3>
+            <hr class="bg-light opacity-25">
+        </div>
+
+        <nav class="nav flex-column">
+            <NavLink class="nav-link" href="/dashboardfuncionario">🏠 Inicio</NavLink>
+            <NavLink class="nav-link" href="/tramites-pendientes">📄 Trámites Pendientes</NavLink>
+            <NavLink class="nav-link" href="/reportes">📊 Reportes</NavLink>
+            <NavLink class="nav-link active" href="/configuracion">⚙️ Configuración</NavLink>
+            <NavLink class="nav-link text-danger mt-auto" href="/">🚪 Cerrar Sesión</NavLink>
+        </nav>
+    </aside>
+
+    <main class="content">
+        <div class="container-fluid px-4">
+            <h2 class="fw-bold text-primary mb-4 mt-3">⚙️ Configuración del Sistema</h2>
+
+            <div class="card border-0 shadow p-4 animate-fadein">
+                <p>Actualiza tus datos personales, preferencias y configuración del sistema.</p>
+
+                <form class="mt-3">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nombre Completo</label>
+                        <input type="text" class="form-control rounded-pill" placeholder="Ingrese su nombre">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Correo Electrónico</label>
+                        <input type="email" class="form-control rounded-pill" placeholder="correo@ejemplo.com">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Contraseña</label>
+                        <input type="password" class="form-control rounded-pill" placeholder="********">
+                    </div>
+                    <button type="submit" class="btn btn-gradient rounded-pill px-4">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    /* mismo estilo del dashboardfuncionario */
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+        background-color: #f8f9fa;
+    }
+
+    .sidebar {
+        width: 250px;
+        background: linear-gradient(180deg, #1a365d, #2c5282);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem 1rem;
+    }
+
+    .nav-link {
+        color: #ffffffcc;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+            color: #fff;
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.25);
+            font-weight: 600;
+            color: #fff;
+        }
+
+    .content {
+        flex-grow: 1;
+        padding: 2rem;
+        background-color: #f5f7fb;
+    }
+
+    .btn-gradient {
+        background: linear-gradient(135deg, #1a365d, #3182ce);
+        border: none;
+        color: white;
+        transition: 0.3s;
+    }
+
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #0f2027, #1a365d);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26,54,93,0.4);
+        }
+</style>

@@ -1,0 +1,131 @@
+﻿@page "/tramites-generales"
+
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar shadow">
+        <div class="sidebar-header text-center mb-4">
+            <h3 class="fw-bold text-light">Gerente</h3>
+            <hr class="bg-light opacity-25">
+        </div>
+
+        <nav class="nav flex-column">
+            <a class="nav-link" href="/dashboardgerente">🏠 Inicio</a>
+            <a class="nav-link active" href="/tramites-generales">📋 Trámites Generales</a>
+            <a class="nav-link" href="/reportesGerente">📊 Reportes</a>
+            <a class="nav-link" href="/controlfuncionarios">👥 Control de Funcionarios</a>
+            <a class="nav-link" href="/configuracionGerente">⚙️ Configuración</a>
+            <a class="nav-link text-danger mt-auto" href="/">🚪 Cerrar Sesión</a>
+        </nav>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="content animate-fadein">
+        <div class="container-fluid px-4">
+            <h2 class="fw-bold text-primary mb-4 mt-3">📋 Gestión de Trámites Generales</h2>
+
+            <div class="card border-0 shadow p-4 rounded-4">
+                <h4 class="fw-bold text-primary mb-3">Trámites Activos</h4>
+                <p>Aquí puedes revisar, aprobar o rechazar los trámites pendientes de los funcionarios.</p>
+
+                <div class="table-responsive mt-4">
+                    <table class="table table-hover align-middle shadow-sm table-borderless rounded-3">
+                        <thead class="table-primary text-secondary">
+                            <tr>
+                                <th>#</th>
+                                <th>Funcionario</th>
+                                <th>Tipo de Trámite</th>
+                                <th>Fecha de Solicitud</th>
+                                <th>Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white">
+                            <tr>
+                                <td>1</td>
+                                <td>Juan Pérez</td>
+                                <td>Permiso</td>
+                                <td>25/10/2025</td>
+                                <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-success me-2">✅ Aprobar</button>
+                                    <button class="btn btn-sm btn-danger">🚫 Rechazar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>María López</td>
+                                <td>Vacaciones</td>
+                                <td>23/10/2025</td>
+                                <td><span class="badge bg-success">Aprobado</span></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-primary">📄 Ver Detalles</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+        background-color: #f8f9fa;
+    }
+
+    .sidebar {
+        width: 250px;
+        background: linear-gradient(180deg, #1a365d 0%, #2c5282 100%);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem 1rem;
+    }
+
+    .nav-link {
+        color: #ffffffcc;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        background-color: transparent !important;
+    }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
+            transform: translateX(5px);
+            color: #fff !important;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #1a365d, #2c5282) !important;
+            font-weight: 600;
+            color: #fff !important;
+        }
+
+    .content {
+        flex-grow: 1;
+        padding: 2rem;
+        background-color: #f5f7fb;
+    }
+
+    .animate-fadein {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

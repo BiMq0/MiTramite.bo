@@ -1,4 +1,4 @@
-﻿@page "/dashboardgerente"
+﻿@page "/reportesGerente"
 
 <div class="dashboard-container">
     <!-- Sidebar -->
@@ -9,41 +9,41 @@
         </div>
 
         <nav class="nav flex-column">
-            <a class="nav-link active" href="/dashboardgerente">🏠 Inicio</a>
+            <a class="nav-link" href="/dashboardgerente">🏠 Inicio</a>
             <a class="nav-link" href="/tramites-generales">📋 Trámites Generales</a>
-            <a class="nav-link" href="/reportesGerente">📊 Reportes</a>
+            <a class="nav-link active" href="/reportesGerente">📊 Reportes</a>
             <a class="nav-link" href="/controlfuncionarios">👥 Control de Funcionarios</a>
             <a class="nav-link" href="/configuracionGerente">⚙️ Configuración</a>
             <a class="nav-link text-danger mt-auto" href="/">🚪 Cerrar Sesión</a>
         </nav>
     </aside>
 
-    <!-- Main content -->
-    <main class="content">
+    <!-- Contenido -->
+    <main class="content animate-fadein">
         <div class="container-fluid px-4">
-            <h2 class="fw-bold text-primary mb-4 mt-3">Panel del Gerente</h2>
+            <h2 class="fw-bold text-primary mb-4 mt-3">📊 Reportes Generales</h2>
 
-            <div class="card border-0 shadow p-4 animate-fadein">
-                <h4 class="fw-bold text-primary mb-3">📈 Resumen General</h4>
-                <p>Bienvenido al panel de supervisión. Desde aquí puedes revisar reportes, ver trámites activos y controlar al personal administrativo.</p>
+            <div class="card border-0 shadow p-4">
+                <h4 class="fw-bold text-primary mb-3">Resumen de Actividades</h4>
+                <p>Visualiza el estado general de trámites y personal activo.</p>
 
-                <div class="row mt-4">
+                <div class="row mt-4 text-center">
                     <div class="col-md-4">
-                        <div class="info-card bg-primary text-white shadow-sm p-3 rounded">
-                            <h5>Trámites Pendientes</h5>
-                            <h3>32</h3>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="info-card bg-success text-white shadow-sm p-3 rounded">
+                        <div class="info-card bg-success text-white p-4 rounded shadow-sm">
                             <h5>Trámites Aprobados</h5>
                             <h3>105</h3>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="info-card bg-warning text-dark shadow-sm p-3 rounded">
-                            <h5>Funcionarios Activos</h5>
-                            <h3>14</h3>
+                        <div class="info-card bg-warning text-dark p-4 rounded shadow-sm">
+                            <h5>En Proceso</h5>
+                            <h3>22</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-card bg-danger text-white p-4 rounded shadow-sm">
+                            <h5>Rechazados</h5>
+                            <h3>8</h3>
                         </div>
                     </div>
                 </div>
@@ -59,7 +59,6 @@
         background-color: #f8f9fa;
     }
 
-    /* Sidebar azul */
     .sidebar {
         width: 250px;
         background: linear-gradient(180deg, #1a365d 0%, #2c5282 100%);
@@ -69,7 +68,6 @@
         padding: 1.5rem 1rem;
     }
 
-    /* Navegación azul */
     .nav-link {
         color: #ffffffcc;
         padding: 0.75rem 1rem;
@@ -77,17 +75,17 @@
         margin-bottom: 0.5rem;
         transition: all 0.2s ease;
         font-weight: 500;
-        background-color: transparent !important; /* quitar cualquier verde */
+        background-color: transparent !important;
     }
 
         .nav-link:hover {
-            background: rgba(255, 255, 255, 0.2) !important;
+            background: rgba(255,255,255,0.2) !important;
             transform: translateX(5px);
             color: #fff !important;
         }
 
         .nav-link.active {
-            background: linear-gradient(135deg, #1a365d, #2c5282) !important;
+            background: linear-gradient(135deg,#1a365d,#2c5282) !important;
             font-weight: 600;
             color: #fff !important;
         }
@@ -97,16 +95,6 @@
         padding: 2rem;
         background-color: #f5f7fb;
     }
-
-    .info-card {
-        border-radius: 0.75rem;
-        text-align: center;
-        transition: transform 0.2s ease;
-    }
-
-        .info-card:hover {
-            transform: scale(1.05);
-        }
 
     @@keyframes fadeIn {
         from {
