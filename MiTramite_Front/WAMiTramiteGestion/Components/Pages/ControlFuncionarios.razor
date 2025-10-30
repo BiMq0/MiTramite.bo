@@ -10,10 +10,10 @@
 
         <nav class="nav flex-column">
             <a class="nav-link" href="/dashboardgerente">🏠 Inicio</a>
-            <a class="nav-link" href="#">📋 Trámites Generales</a>
-            <a class="nav-link" href="#">📊 Reportes</a>
-            <a class="nav-link active" href="/controlfuncionarios">👥 Control de Funcionarios</a>
-            <a class="nav-link" href="#">⚙️ Configuración</a>
+            <a class="nav-link active" href="/tramites-generales">📋 Trámites Generales</a>
+            <a class="nav-link" href="/reportesGerente">📊 Reportes</a>
+            <a class="nav-link" href="/controlfuncionarios">👥 Control de Funcionarios</a>
+            <a class="nav-link" href="/configuracionGerente">⚙️ Configuración</a>
             <a class="nav-link text-danger mt-auto" href="/">🚪 Cerrar Sesión</a>
         </nav>
     </aside>
@@ -21,24 +21,24 @@
     <!-- Contenido principal -->
     <main class="content animate-fadein">
         <div class="container-fluid px-4">
-            <h2 class="fw-bold text-success mb-4 mt-3">👥 Control de Funcionarios</h2>
+            <h2 class="fw-bold text-primary mb-4 mt-3">👥 Control de Funcionarios</h2>
 
             <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-                <div class="card-header bg-success text-white py-3">
+                <div class="card-header text-white py-3 bg-gradient">
                     <h4 class="fw-bold mb-0">Lista de Funcionarios Registrados</h4>
                 </div>
 
                 <div class="card-body bg-light">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <input type="text" class="form-control w-50 shadow-sm border-success" placeholder="🔍 Buscar funcionario..." />
-                        <button class="btn btn-success shadow-sm px-3">
+                        <input type="text" class="form-control w-50 shadow-sm border-primary" placeholder="🔍 Buscar funcionario..." />
+                        <button class="btn btn-primary shadow-sm px-3">
                             ➕ Nuevo Funcionario
                         </button>
                     </div>
 
                     <div class="table-responsive">
                         <table class="table table-hover align-middle shadow-sm table-borderless rounded-3">
-                            <thead class="table-success text-secondary">
+                            <thead class="table-primary text-secondary">
                                 <tr>
                                     <th>#</th>
                                     <th>Foto</th>
@@ -110,7 +110,7 @@
     /* Sidebar */
     .sidebar {
         width: 250px;
-        background: linear-gradient(180deg, #198754, #0f5132);
+        background: linear-gradient(180deg, #1a365d, #2c5282);
         color: white;
         display: flex;
         flex-direction: column;
@@ -145,14 +145,32 @@
         background-color: #f5f7fb;
     }
 
-    /* Tabla y tarjeta */
+    /* Paleta principal */
+    .bg-gradient {
+        background: linear-gradient(135deg, #1a365d, #3182ce);
+        border-bottom: 3px solid #2c5282;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #1a365d, #3182ce);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0f2027, #1a365d);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 54, 93, 0.4);
+        }
+
+    /* Tabla */
     .table {
         border-collapse: separate;
         border-spacing: 0 0.6rem;
     }
 
         .table tbody tr:hover {
-            background-color: #e8f5e9;
+            background-color: #e2e8f0;
             transform: scale(1.01);
             box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
         }
@@ -174,10 +192,6 @@
 
     .card {
         border-radius: 1rem;
-    }
-
-    .card-header {
-        border-bottom: 3px solid #146c43;
     }
 
     /* Animación */

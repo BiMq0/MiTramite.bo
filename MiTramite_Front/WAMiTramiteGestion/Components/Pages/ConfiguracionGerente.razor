@@ -1,0 +1,112 @@
+﻿@page "/configuracionGerente"
+
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar shadow">
+        <div class="sidebar-header text-center mb-4">
+            <h3 class="fw-bold text-light">Gerente</h3>
+            <hr class="bg-light opacity-25">
+        </div>
+
+        <nav class="nav flex-column">
+            <a class="nav-link" href="/dashboardgerente">🏠 Inicio</a>
+            <a class="nav-link" href="/tramites-generales">📋 Trámites Generales</a>
+            <a class="nav-link" href="/reportes">📊 Reportes</a>
+            <a class="nav-link" href="/controlfuncionarios">👥 Control de Funcionarios</a>
+            <a class="nav-link active" href="/configuracionGerente">⚙️ Configuración</a>
+            <a class="nav-link text-danger mt-auto" href="/">🚪 Cerrar Sesión</a>
+        </nav>
+    </aside>
+
+    <!-- Contenido -->
+    <main class="content animate-fadein">
+        <div class="container-fluid px-4">
+            <h2 class="fw-bold text-primary mb-4 mt-3">⚙️ Configuración del Sistema</h2>
+
+            <div class="card border-0 shadow p-4 rounded-4">
+                <h4 class="fw-bold text-primary mb-3">Preferencias del Gerente</h4>
+                <p>Modifica los ajustes del sistema, notificaciones y seguridad.</p>
+
+                <form class="mt-3">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Correo de notificaciones</label>
+                        <input type="email" class="form-control shadow-sm border-primary" placeholder="gerente@gestora.bo" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Contraseña actual</label>
+                        <input type="password" class="form-control shadow-sm border-primary" placeholder="********" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nueva contraseña</label>
+                        <input type="password" class="form-control shadow-sm border-primary" />
+                    </div>
+
+                    <button class="btn btn-primary px-4">💾 Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+        background-color: #f8f9fa;
+    }
+
+    .sidebar {
+        width: 250px;
+        background: linear-gradient(180deg, #1a365d 0%, #2c5282 100%);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem 1rem;
+    }
+
+    .nav-link {
+        color: #ffffffcc;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        background-color: transparent !important;
+    }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2) !important;
+            transform: translateX(5px);
+            color: #fff !important;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg,#1a365d,#2c5282) !important;
+            font-weight: 600;
+            color: #fff !important;
+        }
+
+    .content {
+        flex-grow: 1;
+        padding: 2rem;
+        background-color: #f5f7fb;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fadein {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+</style>
