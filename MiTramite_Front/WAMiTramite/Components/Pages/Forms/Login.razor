@@ -130,6 +130,10 @@
     private bool showPassword = false;
     private bool isSubmitting = false;
     private string errorMessage = string.Empty;
+    public static int MaxLoginAttempts = 3;
+    public static int LoginCurrentAttempts = 0;
+    public static int LockoutDurationMinutes = 5;
+
 
     public class LoginModel
     {
@@ -154,8 +158,8 @@
                 return;
             }
 
-            // Simulación de login (remover cuando se implemente la lógica real)
-            if (loginModel.Correo.Contains("@") && loginModel.Password.Length >= 6)
+            // Simulación de login
+            if (loginModel.Correo == "ejemplo@ejemplo.com" && loginModel.Password == "contrasenia123")
             {
                 Console.WriteLine($"Login exitoso: {loginModel.Correo}");
 
@@ -165,6 +169,7 @@
             else
             {
                 errorMessage = "Credenciales incorrectas. Verifica tu email y contraseña.";
+                LoginCurrentAttempts++;
             }
         }
         catch (Exception ex)
@@ -174,7 +179,14 @@
         }
         finally
         {
-            isSubmitting = false;
+            if (LoginCurrentAttempts >= MaxLoginAttempts)
+            {
+                errorMessage = $"Has excedido el número máximo de intentos. Intenta nuevamente en 5 minutos.";
+            }
+            else
+            {
+                isSubmitting = false;
+            }
         }
     }
 

@@ -133,6 +133,46 @@
     </div>
 </section>
 
+<!-- Contact form simple -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h3 class="section-title text-white">Contáctanos</h3>
+        <p class="muted-small text-white">¿Tienes alguna duda o sugerencia? Envíanos un mensaje rápido.</p>
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Nombre</label>
+                <input class="form-control" @bind="contactModel.Nombre" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" @bind="contactModel.Email" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Asunto</label>
+                <input class="form-control" @bind="contactModel.Asunto" />
+            </div>
+
+            <div class="col-12 mt-3">
+                <button type="button" class="btn btn-primary" @onclick="HandleSubmit">Enviar mensaje</button>
+            </div>
+
+            <div class="col-12 mt-3">
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger">@errorMessage</div>
+                }
+                else if (sent)
+                {
+                    <div class="alert alert-success">Gracias, tu mensaje ha sido enviado. Nos contactaremos pronto.</div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
 @code {
     private void NavigateToRegister()
     {
@@ -143,5 +183,46 @@
     {
 
         Navigation.NavigateToLogin();
+    }
+
+    // Contact form model and handler
+    private ContactModel contactModel = new ContactModel();
+    private bool sent = false;
+    private string errorMessage;
+
+    private void HandleSubmit()
+    {
+        errorMessage = null;
+        sent = false;
+
+        if (string.IsNullOrWhiteSpace(contactModel.Nombre))
+        {
+            errorMessage = "El nombre es requerido.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(contactModel.Email) || !contactModel.Email.Contains("@"))
+        {
+            errorMessage = "Proporcione un email válido.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(contactModel.Asunto))
+        {
+            errorMessage = "El asunto es requerido.";
+            return;
+        }
+
+        // Aquí podrías llamar a un servicio para enviar el mensaje.
+        sent = true;
+        // Reset form after send
+        contactModel = new ContactModel();
+    }
+
+    public class ContactModel
+    {
+        public string Nombre { get; set; }
+        public string Email { get; set; }
+        public string Asunto { get; set; }
     }
 }
