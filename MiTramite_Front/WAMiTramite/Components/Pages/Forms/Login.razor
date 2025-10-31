@@ -1,7 +1,10 @@
-@page "/login"
+@inject WAMiTramite.Handlers.NavigationTriggers Navigation
 @rendermode InteractiveServer
 
 <div class="container py-5">
+    <div class="position-fixed"><button class="btn btn-primary" @onclick="@(() => Navigation.NavigateToLanding())"><i
+                class="bi bi-arrow-left"></i> Volver</button>
+    </div>
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
             <div class="card shadow-lg border-0">
@@ -157,7 +160,7 @@
                 Console.WriteLine($"Login exitoso: {loginModel.Correo}");
 
                 // Redirigir al dashboard o página principal
-                Navigation.NavigateTo("/user/dashboard");
+                Navigation.NavigateToMenu();
             }
             else
             {
@@ -177,9 +180,7 @@
 
     private void NavigateToRegister()
     {
-        Navigation.NavigateTo("/register");
+        Navigation.NavigateToSignup();
     }
 
-    [Inject]
-    private NavigationManager Navigation { get; set; } = default!;
 }

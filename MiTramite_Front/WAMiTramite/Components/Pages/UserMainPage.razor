@@ -1,7 +1,5 @@
-@page "/user"
-@page "/user/{ActivePage?}"
 @using WAMiTramite.Components.Pages.UserComponents
-@rendermode InteractiveServer
+@inject WAMiTramite.Handlers.NavigationTriggers Navigation
 @inject IJSRuntime JSRuntime
 
 <div class="d-flex vh-100 m-0 p-0">
@@ -251,27 +249,26 @@
 </style>
 
 @code {
-    [Parameter] public string? ActivePage { get; set; }
 
     private string activePage = "dashboard";
     private bool sidebarOpen = false;
 
     protected override void OnInitialized()
     {
-        activePage = ActivePage ?? "dashboard";
+        activePage = "dashboard";
     }
 
     private void SetActivePage(string page)
     {
         activePage = page;
-        Navigation.NavigateTo($"/user/{page}");
+        StateHasChanged();
     }
 
     private void SetActivePageAndClose(string page)
     {
         activePage = page;
         sidebarOpen = false;
-        Navigation.NavigateTo($"/user/{page}");
+        StateHasChanged();
     }
 
     private void ToggleSidebar()
@@ -311,9 +308,6 @@
 
     private void HandleLogout()
     {
-        Navigation.NavigateTo("/");
+        Navigation.NavigateToLanding();
     }
-
-    [Inject]
-    private NavigationManager Navigation { get; set; } = default!;
 }

@@ -1,6 +1,5 @@
-@page "/"
-@rendermode InteractiveServer
-<!-- Use local theme + bootstrap utilities -->
+@inject WAMiTramite.Handlers.NavigationTriggers Navigation
+
 <link href="/css/gestora-theme.css" rel="stylesheet" />
 
 <section class="hero ">
@@ -137,14 +136,12 @@
 @code {
     private void NavigateToRegister()
     {
-        Navigation.NavigateTo("/register");
+        Navigation.NavigateToSignup();
     }
 
     private void NavigateToLogin()
     {
-        Navigation.NavigateTo("/login");
-    }
 
-    [Inject]
-    private NavigationManager Navigation { get; set; } = default!;
+        Navigation.NavigateToLogin();
+    }
 }

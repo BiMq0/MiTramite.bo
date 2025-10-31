@@ -1,7 +1,10 @@
-@page "/register"
+@inject WAMiTramite.Handlers.NavigationTriggers Navigation
 @rendermode InteractiveServer
 
 <div class="container py-5">
+    <div class="position-fixed"><button class="btn btn-primary" @onclick="@(() => NavigateToLanding())"><i
+                class="bi bi-arrow-left"></i> Volver</button>
+    </div>
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-lg border-0">
@@ -176,13 +179,10 @@
 
         try
         {
-            // TODO: Aquí se implementará la lógica de registro
-            await Task.Delay(2000); // Simular proceso de registro
+            await Task.Delay(2000); // Simulacion de registro
 
-            // Por ahora solo mostramos un mensaje
             Console.WriteLine($"Registro: {registerModel.Nombres} {registerModel.ApellidoPaterno}");
 
-            // Redirigir al login o dashboard después del registro exitoso
             NavigateToLogin();
         }
         catch (Exception ex)
@@ -197,9 +197,10 @@
 
     private void NavigateToLogin()
     {
-        Navigation.NavigateTo("/login");
+        Navigation.NavigateToLogin();
     }
-
-    [Inject]
-    private NavigationManager Navigation { get; set; } = default!;
+    private void NavigateToLanding()
+    {
+        Navigation.NavigateToLanding();
+    }
 }

@@ -1,10 +1,14 @@
 using WAMiTramite.Components;
+using WAMiTramite.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddScopedServices();
+builder.Services.AddSingleton<SPANavManager>();
+builder.Services.AddSingleton<NavigationTriggers>();
 
 var app = builder.Build();
 

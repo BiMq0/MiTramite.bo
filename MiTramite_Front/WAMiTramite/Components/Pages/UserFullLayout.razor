@@ -1,0 +1,19 @@
+﻿@page "/"
+@inject WAMiTramite.Handlers.SPANavManager SPANavManager
+@rendermode InteractiveServer
+
+
+@SPANavManager.CurrentRenderFragment
+
+
+
+@code {
+    protected override void OnInitialized()
+    {
+        SPANavManager.OnNavItemChanged += HandleNavItemChanged;
+    }
+    private void HandleNavItemChanged()
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
+}
