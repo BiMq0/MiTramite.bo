@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MiTramite_Back.Acceso_A_Datos.Context;
 using MiTramite_Domain.Entities;
+using MiTramite_Shared.DTOs.FuncionarioDTOs;
 
-// using fully-qualified entity types to avoid collision with namespace names
 
 namespace MiTramite_Back.Acceso_A_Datos.Repositories.FuncionarioRep
 {
@@ -17,29 +17,25 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.FuncionarioRep
         {
             _context = context;
         }
-
-        public async Task<IEnumerable<Funcionario>> GetAllAsync(CancellationToken cancellationToken = default)
-            => await _context.Funcionarios.ToListAsync(cancellationToken);
-
-        public async Task<Funcionario?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
-            => await _context.Funcionarios.FindAsync(new object[] { id }, cancellationToken);
-
-        public async Task AddAsync(Funcionario entity, CancellationToken cancellationToken = default)
+        public async Task<FuncionarioAccesosDTO> IniciarSesionFuncionarioAsync(FuncionarioLoginDTO funcionarioLogin, CancellationToken cancellationToken = default)
         {
-            await _context.Funcionarios.AddAsync(entity, cancellationToken);
-        }
+            var funcionario = await _context.Funcionarios
+                    .Include(f => f.Rol)
+                        .ThenInclude(r => r!.RolPermisos)
+                            .ThenInclude(rp => rp!.Permiso)
+                    .Include(f => f.Rol)
+                        .ThenInclude(r => r!.RolOpciones)
+                            .ThenInclude(ro => ro!.Opcion)
+                .FirstOrDefaultAsync(f => f.CodigoFuncionario == funcionarioLogin.CodigoFuncionario);
 
-        public void Update(Funcionario entity)
-        {
-            _context.Funcionarios.Update(entity);
-        }
 
-        public void Remove(Funcionario entity)
-        {
-            _context.Funcionarios.Remove(entity);
-        }
+            if (funcionario != null && BCrypt.Net.BCrypt.Verify(funcionarioLogin.Password, funcionario.PasswordHash))
+            {
+                var funcionarioToReturn = new FuncionarioAccesosDTO(funcionario);
+                return funcionarioToReturn;
+            }
 
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-            => _context.SaveChangesAsync(cancellationToken);
+            return null;
+        }
     }
 }
