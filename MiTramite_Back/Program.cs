@@ -7,7 +7,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 //Adicion de Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "Pharm API", Description = "Documentacion de API para farmacia UwU", Version = "v1" }); });
+builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "MiTramite API", Description = "Documentacion de API para MiTramite", Version = "v1" }); });
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+   options.IdleTimeout = TimeSpan.FromMinutes(480);
+   options.Cookie.HttpOnly = true;
+   options.Cookie.IsEssential = true;
+});
+
+builder.Services.AddHttpContextAccessor(); // Necesario para acceder a HttpContext en servicios
+
 
 //Database
 builder.Services.AddDbContext<MiTramiteDbContext>(options =>
@@ -19,7 +29,6 @@ builder.Services.AddDbContext<MiTramiteDbContext>(options =>
 //Scopes
 builder.Services.AddScopedRepositories();
 builder.Services.AddScopedServices();
-builder.Services.AddScopedMappers();
 
 var app = builder.Build();
 
@@ -31,7 +40,7 @@ if (app.Environment.IsDevelopment())
       c.SwaggerEndpoint("/swagger/v1/swagger.json", "PharmAPI V1");
    });
 }
-
+app.UseSession();
 app.MapEndpoints();
 app.MapGet("/", () => Results.Redirect("/swagger"));
-app.Run("http://localhost:5252");
+app.Run();

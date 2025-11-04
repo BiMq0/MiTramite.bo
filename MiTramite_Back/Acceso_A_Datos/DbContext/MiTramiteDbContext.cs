@@ -111,25 +111,25 @@ namespace MiTramite_Back.Acceso_A_Datos.Context
 
             modelBuilder.Entity<RolOpcion>()
                 .HasOne(o => o.Opcion)
-                .WithMany()
+                .WithMany(o => o.RolOpciones)
                 .HasForeignKey(o => o.IdOpcion)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<RolOpcion>()
                 .HasOne(o => o.Rol)
-                .WithMany()
+                .WithMany(o => o.RolOpciones)
                 .HasForeignKey(o => o.IdRol)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<RolPermiso>()
                 .HasOne(rp => rp.Rol)
-                .WithMany()
+                .WithMany(r => r.RolPermisos)
                 .HasForeignKey(rp => rp.IdRol)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<RolPermiso>()
                 .HasOne(rp => rp.Permiso)
-                .WithMany()
+                .WithMany(p => p.RolPermisos)
                 .HasForeignKey(rp => rp.IdPermiso)
                 .OnDelete(DeleteBehavior.Cascade);
 
