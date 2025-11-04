@@ -2,7 +2,7 @@
 
 public static class EstadoTramiteMapper
 {
-    public static void Map(this WebApplication app)
+    public static void Map(WebApplication app)
     {
 
     }

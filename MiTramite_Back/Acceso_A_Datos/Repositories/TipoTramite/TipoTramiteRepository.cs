@@ -15,29 +15,5 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.TipoTramiteRep
         {
             _context = context;
         }
-
-        public async Task<IEnumerable<TipoTramite>> GetAllAsync(CancellationToken cancellationToken = default)
-            => await _context.TipoTramites.ToListAsync(cancellationToken);
-
-        public async Task<TipoTramite?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-            => await _context.TipoTramites.FindAsync(new object[] { id }, cancellationToken);
-
-        public async Task AddAsync(TipoTramite entity, CancellationToken cancellationToken = default)
-        {
-            await _context.TipoTramites.AddAsync(entity, cancellationToken);
-        }
-
-        public void Update(TipoTramite entity)
-        {
-            _context.TipoTramites.Update(entity);
-        }
-
-        public void Remove(TipoTramite entity)
-        {
-            _context.TipoTramites.Remove(entity);
-        }
-
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-            => _context.SaveChangesAsync(cancellationToken);
     }
 }

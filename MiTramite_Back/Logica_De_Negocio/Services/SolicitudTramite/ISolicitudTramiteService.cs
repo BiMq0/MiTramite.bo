@@ -8,10 +8,5 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramiteSvc
 {
     public interface ISolicitudTramiteService
     {
-        Task<IEnumerable<SolicitudTramite>> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<SolicitudTramite?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
-        Task AddAsync(SolicitudTramite entity, CancellationToken cancellationToken = default);
-        Task UpdateAsync(SolicitudTramite entity, CancellationToken cancellationToken = default);
-        Task DeleteAsync(SolicitudTramite entity, CancellationToken cancellationToken = default);
     }
 }

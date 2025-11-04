@@ -14,29 +14,5 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.RolPermisoSvc
         {
             _repository = repository;
         }
-
-        public async Task<IEnumerable<RolPermiso>> GetAllAsync(CancellationToken cancellationToken = default)
-            => await _repository.GetAllAsync(cancellationToken);
-
-        public async Task<RolPermiso?> GetByIdAsync(int idRol, int idPermiso, CancellationToken cancellationToken = default)
-            => await _repository.GetByIdAsync(idRol, idPermiso, cancellationToken);
-
-        public async Task AddAsync(RolPermiso entity, CancellationToken cancellationToken = default)
-        {
-            await _repository.AddAsync(entity, cancellationToken);
-            await _repository.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task UpdateAsync(RolPermiso entity, CancellationToken cancellationToken = default)
-        {
-            _repository.Update(entity);
-            await _repository.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task DeleteAsync(RolPermiso entity, CancellationToken cancellationToken = default)
-        {
-            _repository.Remove(entity);
-            await _repository.SaveChangesAsync(cancellationToken);
-        }
     }
 }

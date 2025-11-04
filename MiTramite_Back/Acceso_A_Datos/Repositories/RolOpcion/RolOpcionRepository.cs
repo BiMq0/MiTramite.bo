@@ -15,29 +15,5 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.RolOpcionRep
         {
             _context = context;
         }
-
-        public async Task<IEnumerable<RolOpcion>> GetAllAsync(CancellationToken cancellationToken = default)
-            => await _context.RolOpciones.ToListAsync(cancellationToken);
-
-        public async Task<RolOpcion?> GetByIdAsync(int idRol, int idOpcion, CancellationToken cancellationToken = default)
-            => await _context.RolOpciones.FindAsync(new object[] { idRol, idOpcion }, cancellationToken);
-
-        public async Task AddAsync(RolOpcion entity, CancellationToken cancellationToken = default)
-        {
-            await _context.RolOpciones.AddAsync(entity, cancellationToken);
-        }
-
-        public void Update(RolOpcion entity)
-        {
-            _context.RolOpciones.Update(entity);
-        }
-
-        public void Remove(RolOpcion entity)
-        {
-            _context.RolOpciones.Remove(entity);
-        }
-
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-            => _context.SaveChangesAsync(cancellationToken);
     }
 }

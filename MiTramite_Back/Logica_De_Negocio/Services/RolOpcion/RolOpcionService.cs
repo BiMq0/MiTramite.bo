@@ -14,29 +14,5 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.RolOpcionSvc
         {
             _repository = repository;
         }
-
-        public async Task<IEnumerable<RolOpcion>> GetAllAsync(CancellationToken cancellationToken = default)
-            => await _repository.GetAllAsync(cancellationToken);
-
-        public async Task<RolOpcion?> GetByIdAsync(int idRol, int idOpcion, CancellationToken cancellationToken = default)
-            => await _repository.GetByIdAsync(idRol, idOpcion, cancellationToken);
-
-        public async Task AddAsync(RolOpcion entity, CancellationToken cancellationToken = default)
-        {
-            await _repository.AddAsync(entity, cancellationToken);
-            await _repository.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task UpdateAsync(RolOpcion entity, CancellationToken cancellationToken = default)
-        {
-            _repository.Update(entity);
-            await _repository.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task DeleteAsync(RolOpcion entity, CancellationToken cancellationToken = default)
-        {
-            _repository.Remove(entity);
-            await _repository.SaveChangesAsync(cancellationToken);
-        }
     }
 }

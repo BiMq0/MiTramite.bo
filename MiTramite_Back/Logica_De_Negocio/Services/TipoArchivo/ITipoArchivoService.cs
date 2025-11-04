@@ -8,10 +8,5 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.TipoArchivoSvc
 {
     public interface ITipoArchivoService
     {
-        Task<IEnumerable<TipoArchivo>> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<TipoArchivo?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
-        Task AddAsync(TipoArchivo entity, CancellationToken cancellationToken = default);
-        Task UpdateAsync(TipoArchivo entity, CancellationToken cancellationToken = default);
-        Task DeleteAsync(TipoArchivo entity, CancellationToken cancellationToken = default);
     }
 }

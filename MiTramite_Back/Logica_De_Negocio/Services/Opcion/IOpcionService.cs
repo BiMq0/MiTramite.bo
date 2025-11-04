@@ -8,10 +8,5 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.OpcionSvc
 {
     public interface IOpcionService
     {
-        Task<IEnumerable<Opcion>> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<Opcion?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
-        Task AddAsync(Opcion entity, CancellationToken cancellationToken = default);
-        Task UpdateAsync(Opcion entity, CancellationToken cancellationToken = default);
-        Task DeleteAsync(Opcion entity, CancellationToken cancellationToken = default);
     }
 }

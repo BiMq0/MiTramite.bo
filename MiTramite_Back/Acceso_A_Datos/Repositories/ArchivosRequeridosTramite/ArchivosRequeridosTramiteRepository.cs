@@ -15,29 +15,5 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.ArchivosRequeridosTramiteRe
         {
             _context = context;
         }
-
-        public async Task<IEnumerable<ArchivosRequeridosTramite>> GetAllAsync(CancellationToken cancellationToken = default)
-            => await _context.ArchivosRequeridosTramites.ToListAsync(cancellationToken);
-
-        public async Task<ArchivosRequeridosTramite?> GetByIdAsync(int idTipoTramite, int idTipoArchivo, CancellationToken cancellationToken = default)
-            => await _context.ArchivosRequeridosTramites.FindAsync(new object[] { idTipoTramite, idTipoArchivo }, cancellationToken);
-
-        public async Task AddAsync(ArchivosRequeridosTramite entity, CancellationToken cancellationToken = default)
-        {
-            await _context.ArchivosRequeridosTramites.AddAsync(entity, cancellationToken);
-        }
-
-        public void Update(ArchivosRequeridosTramite entity)
-        {
-            _context.ArchivosRequeridosTramites.Update(entity);
-        }
-
-        public void Remove(ArchivosRequeridosTramite entity)
-        {
-            _context.ArchivosRequeridosTramites.Remove(entity);
-        }
-
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-            => _context.SaveChangesAsync(cancellationToken);
     }
 }

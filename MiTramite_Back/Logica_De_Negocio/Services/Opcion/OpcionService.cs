@@ -15,33 +15,5 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.OpcionSvc
         {
             _repository = repository;
         }
-
-        public async Task<IEnumerable<Opcion>> GetAllAsync(CancellationToken cancellationToken = default)
-        {
-            return await _repository.GetAllAsync(cancellationToken);
-        }
-
-        public async Task<Opcion?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            return await _repository.GetByIdAsync(id, cancellationToken);
-        }
-
-        public async Task AddAsync(Opcion entity, CancellationToken cancellationToken = default)
-        {
-            await _repository.AddAsync(entity, cancellationToken);
-            await _repository.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task UpdateAsync(Opcion entity, CancellationToken cancellationToken = default)
-        {
-            _repository.Update(entity);
-            await _repository.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task DeleteAsync(Opcion entity, CancellationToken cancellationToken = default)
-        {
-            _repository.Remove(entity);
-            await _repository.SaveChangesAsync(cancellationToken);
-        }
     }
 }

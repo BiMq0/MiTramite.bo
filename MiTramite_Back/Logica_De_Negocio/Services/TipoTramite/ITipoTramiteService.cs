@@ -8,10 +8,5 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.TipoTramiteSvc
 {
     public interface ITipoTramiteService
     {
-        Task<IEnumerable<TipoTramite>> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<TipoTramite?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
-        Task AddAsync(TipoTramite entity, CancellationToken cancellationToken = default);
-        Task UpdateAsync(TipoTramite entity, CancellationToken cancellationToken = default);
-        Task DeleteAsync(TipoTramite entity, CancellationToken cancellationToken = default);
     }
 }
