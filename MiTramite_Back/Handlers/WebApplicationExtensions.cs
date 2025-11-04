@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MiTramite_Back.AccessMaps;
 
 namespace MiTramite_Back.Handlers
 {
@@ -11,9 +12,17 @@ namespace MiTramite_Back.Handlers
         {
             using (var scope = app.Services.CreateScope())
             {
-                // Agrega más mapeadores según sea necesario
-                // var nombreMapper = scope.ServiceProvider.GetRequiredService<NombreMapper>();
-                // nombreMapper.Map(app);
+                ArchivoMapper.Map(app);
+                EstadoTramiteMapper.Map(app);
+                FuncionarioMapper.Map(app);
+                IncumplimientoMapper.Map(app);
+                OpcionMapper.Map(app);
+                PermisoMapper.Map(app);
+                RentistaMapper.Map(app);
+                RolMapper.Map(app);
+                SolicitudTramiteMapper.Map(app);
+                TipoArchivoMapper.Map(app);
+                TipoTramiteMapper.Map(app);
             }
         }
     }

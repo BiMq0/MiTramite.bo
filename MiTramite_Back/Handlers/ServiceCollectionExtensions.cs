@@ -44,13 +44,5 @@ namespace MiTramite_Back.Handlers
             }
             return services;
         }
-
-        public static IServiceCollection AddScopedMappers(this IServiceCollection services)
-        {
-
-            // Agrega más mapeadores según sea necesario
-            // services.AddScoped<NombreMapper>();
-            return services;
-        }
     }
 }
