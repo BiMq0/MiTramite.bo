@@ -1,10 +1,20 @@
 using WAMiTramiteGestion.Components;
+using WAMiTramiteGestion.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddScoped(sp =>
+{
+    return new HttpClient
+    {
+        BaseAddress = new Uri(Config.ApiUrl)
+    };
+});
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddScopedServices();
 
 var app = builder.Build();
 
