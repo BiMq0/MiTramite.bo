@@ -1,0 +1,50 @@
+@* Modal que muestra estado de operación: éxito o fallo *@
+@if (Visible)
+{
+    <div class="modal-backdrop">
+        <div class="status-panel">
+            <div class="status-header">
+                <h5 class="status-title">@(!string.IsNullOrEmpty(Title) ? Title : (IsSuccess ? "Operación exitosa" :
+                                    "Operación fallida"))</h5>
+            </div>
+
+            <div class="status-body">
+                <div class="status-icon">
+                    @if (IsSuccess)
+                    {
+                        <i class="bi bi-check-circle-fill icon-success" aria-hidden="true"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-x-circle-fill icon-fail" aria-hidden="true"></i>
+                    }
+                </div>
+
+                <div class="status-message">
+                    @if (!string.IsNullOrEmpty(Message))
+                    {
+                        <p>@(Message)</p>
+                    }
+                </div>
+            </div>
+
+            <div class="status-footer">
+                <button class="btn btn-primary" @onclick="CloseAsync">Cerrar</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public bool IsSuccess { get; set; } = true;
+    [Parameter] public string Title { get; set; }
+    [Parameter] public string Message { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private async Task CloseAsync()
+    {
+        if (OnClose.HasDelegate)
+            await OnClose.InvokeAsync(null);
+    }
+}

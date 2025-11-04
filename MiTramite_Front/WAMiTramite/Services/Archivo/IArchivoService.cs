@@ -1,4 +1,6 @@
-﻿namespace WAMiTramite;
+﻿
+
+namespace WAMiTramite.Services;
 
 public interface IArchivoService
 {

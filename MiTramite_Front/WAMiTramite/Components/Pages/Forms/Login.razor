@@ -1,4 +1,6 @@
+@using MiTramite_Shared.DTOs.RentistaDTOs
 @inject WAMiTramite.Handlers.NavigationTriggers Navigation
+@inject Services.IRentistaService RentistaService
 @rendermode InteractiveServer
 
 <div class="container py-5">
@@ -50,7 +52,6 @@
                             <ValidationMessage For="@(() => loginModel.Password)" class="text-danger small" />
                         </div>
 
-                        <!-- Recordar sesión y olvidé contraseña -->
                         <div class="row mb-4">
                             <div class="col-6">
                                 <div class="form-check">
@@ -67,7 +68,6 @@
                             </div>
                         </div>
 
-                        <!-- Mensaje de error -->
                         @if (!string.IsNullOrEmpty(errorMessage))
                         {
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -78,7 +78,6 @@
                             </div>
                         }
 
-                        <!-- Botones -->
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-lg" disabled="@isSubmitting">
                                 @if (isSubmitting)
@@ -125,7 +124,7 @@
 </div>
 
 @code {
-    private LoginModel loginModel = new();
+    private RentistaLoginDTO loginModel = new RentistaLoginDTO();
     private bool rememberMe = false;
     private bool showPassword = false;
     private bool isSubmitting = false;
@@ -134,13 +133,6 @@
     public static int LoginCurrentAttempts = 0;
     public static int LockoutDurationMinutes = 5;
 
-
-    public class LoginModel
-    {
-        public string Correo { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-    }
-
     private async Task HandleLogin()
     {
         isSubmitting = true;
@@ -148,22 +140,11 @@
 
         try
         {
-            // TODO: Aquí se implementará la lógica de autenticación
-            await Task.Delay(1500); // Simular proceso de autenticación
 
-            // Validación básica temporal
-            if (string.IsNullOrWhiteSpace(loginModel.Correo) || string.IsNullOrWhiteSpace(loginModel.Password))
-            {
-                errorMessage = "Por favor completa todos los campos";
-                return;
-            }
-
-            // Simulación de login
-            if (loginModel.Correo == "ejemplo@ejemplo.com" && loginModel.Password == "contrasenia123")
+            var result = await RentistaService.IniciarSesionRentista(loginModel);
+            if (result)
             {
                 Console.WriteLine($"Login exitoso: {loginModel.Correo}");
-
-                // Redirigir al dashboard o página principal
                 Navigation.NavigateToMenu();
             }
             else

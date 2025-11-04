@@ -1,6 +1,6 @@
-﻿namespace WAMiTramite;
+﻿
+namespace WAMiTramite.Services;
 
 public class ArchivoService
 {
-
 }

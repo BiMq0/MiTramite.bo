@@ -1,4 +1,6 @@
 @inject WAMiTramite.Handlers.NavigationTriggers Navigation
+@inject Services.IRentistaService RentistaService
+@using MiTramite_Shared.DTOs.RentistaDTOs
 @rendermode InteractiveServer
 
 <div class="container py-5">
@@ -93,9 +95,14 @@
                                 <i class="bi bi-lock me-1"></i>
                                 Contraseña
                             </label>
-                            <InputText @bind-Value="registerModel.PasswordHash" type="password" class="form-control"
-                                placeholder="Ingresa tu contraseña" />
-                            <ValidationMessage For="@(() => registerModel.PasswordHash)" class="text-danger small" />
+                            <div class="input-group">
+                                <InputText @bind-Value="registerModel.Password"
+                                    type="@(showPassword ? "text" : "password")" class="form-control"
+                                    placeholder="Ingresa tu contraseña" />
+                                <i class="bi @(showPassword ? "bi-eye-slash" : "bi-eye") input-group-text"
+                                    @onclick="@(() => showPassword = !showPassword)"></i>
+                            </div>
+                            <ValidationMessage For="@(() => registerModel.Password)" class="text-danger small" />
                             <div class="form-text">
                                 <small class="text-muted">
                                     <i class="bi bi-info-circle me-1"></i>
@@ -158,31 +165,17 @@
 </div>
 
 @code {
-    private RegisterModel registerModel = new();
+    private RentistaSignupDTO registerModel = new RentistaSignupDTO();
     private bool acceptTerms = false;
     private bool isSubmitting = false;
-
-    public class RegisterModel
-    {
-        public string CI { get; set; } = string.Empty;
-        public string Nombres { get; set; } = string.Empty;
-        public string ApellidoPaterno { get; set; } = string.Empty;
-        public string ApellidoMaterno { get; set; } = string.Empty;
-        public DateTime FechaNacimiento { get; set; } = DateTime.Today.AddYears(-18);
-        public string Correo { get; set; } = string.Empty;
-        public string PasswordHash { get; set; } = string.Empty;
-    }
-
+    private bool showPassword = false;
     private async Task HandleRegistration()
     {
         isSubmitting = true;
 
         try
         {
-            await Task.Delay(2000); // Simulacion de registro
-
-            Console.WriteLine($"Registro: {registerModel.Nombres} {registerModel.ApellidoPaterno}");
-
+            var resultado = await RentistaService.RegistrarRentista(registerModel);
             NavigateToLogin();
         }
         catch (Exception ex)

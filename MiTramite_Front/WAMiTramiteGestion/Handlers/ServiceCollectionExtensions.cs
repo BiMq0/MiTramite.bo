@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WAMiTramite.Services;
+using WAMiTramiteGestion.Services;
 
-namespace WAMiTramite.Handlers
+namespace WAMiTramiteGestion.Handlers
 {
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddScopedServices(this IServiceCollection services)
         {
-            var assembly = typeof(IRentistaService).Assembly;
+            var assembly = typeof(IFuncionarioService).Assembly;
             Console.WriteLine($"Assembly: {assembly.FullName}");
             var types = assembly.GetTypes().Where(t => t.Name.EndsWith("Service"));
             var classes = types.Where(t => t.IsClass && !t.IsAbstract);
