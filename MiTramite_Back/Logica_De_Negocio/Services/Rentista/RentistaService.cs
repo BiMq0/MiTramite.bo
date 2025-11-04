@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MiTramite_Back.Acceso_A_Datos.Repositories.RentistaRep;
-using MiTramite_Domain.Entities;
+using MiTramite_Shared.DTOs.RentistaDTOs;
+
 
 namespace MiTramite_Back.Logica_De_Negocio.Services.RentistaSvc
 {
@@ -15,28 +16,23 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.RentistaSvc
             _repository = repository;
         }
 
-        public async Task<IEnumerable<Rentista>> GetAllAsync(CancellationToken cancellationToken = default)
-            => await _repository.GetAllAsync(cancellationToken);
-
-        public async Task<Rentista?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
-            => await _repository.GetByIdAsync(id, cancellationToken);
-
-        public async Task AddAsync(Rentista entity, CancellationToken cancellationToken = default)
+        public async Task<bool> IniciarSesionRentista(RentistaLoginDTO rentistaLogin, CancellationToken cancellationToken = default)
         {
-            await _repository.AddAsync(entity, cancellationToken);
-            await _repository.SaveChangesAsync(cancellationToken);
+
+            return await _repository.IniciarSesionRentistaAsync(rentistaLogin, cancellationToken);
         }
 
-        public async Task UpdateAsync(Rentista entity, CancellationToken cancellationToken = default)
+        public async Task<bool> RegistrarNuevoRentista(RentistaSignupDTO rentistaSignup, CancellationToken cancellationToken = default)
         {
-            _repository.Update(entity);
-            await _repository.SaveChangesAsync(cancellationToken);
-        }
+            rentistaSignup.Password = BCrypt.Net.BCrypt.HashPassword(rentistaSignup.Password);
 
-        public async Task DeleteAsync(Rentista entity, CancellationToken cancellationToken = default)
-        {
-            _repository.Remove(entity);
-            await _repository.SaveChangesAsync(cancellationToken);
+            // Convertir a UTC para PostgreSQL - especificar que es UTC
+            if (rentistaSignup.FechaNacimiento.Kind == DateTimeKind.Unspecified)
+            {
+                rentistaSignup.FechaNacimiento = DateTime.SpecifyKind(rentistaSignup.FechaNacimiento, DateTimeKind.Utc);
+            }
+
+            return await _repository.RegistrarRentistaAsync(rentistaSignup, cancellationToken);
         }
     }
 }

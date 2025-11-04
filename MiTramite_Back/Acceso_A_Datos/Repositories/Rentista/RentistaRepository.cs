@@ -1,11 +1,7 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MiTramite_Back.Acceso_A_Datos.Context;
 using MiTramite_Domain.Entities;
-
-// using fully-qualified entity types to avoid collision with namespace names
+using MiTramite_Shared.DTOs.RentistaDTOs;
 
 namespace MiTramite_Back.Acceso_A_Datos.Repositories.RentistaRep
 {
@@ -17,29 +13,39 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.RentistaRep
         {
             _context = context;
         }
-
-        public async Task<IEnumerable<Rentista>> GetAllAsync(CancellationToken cancellationToken = default)
-            => await _context.Rentistas.ToListAsync(cancellationToken);
-
-        public async Task<Rentista?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
-            => await _context.Rentistas.FindAsync(new object[] { id }, cancellationToken);
-
-        public async Task AddAsync(Rentista entity, CancellationToken cancellationToken = default)
+        public async Task<bool> RegistrarRentistaAsync(RentistaSignupDTO rentistaSignup, CancellationToken cancellationToken = default)
         {
-            await _context.Rentistas.AddAsync(entity, cancellationToken);
-        }
+            var nuevoRentista = new Rentista
+            {
+                CI = rentistaSignup.CI!,
+                Nombres = rentistaSignup.Nombres!,
+                ApellidoPaterno = rentistaSignup.ApellidoPaterno!,
+                ApellidoMaterno = rentistaSignup.ApellidoMaterno!,
+                FechaNacimiento = rentistaSignup.FechaNacimiento,
+                Correo = rentistaSignup.Correo!,
+                PasswordHash = rentistaSignup.Password!,
+            };
 
-        public void Update(Rentista entity)
+            await _context.Rentistas.AddAsync(nuevoRentista, cancellationToken);
+            var result = await _context.SaveChangesAsync(cancellationToken);
+
+            return result > 0;
+        }
+        public async Task<bool> IniciarSesionRentistaAsync(RentistaLoginDTO rentistaLogin, CancellationToken cancellationToken = default)
         {
-            _context.Rentistas.Update(entity);
-        }
+            var rentista = await _context.Rentistas
+                .FirstOrDefaultAsync(r => r.Correo == rentistaLogin.Correo, cancellationToken);
+            Console.WriteLine(rentista?.Correo);
+            Console.WriteLine(rentista?.PasswordHash);
+            if (rentista == null)
+            {
+                return false;
+            }
 
-        public void Remove(Rentista entity)
-        {
-            _context.Rentistas.Remove(entity);
-        }
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(rentistaLogin.Password, rentista.PasswordHash);
 
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-            => _context.SaveChangesAsync(cancellationToken);
+            return isPasswordValid;
+        }
     }
 }
+
