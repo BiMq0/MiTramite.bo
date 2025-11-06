@@ -77,3 +77,8 @@ build/
 
 ## Archivos de configuración de Docker
 docker-compose.override.yml
+
+
+## Secretos 
+**/appsettings.json
+**/appsettings.Development.json
