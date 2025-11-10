@@ -82,3 +82,8 @@ docker-compose.override.yml
 ## Secretos 
 **/appsettings.json
 **/appsettings.Development.json
+appsettings.json
+appsettings.Development.json
+
+*/appsettings.json
+*/appsettings.Development.json
