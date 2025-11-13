@@ -5,6 +5,7 @@ namespace WAMiTramiteGestion.Services
     public class FuncionarioService : IFuncionarioService
     {
         private readonly HttpClient _httpClient;
+        public FuncionarioAccesosDTO? FuncionarioActual { get; set; }
         public FuncionarioService(HttpClient httpClient)
         {
             _httpClient = httpClient;
@@ -15,8 +16,15 @@ namespace WAMiTramiteGestion.Services
             var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.LOGIN;
             var response = await _httpClient.PostAsJsonAsync(url, funcionarioLoginDTO);
             var funcionario = await response.Content.ReadFromJsonAsync<FuncionarioAccesosDTO>();
-            if (!response.IsSuccessStatusCode || funcionario == null) return null;
+            if (!response.IsSuccessStatusCode || funcionario == null) throw new Exception("Error al iniciar sesión del funcionario.");
+
+            FuncionarioActual = funcionario;
             return funcionario;
+        }
+
+        public void CerrarSesion()
+        {
+            FuncionarioActual = null;
         }
     }
 }

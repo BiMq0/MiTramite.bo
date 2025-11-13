@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MiTramite_Shared.DTOs.FuncionarioDTOs;
+using MiTramite_Shared.DTOs.RentistaDTOs;
 
 namespace MiTramite_Back.Middleware.Authentication
 {
@@ -35,7 +36,30 @@ namespace MiTramite_Back.Middleware.Authentication
                 claims: claims,
                 signingCredentials: creds,
                 expires: DateTime.UtcNow.AddHours(2), // Token válido por 2 horas
-                notBefore: DateTime.UtcNow // Token válido desde ahora
+                notBefore: DateTime.UtcNow
+                );
+
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+            return Task.FromResult(tokenString);
+        }
+
+        public Task<string> GenerarTokenRentista(RentistaCurrentDataDTO rentistaDto)
+        {
+            var claims = new[]
+            {
+                new Claim("IdRentista", rentistaDto.IdRentista!.ToString()),
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Value.Key));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _jwtOptions.Value.Issuer,
+                audience: _jwtOptions.Value.Audience,
+                claims: claims,
+                signingCredentials: creds,
+                expires: DateTime.UtcNow.AddHours(2), 
+                notBefore: DateTime.UtcNow
                 );
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);

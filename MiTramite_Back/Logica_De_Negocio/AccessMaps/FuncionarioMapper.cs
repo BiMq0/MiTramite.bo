@@ -26,21 +26,10 @@ public static class FuncionarioMapper
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddHours(2) // Cookie válida por 2 horas, igual que el token
+                Expires = DateTimeOffset.UtcNow.AddHours(2)
             });
 
             return Results.Ok(dto);
-        });
-
-        funcionarios.MapGet(FuncionarioEndpoints.GET_BY_ID, async (IFuncionarioService service, ITokenService tokenService, HttpContext http) =>
-        {
-            var token = http.Request.Cookies["token"];
-            if (string.IsNullOrEmpty(token))
-            {
-                return Results.Unauthorized();
-            }
-
-            return Results.Ok();
         });
     }
 }

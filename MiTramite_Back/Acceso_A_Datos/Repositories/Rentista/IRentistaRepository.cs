@@ -12,6 +12,6 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.RentistaRep
     public interface IRentistaRepository
     {
         Task<bool> RegistrarRentistaAsync(RentistaSignupDTO rentistaSignup, CancellationToken cancellationToken = default);
-        Task<bool> IniciarSesionRentistaAsync(RentistaLoginDTO rentistaLogin, CancellationToken cancellationToken = default);
+        Task<Rentista> IniciarSesionRentistaAsync(RentistaLoginDTO rentistaLogin, CancellationToken cancellationToken = default);
     }
 }
