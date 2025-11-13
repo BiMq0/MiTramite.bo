@@ -1,5 +1,6 @@
+@page "/dashboard"
 @using WAMiTramite.Components.Pages.UserComponents
-@inject WAMiTramite.Handlers.NavigationTriggers Navigation
+@inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 
 <div class="d-flex vh-100 m-0 p-0">
@@ -308,6 +309,6 @@
 
     private void HandleLogout()
     {
-        Navigation.NavigateToLanding();
+        Navigation.NavigateTo("/");
     }
 }

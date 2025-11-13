@@ -1,10 +1,11 @@
+@page "/login"
 @using MiTramite_Shared.DTOs.RentistaDTOs
-@inject WAMiTramite.Handlers.NavigationTriggers Navigation
+@inject NavigationManager Navigation
 @inject Services.IRentistaService RentistaService
 @rendermode InteractiveServer
 
 <div class="container py-5">
-    <div class="position-fixed"><button class="btn btn-primary" @onclick="@(() => Navigation.NavigateToLanding())"><i
+    <div class="position-fixed"><button class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/"))"><i
                 class="bi bi-arrow-left"></i> Volver</button>
     </div>
     <div class="row justify-content-center">
@@ -145,7 +146,7 @@
             if (result)
             {
                 Console.WriteLine($"Login exitoso: {loginModel.Correo}");
-                Navigation.NavigateToMenu();
+                Navigation.NavigateTo("/dashboard");
             }
             else
             {
@@ -173,7 +174,7 @@
 
     private void NavigateToRegister()
     {
-        Navigation.NavigateToSignup();
+        Navigation.NavigateTo("/register");
     }
 
 }
