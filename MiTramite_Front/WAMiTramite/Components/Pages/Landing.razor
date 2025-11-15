@@ -1,4 +1,6 @@
-@inject WAMiTramite.Handlers.NavigationTriggers Navigation
+@page "/"
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
 
 <link href="/css/gestora-theme.css" rel="stylesheet" />
 
@@ -176,19 +178,18 @@
 @code {
     private void NavigateToRegister()
     {
-        Navigation.NavigateToSignup();
+        Navigation.NavigateTo("/register");
     }
 
     private void NavigateToLogin()
     {
-
-        Navigation.NavigateToLogin();
+        Navigation.NavigateTo("/login");
     }
 
     // Contact form model and handler
     private ContactModel contactModel = new ContactModel();
     private bool sent = false;
-    private string errorMessage;
+    private string? errorMessage;
 
     private void HandleSubmit()
     {
@@ -221,8 +222,8 @@
 
     public class ContactModel
     {
-        public string Nombre { get; set; }
-        public string Email { get; set; }
-        public string Asunto { get; set; }
+        public string Nombre { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Asunto { get; set; } = string.Empty;
     }
 }

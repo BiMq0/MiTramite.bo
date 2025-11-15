@@ -31,7 +31,7 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.RentistaRep
 
             return result > 0;
         }
-        public async Task<bool> IniciarSesionRentistaAsync(RentistaLoginDTO rentistaLogin, CancellationToken cancellationToken = default)
+        public async Task<Rentista> IniciarSesionRentistaAsync(RentistaLoginDTO rentistaLogin, CancellationToken cancellationToken = default)
         {
             var rentista = await _context.Rentistas
                 .FirstOrDefaultAsync(r => r.Correo == rentistaLogin.Correo, cancellationToken);
@@ -39,12 +39,16 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.RentistaRep
             Console.WriteLine(rentista?.PasswordHash);
             if (rentista == null)
             {
-                return false;
+                throw new KeyNotFoundException("Credenciales inválidas.");
             }
 
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(rentistaLogin.Password, rentista.PasswordHash);
 
-            return isPasswordValid;
+            if (!isPasswordValid)
+            {
+                throw new UnauthorizedAccessException("Credenciales inválidas.");
+            }
+            return rentista;
         }
     }
 }

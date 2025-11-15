@@ -1,10 +1,11 @@
-@inject WAMiTramite.Handlers.NavigationTriggers Navigation
+@page "/register"
+@inject NavigationManager Navigation
 @inject Services.IRentistaService RentistaService
 @using MiTramite_Shared.DTOs.RentistaDTOs
 @rendermode InteractiveServer
 
 <div class="container py-5">
-    <div class="position-fixed"><button class="btn btn-primary" @onclick="@(() => NavigateToLanding())"><i
+    <div class="position-fixed"><button class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/"))"><i
                 class="bi bi-arrow-left"></i> Volver</button>
     </div>
     <div class="row justify-content-center">
@@ -139,7 +140,7 @@
                             </button>
 
                             <button type="button" class="btn btn-outline-secondary"
-                                @onclick="@(() => NavigateToLogin())">
+                                @onclick="@(() => Navigation.NavigateTo("/login"))">
                                 <i class="bi bi-arrow-left me-2"></i>
                                 ¿Ya tienes cuenta? Inicia sesión
                             </button>
@@ -190,10 +191,10 @@
 
     private void NavigateToLogin()
     {
-        Navigation.NavigateToLogin();
+        Navigation.NavigateTo("/login");
     }
     private void NavigateToLanding()
     {
-        Navigation.NavigateToLanding();
+        Navigation.NavigateTo("/");
     }
 }

@@ -9,7 +9,7 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.RentistaSvc
 {
     public interface IRentistaService
     {
-        Task<bool> IniciarSesionRentista(RentistaLoginDTO rentistaLogin, CancellationToken cancellationToken = default);
+        Task<RentistaCurrentDataDTO> IniciarSesionRentista(RentistaLoginDTO rentistaLogin, CancellationToken cancellationToken = default);
         Task<bool> RegistrarNuevoRentista(RentistaSignupDTO rentistaSignup, CancellationToken cancellationToken = default);
     }
 }

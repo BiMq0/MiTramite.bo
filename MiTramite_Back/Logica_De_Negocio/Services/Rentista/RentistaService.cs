@@ -16,10 +16,11 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.RentistaSvc
             _repository = repository;
         }
 
-        public async Task<bool> IniciarSesionRentista(RentistaLoginDTO rentistaLogin, CancellationToken cancellationToken = default)
+        public async Task<RentistaCurrentDataDTO> IniciarSesionRentista(RentistaLoginDTO rentistaLogin, CancellationToken cancellationToken = default)
         {
 
-            return await _repository.IniciarSesionRentistaAsync(rentistaLogin, cancellationToken);
+            var rentista = await _repository.IniciarSesionRentistaAsync(rentistaLogin, cancellationToken);
+            return new RentistaCurrentDataDTO(rentista);
         }
 
         public async Task<bool> RegistrarNuevoRentista(RentistaSignupDTO rentistaSignup, CancellationToken cancellationToken = default)
