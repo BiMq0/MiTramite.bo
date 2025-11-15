@@ -1,0 +1,42 @@
+﻿@page "/funcionario/tramites-pendientes"
+
+<div class="container-fluid px-4">
+    <h2 class="fw-bold text-primary mb-4 mt-3">📄 Trámites Pendientes</h2>
+
+    <div class="card border-0 shadow p-4 animate-fadein">
+        <p>Listado de trámites que están actualmente pendientes de revisión o aprobación.</p>
+
+        <div class="table-wrapper mt-3">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tipo de Trámite</th>
+                        <th>Solicitante</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Actualización de Datos</td>
+                        <td>Lucía Ramos</td>
+                        <td>2025-10-25</td>
+                        <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+                        <td><button class="btn btn-sm btn-gradient">Revisar</button></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Afiliación</td>
+                        <td>José Fernández</td>
+                        <td>2025-10-26</td>
+                        <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+                        <td><button class="btn btn-sm btn-gradient">Revisar</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

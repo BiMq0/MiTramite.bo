@@ -1,15 +1,17 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@implements IDisposable
 
-<!-- Navbar superior institucional -->
-<header class="py-0">
+<!-- Navbar superior institucional (Fijo) -->
+<header class="py-0 " style="top: 0; left: 0; right: 0;">
     <nav class="navbar navbar-expand-lg shadow-sm w-100"
-        style="background: linear-gradient(135deg, #1a365d, #2c5282, #3182ce);">
-        <div class="container d-flex align-items-center justify-content-between">
+        style="background: linear-gradient(180deg, #1a365d 0%, #2c5282 100%);">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
             <!-- Logo y nombre -->
             <a class="navbar-brand d-flex align-items-center text-light" href="/">
                 <div class="d-flex align-items-center">
-                    <div class="me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #1a365d, #3182ce, #63b3ed);
-                                border-radius: 8px; display: flex; align-items: center; justify-content: center;
+                    <div class="me-3" style="width: 40px; height: 40px; background: linear-gradient(180deg, #1a365d 0%, #2c5282 100%);
+                                border-radius: 6px; display: flex; align-items: center; justify-content: center;
                                 color: white; font-weight: bold; font-size: 1.2rem;">
                         MT
                     </div>
@@ -18,23 +20,24 @@
                         <div style="font-size: 0.75rem; color: rgba(255,255,255,0.85); line-height: 1;">La Paz Digital
                         </div>
                     </div>
-                    <div>
-                        <img src="https://www.gestora.bo/img/logos/logoslogan.png" alt="Logo Gestora Nacional" style="height: 30px; margin-left: 10px; background: white;
-                                    border-radius: 6px; padding: 4px 6px;" />
-                    </div>
                 </div>
             </a>
         </div>
     </nav>
 </header>
 
-<!-- Contenido principal -->
-<main style="background-color: #f5f7fb; min-height: 100vh;">
-    <article class="container-fluid p-0 " style="padding: 0 !important;">
-        @Body
-    </article>
-</main>
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
 
+    <main>
+
+        <article class="content px-4 py-2">
+            @Body
+        </article>
+    </main>
+</div>
 
 <!-- Error Blazor -->
 <div id="blazor-error-ui" data-nosnippet>
@@ -43,8 +46,36 @@
     <span class="dismiss">🗙</span>
 </div>
 
+@code {
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
+
 <style>
-    /* Ajustes del layout */
+    /* Layout container - distribuye header + contenido */
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .main-content {
+        flex: 1;
+        background-color: #f5f7fb;
+        overflow-y: auto;
+    }
+
     .navbar {
         border-bottom: 3px solid rgba(255, 255, 255, 0.2);
     }
