@@ -12,17 +12,8 @@ namespace MiTramite_Back.Handlers
         {
             using (var scope = app.Services.CreateScope())
             {
-                ArchivoMapper.Map(app);
-                EstadoTramiteMapper.Map(app);
                 FuncionarioMapper.Map(app);
-                IncumplimientoMapper.Map(app);
-                OpcionMapper.Map(app);
-                PermisoMapper.Map(app);
                 RentistaMapper.Map(app);
-                RolMapper.Map(app);
-                SolicitudTramiteMapper.Map(app);
-                TipoArchivoMapper.Map(app);
-                TipoTramiteMapper.Map(app);
             }
         }
     }
