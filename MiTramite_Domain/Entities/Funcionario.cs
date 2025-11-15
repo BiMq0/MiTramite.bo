@@ -16,12 +16,12 @@ namespace MiTramite_Domain.Entities
         public string ApellidoPaterno { get; set; } = null!;
         public string ApellidoMaterno { get; set; } = null!;
         public DateTime? FechaNacimiento { get; set; }
+        public string Telefono { get; set; } = null!;
         public int? PesoDisponibilidad { get; set; }
         public string Correo { get; set; } = null!;
         public string PasswordHash { get; set; } = null!;
         public int IdRol { get; set; }
         public ActivityStatus Activo { get; set; } = ActivityStatus.Activo;
-
 
         public Rol? Rol { get; set; }
         public ICollection<SolicitudTramite> SolicitudesAsignadas { get; set; } = new List<SolicitudTramite>();

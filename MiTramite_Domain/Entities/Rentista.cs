@@ -13,11 +13,10 @@ public class Rentista
     public string ApellidoPaterno { get; set; } = null!;
     public string ApellidoMaterno { get; set; } = null!;
     public DateTime FechaNacimiento { get; set; }
+    public string Telefono { get; set; } = null!;
     public string Correo { get; set; } = null!;
     public string PasswordHash { get; set; } = null!;
     public ActivityStatus Activo { get; set; } = ActivityStatus.Activo;
-
     public ICollection<Archivo> Archivos { get; set; } = new List<Archivo>();
-
     public ICollection<SolicitudTramite> SolicitudesTramite { get; set; } = new List<SolicitudTramite>();
 }
