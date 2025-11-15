@@ -8,5 +8,6 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.FuncionarioSvc
     public interface IFuncionarioService
     {
         Task<FuncionarioAccesosDTO> IniciarSesionFuncionario(FuncionarioLoginDTO funcionarioLogin, CancellationToken cancellationToken = default);
+        CookieOptions ConfigurarCookie();
     }
 }

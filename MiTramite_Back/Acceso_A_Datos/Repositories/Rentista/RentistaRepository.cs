@@ -35,8 +35,7 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.RentistaRep
         {
             var rentista = await _context.Rentistas
                 .FirstOrDefaultAsync(r => r.Correo == rentistaLogin.Correo, cancellationToken);
-            Console.WriteLine(rentista?.Correo);
-            Console.WriteLine(rentista?.PasswordHash);
+
             if (rentista == null)
             {
                 throw new KeyNotFoundException("Credenciales inválidas.");

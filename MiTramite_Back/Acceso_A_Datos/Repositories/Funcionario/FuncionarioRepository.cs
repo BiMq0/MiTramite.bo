@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MiTramite_Back.Acceso_A_Datos.Context;
+using MiTramite_Back.Middleware.Tokens;
 using MiTramite_Domain.Entities;
 using MiTramite_Shared.DTOs.FuncionarioDTOs;
 
@@ -13,7 +14,7 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.FuncionarioRep
     {
         private readonly MiTramiteDbContext _context;
 
-        public FuncionarioRepository(MiTramiteDbContext context)
+        public FuncionarioRepository(MiTramiteDbContext context, ITokenService tokenService)
         {
             _context = context;
         }
@@ -29,13 +30,16 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.FuncionarioRep
                 .FirstOrDefaultAsync(f => f.CodigoFuncionario == funcionarioLogin.CodigoFuncionario);
 
 
+
             if (funcionario != null && BCrypt.Net.BCrypt.Verify(funcionarioLogin.Password, funcionario.PasswordHash))
             {
                 var funcionarioToReturn = new FuncionarioAccesosDTO(funcionario);
+
                 return funcionarioToReturn;
             }
 
             return null;
         }
+
     }
 }

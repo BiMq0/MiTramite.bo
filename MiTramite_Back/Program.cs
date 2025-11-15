@@ -19,9 +19,12 @@ builder.Services.AddDbContext<MiTramiteDbContext>(options =>
 // JWT Configuration
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 
-// Scopes (esto registra automáticamente ITokenService y TokenService)
+// Scopes y Repositories
 builder.Services.AddScopedRepositories();
 builder.Services.AddScopedServices();
+
+// Middlewares
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

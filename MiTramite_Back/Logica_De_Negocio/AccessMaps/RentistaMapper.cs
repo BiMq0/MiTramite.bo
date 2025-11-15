@@ -2,7 +2,6 @@
 using MiTramite_Shared.DTOs.RentistaDTOs;
 using MiTramite_Shared.Endpoints;
 using Microsoft.AspNetCore.Mvc;
-using MiTramite_Back.Middleware.Authentication;
 using MiTramite_Back.Middleware.Tokens;
 
 namespace MiTramite_Back;
@@ -18,12 +17,12 @@ public static class RentistaMapper
             return await service.RegistrarNuevoRentista(rentistaNuevo);
         });
 
-        rentistas.MapPost(RentistaEndpoints.LOGIN, async (RentistaLoginDTO rentistaLogin, IRentistaService service, HttpContext http, IAuthService authService) =>
+        rentistas.MapPost(RentistaEndpoints.LOGIN, async (RentistaLoginDTO rentistaLogin, IRentistaService service, HttpContext http, ITokenService tokenService) =>
         {
             var resultado = await service.IniciarSesionRentista(rentistaLogin);
             if (resultado != null)
             {
-                var token = await authService.GenerarTokenRentista(resultado);
+                var token = await tokenService.GenerarTokenRentista(resultado);
                 http.Response.Cookies.Append("token", token, new CookieOptions
                 {
                     HttpOnly = true,
