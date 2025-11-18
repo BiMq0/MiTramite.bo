@@ -40,4 +40,5 @@ if (app.Environment.IsDevelopment())
 app.AddMiddleware();
 app.MapEndpoints();
 app.MapGet("/", () => Results.Redirect("/swagger"));
+app.MapGet("/verify", () => Results.Ok("Token disponible y válido"));
 app.Run();

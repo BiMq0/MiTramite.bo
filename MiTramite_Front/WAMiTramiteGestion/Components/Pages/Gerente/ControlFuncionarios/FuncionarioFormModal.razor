@@ -1,0 +1,318 @@
+@using MiTramite_Shared.DTOs.FuncionarioDTOs
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="modal fade @MostrarClase" id="formularioModal" tabindex="-1" style="display: @MostrarEstilo">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light border-bottom-2">
+                <h5 class="modal-title fw-bold text-primary">
+                    @if (esRegistroNuevo)
+                    {
+                        <i class="bi bi-plus-circle me-2"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-person-check me-2"></i>
+                    }
+                </h5>
+                <button type="button" class="btn-close" @onclick="Cerrar"></button>
+            </div>
+
+            <div class="modal-body">
+                @if (esRegistroNuevo)
+                {
+                    <EditForm Model="funcionarioNuevo" OnValidSubmit="GuardarFuncionarioNuevo">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="row">
+                            <!-- Nombre -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-500">Nombre <span class="text-danger">*</span></label>
+                                <InputText class="form-control" @bind-Value="funcionarioNuevo.Nombres"
+                                    placeholder="Ingrese el nombre" />
+                                <ValidationMessage For="@(() => funcionarioNuevo.Nombres)" />
+                            </div>
+
+                            <!-- Apellido Paterno -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-500">Apellido Paterno <span class="text-danger">*</span></label>
+                                <InputText class="form-control" @bind-Value="funcionarioNuevo.ApellidoPaterno"
+                                    placeholder="Ingrese el apellido paterno" />
+                                <ValidationMessage For="@(() => funcionarioNuevo.ApellidoPaterno)" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-500">Apellido Materno <span
+                                        class="text-muted">(Opcional)</span></label>
+                                <InputText class="form-control" @bind-Value="funcionarioNuevo.ApellidoMaterno"
+                                    placeholder="Ingrese el apellido materno" />
+                            </div>
+
+                            <!-- Fecha de Nacimiento -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-500">Fecha de Nacimiento <span
+                                        class="text-danger">*</span></label>
+                                <InputDate class="form-control" @bind-Value="funcionarioNuevo.FechaNacimiento" />
+                                <ValidationMessage For="@(() => funcionarioNuevo.FechaNacimiento)" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-500">Correo <span class="text-danger">*</span></label>
+                                <InputText type="email" class="form-control" @bind-Value="funcionarioNuevo.Correo"
+                                    placeholder="correo@ejemplo.com" />
+                                <ValidationMessage For="@(() => funcionarioNuevo.Correo)" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-500">Teléfono</label>
+                                <InputText class="form-control" @bind-Value="funcionarioNuevo.Telefono"
+                                    placeholder="Ingrese el teléfono" />
+                                <ValidationMessage For="@(() => funcionarioNuevo.Telefono)" />
+
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-500">Contraseña <span class="text-danger">*</span></label>
+                                <InputText type="password" class="form-control" @bind-Value="funcionarioNuevo.Password"
+                                    placeholder="Ingrese una contraseña segura" />
+                                <ValidationMessage For="@(() => funcionarioNuevo.Password)" />
+                            </div>
+                        </div>
+
+
+                        <!-- Botones -->
+                        <div class="modal-footer bg-light border-top mt-4">
+                            @if (puedeEditar)
+                            {
+                                <button type="button" class="btn btn-secondary" @onclick="Cancelar">
+                                    <i class="bi bi-x-circle me-2"></i>Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle me-2"></i>Guardar
+                                </button>
+                            }
+                            else if (esRegistroNuevo)
+                            {
+                                <button type="button" class="btn btn-secondary" @onclick="Cerrar">
+                                    <i class="bi bi-arrow-left me-2"></i>Cancelar
+                                </button>
+                            }
+                        </div>
+                    </EditForm>
+                }
+                else
+                {
+                    <EditForm Model="funcionarioEdit" OnValidSubmit="GuardarFuncionarioEditado">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="row">
+                            <!-- Nombre -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-500">Nombre <span class="text-danger">*</span></label>
+                                <InputText class="form-control" @bind-Value="funcionarioEdit.Nombres"
+                                    disabled="@(!puedeEditar)" placeholder="Ingrese el nombre" />
+                                <ValidationMessage For="@(() => funcionarioEdit.Nombres)" />
+                            </div>
+
+                            <!-- Apellido Paterno -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-500">Apellido Paterno <span class="text-danger">*</span></label>
+                                <InputText class="form-control" @bind-Value="funcionarioEdit.ApellidoPaterno"
+                                    disabled="@(!puedeEditar)" placeholder="Ingrese el apellido paterno" />
+                                <ValidationMessage For="@(() => funcionarioEdit.ApellidoPaterno)" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-500">Apellido Materno <span
+                                        class="text-muted">(Opcional)</span></label>
+                                <InputText class="form-control" @bind-Value="funcionarioEdit.ApellidoMaterno"
+                                    disabled="@(!puedeEditar)" placeholder="Ingrese el apellido materno" />
+                            </div>
+
+                            <!-- Fecha de Nacimiento -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-500">Fecha de Nacimiento <span
+                                        class="text-danger">*</span></label>
+                                <InputDate class="form-control" @bind-Value="funcionarioEdit.FechaNacimiento"
+                                    disabled="@(!puedeEditar)" />
+                                <ValidationMessage For="@(() => funcionarioEdit.FechaNacimiento)" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Rol (Disabled) -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-500">Rol</label>
+                                <select class="form-select" disabled>
+                                    <option selected>Funcionario</option>
+                                </select>
+                                <small class="text-muted">El rol es automático y no puede ser modificado</small>
+                            </div>
+
+                            <!-- Correo -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-500">Correo <span class="text-danger">*</span></label>
+                                <InputText type="email" class="form-control" @bind-Value="funcionarioEdit.Correo"
+                                    disabled="@(!puedeEditar)" placeholder="correo@ejemplo.com" />
+                                <ValidationMessage For="@(() => funcionarioEdit.Correo)" />
+                            </div>
+                        </div>
+
+                        <!-- Telefono -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-500">Teléfono</label>
+                                <InputText class="form-control" @bind-Value="funcionarioEdit.Telefono"
+                                    disabled="@(!puedeEditar)" placeholder="Ingrese el teléfono" />
+                                <ValidationMessage For="@(() => funcionarioEdit.Telefono)" />
+
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="modal-footer bg-light border-top mt-4">
+                            @if (!puedeEditar)
+                            {
+                                <button type="button" class="btn btn-warning" @onclick="HabilitarEdicion">
+                                    <i class="bi bi-pencil me-2"></i>Editar
+                                </button>
+                                <button type="button" class="btn btn-secondary" @onclick="Cerrar">
+                                    <i class="bi bi-arrow-left me-2"></i>Volver
+                                </button>
+                            }
+                            @if (puedeEditar)
+                            {
+                                <button type="button" class="btn btn-secondary" @onclick="Cancelar">
+                                    <i class="bi bi-x-circle"></i>Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle"></i>Guardar
+                                </button>
+                            }
+                        </div>
+                    </EditForm>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (mostrar)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+<style>
+    .fw-500 {
+        font-weight: 500;
+    }
+
+    .border-bottom-2 {
+        border-bottom: 2px solid #dee2e6 !important;
+    }
+
+    .modal-content {
+        border-radius: 0.5rem;
+    }
+
+    .form-control:disabled,
+    .form-select:disabled {
+        background-color: #f8f9fa;
+        color: #6c757d;
+        cursor: not-allowed;
+    }
+
+    .form-label {
+        color: #003d7a;
+        margin-bottom: 0.5rem;
+    }
+
+    .text-danger {
+        color: #dc3545;
+    }
+</style>
+
+@code {
+    private bool mostrar = false;
+    private bool esRegistroNuevo = false;
+    private bool puedeEditar = false;
+
+    private FuncionarioNuevoDTO funcionarioNuevo = new();
+    private FuncionarioNuevoDTO funcionarioEdit = new();
+
+    [Parameter]
+    public EventCallback<FuncionarioNuevoDTO> OnGuardarNuevo { get; set; }
+
+    [Parameter]
+    public EventCallback<FuncionarioNuevoDTO> OnGuardarEditado { get; set; }
+
+    [Parameter]
+    public EventCallback OnCerrar { get; set; }
+
+    private string MostrarClase => mostrar ? "show" : "";
+    private string MostrarEstilo => mostrar ? "block" : "none";
+
+    public async Task AbrirParaAgregar()
+    {
+        esRegistroNuevo = true;
+        puedeEditar = true;
+        funcionarioNuevo = new();
+        mostrar = true;
+        StateHasChanged();
+    }
+
+    public async Task AbrirParaVer(FuncionarioNuevoDTO funcionario)
+    {
+        esRegistroNuevo = false;
+        puedeEditar = false;
+        funcionarioEdit = funcionario;
+        mostrar = true;
+        StateHasChanged();
+    }
+
+    private void HabilitarEdicion()
+    {
+        puedeEditar = true;
+        StateHasChanged();
+    }
+
+    private async Task GuardarFuncionarioNuevo()
+    {
+        await OnGuardarNuevo.InvokeAsync(funcionarioNuevo);
+        Cerrar();
+    }
+
+    private async Task GuardarFuncionarioEditado()
+    {
+        await OnGuardarEditado.InvokeAsync(funcionarioEdit);
+        Cerrar();
+    }
+
+    private void Cancelar()
+    {
+        puedeEditar = false;
+        StateHasChanged();
+    }
+
+    private void Cerrar()
+    {
+        mostrar = false;
+        funcionarioNuevo = new();
+        funcionarioEdit = new();
+        puedeEditar = false;
+        esRegistroNuevo = false;
+        StateHasChanged();
+        OnCerrar.InvokeAsync();
+    }
+}

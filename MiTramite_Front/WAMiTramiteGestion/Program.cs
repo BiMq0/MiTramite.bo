@@ -14,6 +14,7 @@ builder.Services.AddScoped(sp =>
 });
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddSingleton<LoginStateService>();
 builder.Services.AddScopedServices();
 
 var app = builder.Build();

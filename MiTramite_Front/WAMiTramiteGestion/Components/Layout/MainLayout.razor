@@ -1,67 +1,26 @@
-﻿@inherits LayoutComponentBase
+﻿@using MiTramite_Shared.DTOs.FuncionarioDTOs
+@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
+@inject Handlers.LoginStateService LoginStateService
 @implements IDisposable
 
-<!-- Navbar superior institucional (Fijo) -->
-<header class="py-0 " style="top: 0; left: 0; right: 0;">
-    <nav class="navbar navbar-expand-lg shadow-sm w-100"
-        style="background: linear-gradient(180deg, #1a365d 0%, #2c5282 100%);">
-        <div class="container-fluid d-flex align-items-center justify-content-between">
-            <!-- Logo y nombre -->
-            <a class="navbar-brand d-flex align-items-center text-light" href="/">
-                <div class="d-flex align-items-center">
-                    <div class="me-3" style="width: 40px; height: 40px; background: linear-gradient(180deg, #1a365d 0%, #2c5282 100%);
-                                border-radius: 6px; display: flex; align-items: center; justify-content: center;
-                                color: white; font-weight: bold; font-size: 1.2rem;">
-                        MT
-                    </div>
-                    <div>
-                        <div style="font-size: 1.25rem; font-weight: 700; line-height: 1;">Mi Trámite Gestión</div>
-                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.85); line-height: 1;">La Paz Digital
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </nav>
-</header>
+<Header />
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
+    <NavMenu Rol="@rolActual" />
     <main>
-
-        <article class="content px-4 py-2">
+        <article class="content" style="padding: 0 !important;">
             @Body
         </article>
     </main>
 </div>
 
-<!-- Error Blazor -->
 <div id="blazor-error-ui" data-nosnippet>
     Ocurrió un error inesperado.
     <a href="." class="reload">Recargar</a>
     <span class="dismiss">🗙</span>
 </div>
 
-@code {
-    protected override void OnInitialized()
-    {
-        NavigationManager.LocationChanged += OnLocationChanged;
-    }
-
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        StateHasChanged();
-    }
-
-    void IDisposable.Dispose()
-    {
-        NavigationManager.LocationChanged -= OnLocationChanged;
-    }
-}
 
 <style>
     /* Layout container - distribuye header + contenido */
@@ -104,3 +63,28 @@
         margin-left: 1rem;
     }
 </style>
+
+@code {
+    private string? rolActual = null;
+
+    protected override void OnInitialized()
+    {
+        LoginStateService.OnLoginSuccess += OnLoginSuccess;
+
+        if (LoginStateService.EstaAutenticado && LoginStateService.UsuarioActual != null)
+        {
+            rolActual = LoginStateService.UsuarioActual.Rol;
+        }
+    }
+
+    private void OnLoginSuccess(FuncionarioAccesosDTO usuario)
+    {
+        rolActual = usuario?.Rol;
+        StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        LoginStateService.OnLoginSuccess -= OnLoginSuccess;
+    }
+}

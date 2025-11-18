@@ -29,7 +29,15 @@ namespace MiTramite_Back.Handlers
             {
                 var path = context.Request.Path.Value?.ToLower();
 
-                if (path == "/funcionario/login" || path!.StartsWith("/swagger"))
+                string[] allowedPaths = new string[]
+                {
+                    "/swagger",
+                    "/login",
+                    "/signup",
+                    "/logout",
+                    "/verify"
+                };
+                if (allowedPaths.Any(p => path!.Contains(p)))
                 {
                     await next();
                     return;

@@ -3,7 +3,8 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inject Services.IFuncionarioService FuncionarioService
 @inject NavigationManager NavigationManager
-@inject Handlers.AuthenticationStateService AuthenticationService
+@inject Services.VerificationService.ITokenVerificationService TokenVerificationService
+@inject Handlers.LoginStateService LoginStateService
 @rendermode InteractiveServer
 
 
@@ -13,7 +14,6 @@
         justify-content: center;
         align-items: center;
         min-height: calc(100vh - 60px);
-        padding: 1rem 2rem;
         background: linear-gradient(135deg, #003d7a 0%, #0052a3 50%, #1a5fb5 100%);
     }
 
@@ -200,8 +200,7 @@
 
         <h3 class="login-title">Iniciar Sesión</h3>
 
-        <EditForm Model="funcionarioLogin" OnValidSubmit="HandleLogin">
-            <DataAnnotationsValidator />
+        <EditForm Model="funcionarioLogin" OnValidSubmit="HandleLogin" FormName="loginForm">
             <ValidationSummary />
 
             <div class="form-group">
@@ -254,6 +253,18 @@
     private string mensajeError = string.Empty;
     private bool mostrarContraseña = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (await TokenVerificationService.TokenExistsOrIsValidAsync())
+        {
+            var rol = FuncionarioService.FuncionarioActual?.Rol;
+            if (!string.IsNullOrEmpty(rol))
+            {
+                RedireccionarPorRol(rol);
+            }
+            await base.OnInitializedAsync();
+        }
+    }
     private void AlternarVisibilidadContraseña()
     {
         mostrarContraseña = !mostrarContraseña;
@@ -268,11 +279,8 @@
 
             if (resultado != null)
             {
-                // Notificar al servicio de autenticación
-                await AuthenticationService.NotifyLoginAsync(resultado);
-
-                var url = resultado.Rol ?? "";
-                NavigationManager.NavigateTo($"/{url.ToLower()}/inicio");
+                LoginStateService.NotifyLoginSuccess(resultado);
+                RedireccionarPorRol(resultado.Rol!);
             }
             else
             {
@@ -283,5 +291,10 @@
         {
             mensajeError = $"Error al iniciar sesión: {ex.Message}";
         }
+    }
+
+    private void RedireccionarPorRol(string rol)
+    {
+        NavigationManager.NavigateTo($"/{rol.ToLower()}/inicio");
     }
 }

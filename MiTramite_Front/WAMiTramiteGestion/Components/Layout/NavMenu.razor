@@ -1,126 +1,85 @@
+@using MiTramite_Shared.DTOs.FuncionarioDTOs
+@using WAMiTramiteGestion.Handlers
 @inject NavigationManager NavigationManager
-@inject Handlers.AuthenticationStateService AuthenticationService
-@implements IDisposable
 
 @if (mostrarNavMenu)
 {
-    <nav class="sidebar">
-        <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-            <nav class="nav flex-column">
-                <div class="nav-item px-3">
-                    @if (opcionesMenu.Count > 0)
-                    {
-                        @foreach (var opcion in opcionesMenu)
-                        {
-                            <NavLink class="nav-link" href="@opcion.Ruta" Match="NavLinkMatch.All">
-                                <span class="nav-icon">
-                                    <i class="bi @opcion.Icono"></i>
-                                </span>
-                                <span class="nav-text">@opcion.Label</span>
-                            </NavLink>
-                        }
-                    }
-                    else
-                    {
-                        <!-- Opciones por defecto si no hay opciones del servidor -->
-                        <NavLink class="nav-link" href="/funcionario/inicio" Match="NavLinkMatch.All">
-                            <span class="nav-icon">
-                                <i class="bi bi-house"></i>
-                            </span>
-                            <span class="nav-text">Inicio</span>
+    <div class="nav-scrollable">
+        <nav class="nav flex-column">
+            @if (opcionesMenu.Count > 0)
+            {
+                @foreach (var opcion in opcionesMenu)
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="@opcion.Ruta" Match="NavLinkMatch.All">
+                            <i class="bi @opcion.Icono me-4 fs-6"></i> @opcion.Label
                         </NavLink>
-                        <NavLink class="nav-link" href="/funcionario/tramites">
-                            <span class="nav-icon">
-                                <i class="bi bi-file-earmark-text"></i>
-                            </span>
-                            <span class="nav-text">Trámites</span>
-                        </NavLink>
-
-                        <NavLink class="nav-link" href="/funcionario/control">
-                            <span class="nav-icon">
-                                <i class="bi bi-people"></i>
-                            </span>
-                            <span class="nav-text">Control de Funcionarios</span>
-                        </NavLink>
-
-                        <NavLink class="nav-link" href="/funcionario/reportes">
-                            <span class="nav-icon">
-                                <i class="bi bi-graph-up"></i>
-                            </span>
-                            <span class="nav-text">Reportes</span>
-                        </NavLink>
-                    }
-                </div>
-            </nav>
-        </div>
-    </nav>
+                    </div>
+                }
+            }
+        </nav>
+    </div>
 }
 
-
-
-
 @code {
+    [Parameter]
+    public string? Rol { get; set; }
+
     private bool mostrarNavMenu = false;
-    private List<Handlers.MenuOpcion> opcionesMenu = new();
+    private List<MenuOpcion> opcionesMenu = new();
 
     protected override void OnInitialized()
     {
-        NavigationManager.LocationChanged += OnLocationChanged;
-        AuthenticationService.OnLoginAsync += OnUserLogin;
-        AuthenticationService.OnLogout += OnUserLogout;
         VerificarPagina();
+        FiltrarOpcionesSegunRol(Rol);
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnParametersSet()
     {
-        if (firstRender)
+        // Cuando cambia el parámetro Rol
+        if (!string.IsNullOrEmpty(Rol))
         {
-            VerificarPagina();
-            // Si ya hay un usuario autenticado, cargar sus opciones
-            if (AuthenticationService.FuncionarioActual != null)
-            {
-                opcionesMenu = AuthenticationService.OpcionesMenuActuales;
-                StateHasChanged();
-            }
+            FiltrarOpcionesSegunRol(Rol);
+            StateHasChanged();
         }
-    }
-
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        VerificarPagina();
-        StateHasChanged();
-    }
-
-    private async Task OnUserLogin(MiTramite_Shared.DTOs.FuncionarioDTOs.FuncionarioAccesosDTO funcionarioAccesos)
-    {
-        opcionesMenu = AuthenticationService.OpcionesMenuActuales;
-        VerificarPagina();
-        StateHasChanged();
-        await Task.CompletedTask;
-    }
-
-    private void OnUserLogout()
-    {
-        opcionesMenu.Clear();
-        mostrarNavMenu = false;
-        StateHasChanged();
     }
 
     private void VerificarPagina()
     {
-        var uri = NavigationManager.Uri;
-        // Extraer solo la parte de la ruta sin el dominio
-        var uriBuilder = new Uri(uri);
-        var path = uriBuilder.AbsolutePath.ToLower();
+        var uri = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).ToLower();
 
-        // No mostrar el NavMenu si está en login o en la raíz
-        mostrarNavMenu = !path.Contains("login") && path != "/" && !string.IsNullOrEmpty(path);
+        // Mostrar NavMenu si está en gerente o funcionario, pero no en login ni en raíz
+        if (uri.Contains("gerente") || uri.Contains("funcionario"))
+        {
+            mostrarNavMenu = true;
+        }
+        else
+        {
+            mostrarNavMenu = false;
+        }
     }
 
-    void IDisposable.Dispose()
+    private void FiltrarOpcionesSegunRol(string? rol)
     {
-        NavigationManager.LocationChanged -= OnLocationChanged;
-        AuthenticationService.OnLoginAsync -= OnUserLogin;
-        AuthenticationService.OnLogout -= OnUserLogout;
+        if (string.IsNullOrEmpty(rol))
+        {
+            opcionesMenu.Clear();
+            return;
+        }
+
+        // Crear una lista nueva y filtrada según el rol
+        var todasLasOpciones = new List<MenuOpcion>
+{
+new MenuOpcion{ Label="Inicio", Ruta="/gerente/inicio", Icono="bi-house" },
+new MenuOpcion{ Label="Reportes", Ruta="/gerente/reportes", Icono="bi-bar-chart" },
+new MenuOpcion{ Label="Gestión de Funcionarios", Ruta="/gerente/control-funcs", Icono="bi-people" },
+new MenuOpcion{ Label="Gestión de Trámites", Ruta="/gerente/tramites", Icono="bi-folder2-open" },
+new MenuOpcion{ Label="Incumplimientos", Ruta="/gerente/incumplimientos", Icono="bi-exclamation-triangle" },
+new MenuOpcion{ Label="Inicio", Ruta="/funcionario/inicio", Icono="bi-house" },
+new MenuOpcion{ Label="Trámites Pendientes", Ruta="/funcionario/tramites-pendientes", Icono="bi-clock" },
+new MenuOpcion{ Label="Historial de Trámites", Ruta="/funcionario/historial-tramites", Icono="bi-folder2-open" },
+};
+
+        opcionesMenu = todasLasOpciones.Where(o => o.Ruta.Contains(rol.ToLower())).ToList();
     }
 }

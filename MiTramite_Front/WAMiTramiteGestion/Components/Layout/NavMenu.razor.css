@@ -83,6 +83,9 @@
 
 .nav-scrollable {
   display: none;
+  background: linear-gradient(180deg, #1a365d 0%, #2c5282 100%);
+  padding: 1rem 0;
+  margin: 0;
 }
 
 .navbar-toggler:checked ~ .nav-scrollable {
@@ -99,7 +102,8 @@
     display: block;
 
     /* Allow sidebar to scroll for tall menus */
-    height: calc(100vh - 3.5rem);
+    height: calc(100vh - 60px);
     overflow-y: auto;
+    margin: 0;
   }
 }

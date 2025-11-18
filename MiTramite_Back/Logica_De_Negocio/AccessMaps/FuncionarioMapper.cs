@@ -12,10 +12,25 @@ public static class FuncionarioMapper
 
         funcionarios.MapPost(FuncionarioEndpoints.LOGIN, async (FuncionarioLoginDTO funcionarioLogin, IFuncionarioService service) =>
         {
-            var dto = await service.IniciarSesionFuncionario(funcionarioLogin);
-            if (dto == null) return Results.Unauthorized();
+            try
+            {
+                var dto = await service.IniciarSesionFuncionario(funcionarioLogin);
+                if (dto == null) return Results.Unauthorized();
 
-            return Results.Ok(dto);
+                return Results.Ok(dto);
+            }
+            catch (KeyNotFoundException knfEx)
+            {
+                return Results.NotFound(new { Message = knfEx.Message });
+            }
+            catch (UnauthorizedAccessException uaEx)
+            {
+                return Results.Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(detail: ex.Message, statusCode: 500);
+            }
         });
     }
 }

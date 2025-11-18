@@ -23,13 +23,29 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.FuncionarioSvc
 
         public async Task<FuncionarioAccesosDTO> IniciarSesionFuncionario(FuncionarioLoginDTO funcionarioLogin, CancellationToken cancellationToken = default)
         {
-            var funcionarioAccesosDTO = await _repository.IniciarSesionFuncionarioAsync(funcionarioLogin, cancellationToken);
-            if (funcionarioAccesosDTO != null)
+            try
             {
-                var token = await _tokenService.GenerarTokenFuncionario(funcionarioAccesosDTO);
-                _httpContextAccessor.HttpContext?.Response.Cookies.Append("token", token, ConfigurarCookie());
+                var funcionarioAccesosDTO = await _repository.IniciarSesionFuncionarioAsync(funcionarioLogin, cancellationToken);
+
+                if (funcionarioAccesosDTO != null)
+                {
+                    var token = await _tokenService.GenerarTokenFuncionario(funcionarioAccesosDTO);
+                    _httpContextAccessor.HttpContext?.Response.Cookies.Append("token", token, ConfigurarCookie());
+                }
+                return funcionarioAccesosDTO;
             }
-            return funcionarioAccesosDTO ?? throw new Exception("Error al iniciar sesión del funcionario");
+            catch (KeyNotFoundException knfEx)
+            {
+                throw new KeyNotFoundException("Error al iniciar sesión del funcionario: " + knfEx.Message);
+            }
+            catch (UnauthorizedAccessException uaEx)
+            {
+                throw new UnauthorizedAccessException("Error al iniciar sesión del funcionario: " + uaEx.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al iniciar sesión del funcionario: " + ex.Message);
+            }
         }
 
         public CookieOptions ConfigurarCookie()

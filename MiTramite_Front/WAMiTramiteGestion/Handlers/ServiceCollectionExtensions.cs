@@ -24,7 +24,6 @@ namespace WAMiTramiteGestion.Handlers
                     services.AddScoped(@interface, @class);
                 }
             }
-            services.AddScoped<AuthenticationStateService>();
             return services;
         }
     }

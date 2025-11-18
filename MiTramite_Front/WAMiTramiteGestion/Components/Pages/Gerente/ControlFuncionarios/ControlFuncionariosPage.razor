@@ -1,0 +1,97 @@
+@page "/gerente/control-funcs"
+@using MiTramite_Shared.DTOs.FuncionarioDTOs
+@inject Services.IFuncionarioService FuncionarioService
+@rendermode InteractiveServer
+
+<PageTitle>Control de Funcionarios</PageTitle>
+
+<div class="container-fluid px-4">
+    <div class="mb-4 mt-3">
+        <h2 class="fw-bold text-primary mb-1">
+            <i class="bi bi-people-fill me-2"></i>Control de Funcionarios
+        </h2>
+        <p class="text-muted">Gestiona el personal y sus asignaciones de la institución</p>
+    </div>
+
+    <ControlFuncionariosList @ref="listaFuncionarios" OnVerFuncionario="VerFuncionario"
+        OnAgregar="AgregarFuncionario" />
+
+    <FuncionarioFormModal @ref="formulario" OnGuardarNuevo="OnGuardarNuevoHandler"
+        OnGuardarEditado="OnGuardarEditadoHandler" OnCerrar="FormularioCerrado" />
+</div>
+
+@code {
+    private ControlFuncionariosList? listaFuncionarios;
+    private FuncionarioFormModal? formulario;
+
+    private async Task AgregarFuncionario()
+    {
+        if (formulario != null)
+        {
+            await formulario.AbrirParaAgregar();
+            StateHasChanged();
+        }
+    }
+
+    private async Task VerFuncionario(long idFuncionario)
+    {
+        try
+        {
+            // Cargar funcionario por ID y convertir a FuncionarioEditDTO
+            // var funcionario = await FuncionarioService.ObtenerPorId(idFuncionario);
+            // var funcionarioEdit = new FuncionarioEditDTOLocal { IdFuncionario = funcionario.IdFuncionario, ... };
+            // if (formulario != null)
+            // {
+            // await formulario.AbrirParaVer(funcionarioEdit);
+            // }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar funcionario: {ex.Message}");
+        }
+    }
+
+    // Handlers para EventCallback
+    private async Task OnGuardarNuevoHandler(FuncionarioNuevoDTO funcionario)
+    {
+        await GuardarFuncionarioNuevo(funcionario);
+    }
+
+    private async Task OnGuardarEditadoHandler(FuncionarioNuevoDTO funcionario)
+    {
+        await GuardarFuncionarioEditado(funcionario);
+    }
+
+    private async Task GuardarFuncionarioNuevo(FuncionarioNuevoDTO funcionario)
+    {
+        try
+        {
+            // Implementar lógica de guardado para nuevo funcionario
+            // var resultado = await FuncionarioService.CrearFuncionario(funcionario);
+            // await listaFuncionarios?.CargarFuncionarios();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al guardar funcionario: {ex.Message}");
+        }
+    }
+
+    private async Task GuardarFuncionarioEditado(FuncionarioNuevoDTO funcionario)
+    {
+        try
+        {
+            // Implementar lógica de actualización
+            // await FuncionarioService.ActualizarFuncionario(funcionario);
+            // await listaFuncionarios?.CargarFuncionarios();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al actualizar funcionario: {ex.Message}");
+        }
+    }
+
+    private void FormularioCerrado()
+    {
+        // Recargar lista si es necesario
+    }
+}
