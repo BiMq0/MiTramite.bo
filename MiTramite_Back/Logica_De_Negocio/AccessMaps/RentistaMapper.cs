@@ -35,6 +35,5 @@ public static class RentistaMapper
             return Results.Unauthorized();
         });
 
-        // TODO: Agregar más endpoints relacionados con Rentista aquí y crear los servicios correspondientes
     }
 }

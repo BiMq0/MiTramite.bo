@@ -69,7 +69,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label fw-500">Teléfono</label>
+                                <label class="form-label fw-500">Teléfono <span class="text-danger">*</span></label>
                                 <InputText class="form-control" @bind-Value="funcionarioNuevo.Telefono"
                                     placeholder="Ingrese el teléfono" />
                                 <ValidationMessage For="@(() => funcionarioNuevo.Telefono)" />
@@ -249,13 +249,13 @@
     private bool puedeEditar = false;
 
     private FuncionarioNuevoDTO funcionarioNuevo = new();
-    private FuncionarioNuevoDTO funcionarioEdit = new();
+    private FuncionarioEditDTO funcionarioEdit = new();
 
     [Parameter]
     public EventCallback<FuncionarioNuevoDTO> OnGuardarNuevo { get; set; }
 
     [Parameter]
-    public EventCallback<FuncionarioNuevoDTO> OnGuardarEditado { get; set; }
+    public EventCallback<FuncionarioEditDTO> OnGuardarEditado { get; set; }
 
     [Parameter]
     public EventCallback OnCerrar { get; set; }
@@ -272,7 +272,7 @@
         StateHasChanged();
     }
 
-    public async Task AbrirParaVer(FuncionarioNuevoDTO funcionario)
+    public async Task AbrirParaVer(FuncionarioEditDTO funcionario)
     {
         esRegistroNuevo = false;
         puedeEditar = false;

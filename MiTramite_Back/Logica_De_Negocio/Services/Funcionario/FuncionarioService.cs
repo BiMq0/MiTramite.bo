@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using MiTramite_Back.Acceso_A_Datos.Repositories.FuncionarioRep;
@@ -46,6 +47,34 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.FuncionarioSvc
             {
                 throw new Exception("Error al iniciar sesión del funcionario: " + ex.Message);
             }
+        }
+
+        public async Task<List<FuncionarioRegistroDTO>> ObtenerTodosLosFuncionariosAsync(CancellationToken cancellationToken = default)
+        {
+            var funcionarios = await _repository.ObtenerTodosLosFuncionariosAsync(cancellationToken);
+            return funcionarios;
+        }
+        public async Task<FuncionarioEditDTO> ObtenerFuncionarioPorIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var funcionarioEditDTO = await _repository.ObtenerFuncionarioPorIdAsync(id, cancellationToken);
+            return funcionarioEditDTO;
+        }
+        public async Task<bool> CrearFuncionarioAsync(FuncionarioNuevoDTO funcionarioCreate, CancellationToken cancellationToken = default)
+        {
+            bool funcionarioCreado = false;
+            try
+            {
+                funcionarioCreado = await _repository.CrearFuncionarioAsync(funcionarioCreate, cancellationToken);
+            }
+            catch (DataException dEx)
+            {
+                throw new DataException($"[DataException] Error al crear funcionario: {dEx.InnerException?.Message} {dEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"[Exception] Error al crear funcionario: {ex.Message}");
+            }
+            return funcionarioCreado;
         }
 
         public CookieOptions ConfigurarCookie()

@@ -57,7 +57,7 @@
         await GuardarFuncionarioNuevo(funcionario);
     }
 
-    private async Task OnGuardarEditadoHandler(FuncionarioNuevoDTO funcionario)
+    private async Task OnGuardarEditadoHandler(FuncionarioEditDTO funcionario)
     {
         await GuardarFuncionarioEditado(funcionario);
     }
@@ -76,7 +76,7 @@
         }
     }
 
-    private async Task GuardarFuncionarioEditado(FuncionarioNuevoDTO funcionario)
+    private async Task GuardarFuncionarioEditado(FuncionarioEditDTO funcionario)
     {
         try
         {

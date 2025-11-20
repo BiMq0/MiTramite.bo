@@ -32,5 +32,50 @@ public static class FuncionarioMapper
                 return Results.Problem(detail: ex.Message, statusCode: 500);
             }
         });
+
+        funcionarios.MapPost(FuncionarioEndpoints.REGISTER, async (FuncionarioNuevoDTO funcionarioRegister, IFuncionarioService service) =>
+        {
+            try
+            {
+                var dto = await service.CrearFuncionarioAsync(funcionarioRegister);
+                return Results.Ok(dto);
+            }
+            catch (ArgumentException argEx)
+            {
+                return Results.BadRequest(new { Message = argEx.Message });
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(detail: ex.Message, statusCode: 500);
+            }
+        });
+
+        funcionarios.MapGet(FuncionarioEndpoints.OBTENER_POR_ID, async (int id, IFuncionarioService service) =>
+        {
+            try
+            {
+                var dto = await service.ObtenerFuncionarioPorIdAsync(id);
+                if (dto == null) return Results.NotFound();
+
+                return Results.Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(detail: ex.Message, statusCode: 500);
+            }
+        });
+
+        funcionarios.MapGet(FuncionarioEndpoints.OBTENER_TODOS, async (IFuncionarioService service) =>
+        {
+            try
+            {
+                var dtos = await service.ObtenerTodosLosFuncionariosAsync();
+                return Results.Ok(dtos);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(detail: ex.Message, statusCode: 500);
+            }
+        });
     }
 }

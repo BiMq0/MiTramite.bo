@@ -45,6 +45,37 @@ namespace WAMiTramiteGestion.Services
 
         }
 
+        public async Task<List<FuncionarioRegistroDTO>> ObtenerTodosLosFuncionarios()
+        {
+            var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.OBTENER_TODOS;
+            var response = await _httpClient.GetAsync(url);
+
+            response.EnsureSuccessStatusCode();
+            var funcionarios = await response.Content.ReadFromJsonAsync<List<FuncionarioRegistroDTO>>();
+            return funcionarios!;
+        }
+
+        public async Task<FuncionarioRegistroDTO?> ObtenerFuncionarioPorId(int id)
+        {
+            var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.OBTENER_POR_ID + id;
+            var response = await _httpClient.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<FuncionarioRegistroDTO>();
+            }
+
+            return null;
+        }
+        // TODO: Terminar implementacion de seccion de registro de funcionarios con rol gerente
+
+        public async Task<bool> RegistrarNuevoFuncionario(FuncionarioNuevoDTO funcionarioNuevo)
+        {
+            var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.REGISTER;
+            var response = await _httpClient.PostAsJsonAsync(url, funcionarioNuevo);
+            return response.IsSuccessStatusCode;
+        }
+
         public void CerrarSesion()
         {
             FuncionarioActual = null;
