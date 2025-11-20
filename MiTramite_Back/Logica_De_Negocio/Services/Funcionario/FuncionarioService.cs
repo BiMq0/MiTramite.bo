@@ -12,14 +12,10 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.FuncionarioSvc
     public class FuncionarioService : IFuncionarioService
     {
         private readonly IFuncionarioRepository _repository;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ITokenService _tokenService;
 
-        public FuncionarioService(IFuncionarioRepository repository, IHttpContextAccessor httpContextAccessor, ITokenService tokenService)
+        public FuncionarioService(IFuncionarioRepository repository)
         {
             _repository = repository;
-            _httpContextAccessor = httpContextAccessor ?? throw new InvalidOperationException("No se pudo acceder al HttpContext."); ;
-            _tokenService = tokenService;
         }
 
         public async Task<FuncionarioAccesosDTO> IniciarSesionFuncionario(FuncionarioLoginDTO funcionarioLogin, CancellationToken cancellationToken = default)
@@ -27,12 +23,11 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.FuncionarioSvc
             try
             {
                 var funcionarioAccesosDTO = await _repository.IniciarSesionFuncionarioAsync(funcionarioLogin, cancellationToken);
-
-                if (funcionarioAccesosDTO != null)
+                if (funcionarioAccesosDTO == null)
                 {
-                    var token = await _tokenService.GenerarTokenFuncionario(funcionarioAccesosDTO);
-                    _httpContextAccessor.HttpContext?.Response.Cookies.Append("token", token, ConfigurarCookie());
+                    throw new UnauthorizedAccessException("Credenciales inválidas.");
                 }
+
                 return funcionarioAccesosDTO;
             }
             catch (KeyNotFoundException knfEx)
@@ -75,17 +70,6 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.FuncionarioSvc
                 throw new Exception($"[Exception] Error al crear funcionario: {ex.Message}");
             }
             return funcionarioCreado;
-        }
-
-        public CookieOptions ConfigurarCookie()
-        {
-            return new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddHours(2)
-            };
         }
     }
 }

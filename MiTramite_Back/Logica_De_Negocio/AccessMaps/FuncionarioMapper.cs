@@ -1,6 +1,8 @@
 ﻿using MiTramite_Shared.Endpoints;
 using MiTramite_Shared.DTOs.FuncionarioDTOs;
 using MiTramite_Back.Logica_De_Negocio.Services.FuncionarioSvc;
+using MiTramite_Back.Middleware.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MiTramite_Back.AccessMaps;
 
@@ -10,20 +12,25 @@ public static class FuncionarioMapper
     {
         var funcionarios = app.MapGroup(FuncionarioEndpoints.BASE);
 
-        funcionarios.MapPost(FuncionarioEndpoints.LOGIN, async (FuncionarioLoginDTO funcionarioLogin, IFuncionarioService service) =>
+        funcionarios.MapPost(FuncionarioEndpoints.LOGIN, async (FuncionarioLoginDTO funcionarioLogin, IFuncionarioService service, ITokenService tokenService, HttpContext httpContext) =>
         {
             try
             {
-                var dto = await service.IniciarSesionFuncionario(funcionarioLogin);
-                if (dto == null) return Results.Unauthorized();
+                var funcionarioAccesosDTO = await service.IniciarSesionFuncionario(funcionarioLogin);
+                if (funcionarioAccesosDTO == null)
+                    return Results.Unauthorized();
 
-                return Results.Ok(dto);
+                var token = await tokenService.GenerarTokenFuncionario(funcionarioAccesosDTO);
+
+                httpContext.Response.Cookies.Append("token", token, tokenService.ConfigurarCookie());
+
+                return Results.Ok(funcionarioAccesosDTO);
             }
-            catch (KeyNotFoundException knfEx)
+            catch (KeyNotFoundException)
             {
-                return Results.NotFound(new { Message = knfEx.Message });
+                return Results.NotFound(new { error = "Funcionario no encontrado" });
             }
-            catch (UnauthorizedAccessException uaEx)
+            catch (UnauthorizedAccessException)
             {
                 return Results.Unauthorized();
             }
@@ -38,11 +45,11 @@ public static class FuncionarioMapper
             try
             {
                 var dto = await service.CrearFuncionarioAsync(funcionarioRegister);
-                return Results.Ok(dto);
+                return Results.Created($"{FuncionarioEndpoints.BASE}/1", dto);
             }
             catch (ArgumentException argEx)
             {
-                return Results.BadRequest(new { Message = argEx.Message });
+                return Results.BadRequest(new { error = argEx.Message });
             }
             catch (Exception ex)
             {
@@ -55,7 +62,8 @@ public static class FuncionarioMapper
             try
             {
                 var dto = await service.ObtenerFuncionarioPorIdAsync(id);
-                if (dto == null) return Results.NotFound();
+                if (dto == null)
+                    return Results.NotFound();
 
                 return Results.Ok(dto);
             }

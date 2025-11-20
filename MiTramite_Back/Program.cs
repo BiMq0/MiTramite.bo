@@ -2,7 +2,12 @@ using MiTramite_Back.Handlers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MiTramite_Back.Acceso_A_Datos.Context;
-using MiTramite_Back.Middleware;
+using MiTramite_Back.Middleware.Tokens;
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,12 +21,42 @@ builder.Services.AddDbContext<MiTramiteDbContext>(options =>
    options.UseNpgsql(builder.Configuration.GetConnectionString("DatabaseConnectionString"));
 });
 
-// JWT Configuration
-builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+       options.TokenValidationParameters = new TokenValidationParameters
+       {
+          ValidateIssuer = true,
+          ValidateAudience = true,
+          ValidateLifetime = true,
+          ValidateIssuerSigningKey = true,
+          ValidIssuer = builder.Configuration["Jwt:Issuer"],
+          ValidAudience = builder.Configuration["Jwt:Audience"],
+          IssuerSigningKey = new SymmetricSecurityKey(
+               Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+           ),
+          ClockSkew = TimeSpan.FromMinutes(5)
+       };
+
+       options.Events = new JwtBearerEvents
+       {
+          OnMessageReceived = context =>
+          {
+             if (context.Request.Cookies.ContainsKey("token"))
+             {
+                context.Token = context.Request.Cookies["token"];
+             }
+             return Task.CompletedTask;
+          }
+       };
+    });
+
+builder.Services.AddAuthorization();
 
 // Scopes y Repositories
 builder.Services.AddScopedRepositories();
 builder.Services.AddScopedServices();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 // Middlewares
 builder.Services.AddHttpContextAccessor();
@@ -37,8 +72,18 @@ if (app.Environment.IsDevelopment())
    });
 }
 
-app.AddMiddleware();
+app.UseRouting();
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+   MinimumSameSitePolicy = SameSiteMode.Lax,
+   HttpOnly = HttpOnlyPolicy.Always,
+   Secure = CookieSecurePolicy.SameAsRequest
+});
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapEndpoints();
 app.MapGet("/", () => Results.Redirect("/swagger"));
-app.MapGet("/verify", () => Results.Ok("Token disponible y válido"));
+app.MapGet("/api/verify", [Authorize] async () => Results.Ok("Token disponible y válido"));
 app.Run();

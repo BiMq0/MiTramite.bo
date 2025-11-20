@@ -26,5 +26,10 @@ namespace MiTramite_Shared.DTOs.FuncionarioDTOs
             Telefono = funcionario.Telefono;
             Correo = funcionario.Correo;
         }
+
+        public FuncionarioRegistroDTO()
+        {
+
+        }
     }
 }

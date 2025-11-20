@@ -9,10 +9,8 @@ namespace MiTramite_Back.Middleware.Tokens
 {
     public interface ITokenService
     {
-        Task ValidarToken(HttpContext context, Func<Task> next, string token);
         Task<string> GenerarTokenFuncionario(FuncionarioAccesosDTO funcionarioDto);
         Task<string> GenerarTokenRentista(RentistaCurrentDataDTO funcionarioDto);
-        SigningCredentials ConfigurarCredencialesToken();
-        JwtSecurityToken CrearToken(Claim[] claims, int expirationHours);
+        CookieOptions ConfigurarCookie();
     }
 }

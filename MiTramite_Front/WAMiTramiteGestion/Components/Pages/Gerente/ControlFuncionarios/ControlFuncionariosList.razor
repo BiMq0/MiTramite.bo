@@ -68,10 +68,6 @@
                                     @onclick="() => AbrirFormularioVer(funcionario.IdFuncionario)">
                                     <i class="bi bi-eye"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger" title="Eliminar"
-                                    @onclick="() => ConfirmarEliminar(funcionario.CodigoFuncionario)">
-                                    <i class="bi bi-trash"></i>
-                                </button>
                             </td>
                         </tr>
                     }
@@ -153,8 +149,7 @@
         try
         {
             // Aquí se llamará al servicio para obtener los funcionarios
-            // todosFuncionarios = await FuncionarioService.ObtenerTodos();
-            todosFuncionarios = new List<FuncionarioRegistroDTO>();
+            todosFuncionarios = await FuncionarioService.ObtenerTodosLosFuncionarios();
             ActualizarFiltros();
         }
         catch (Exception ex)
@@ -203,11 +198,5 @@
     private async Task AbrirFormularioVer(long idFuncionario)
     {
         await OnVerFuncionario.InvokeAsync(idFuncionario);
-    }
-
-    private async Task ConfirmarEliminar(string codigoFuncionario)
-    {
-        // Implementar confirmación y eliminación
-        Console.WriteLine($"Eliminar funcionario: {codigoFuncionario}");
     }
 }

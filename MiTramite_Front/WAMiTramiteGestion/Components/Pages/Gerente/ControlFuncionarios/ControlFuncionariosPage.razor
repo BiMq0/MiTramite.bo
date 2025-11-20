@@ -38,12 +38,19 @@
         try
         {
             // Cargar funcionario por ID y convertir a FuncionarioEditDTO
-            // var funcionario = await FuncionarioService.ObtenerPorId(idFuncionario);
-            // var funcionarioEdit = new FuncionarioEditDTOLocal { IdFuncionario = funcionario.IdFuncionario, ... };
-            // if (formulario != null)
-            // {
-            // await formulario.AbrirParaVer(funcionarioEdit);
-            // }
+            var funcionario = await FuncionarioService.ObtenerFuncionarioPorId(idFuncionario);
+            var funcionarioEdit = new FuncionarioEditDTO
+            {
+                IdFuncionario = funcionario.IdFuncionario,
+                Nombres = funcionario.Nombres,
+                ApellidoPaterno = funcionario.ApellidoPaterno,
+                Correo = funcionario.Correo,
+            };
+            if (formulario != null)
+            {
+                await formulario.AbrirParaVer(funcionarioEdit);
+            }
+            StateHasChanged();
         }
         catch (Exception ex)
         {
@@ -67,8 +74,8 @@
         try
         {
             // Implementar lógica de guardado para nuevo funcionario
-            // var resultado = await FuncionarioService.CrearFuncionario(funcionario);
-            // await listaFuncionarios?.CargarFuncionarios();
+            var resultado = await FuncionarioService.RegistrarNuevoFuncionario(funcionario);
+            await listaFuncionarios?.CargarFuncionarios();
         }
         catch (Exception ex)
         {
@@ -92,6 +99,5 @@
 
     private void FormularioCerrado()
     {
-        // Recargar lista si es necesario
     }
 }

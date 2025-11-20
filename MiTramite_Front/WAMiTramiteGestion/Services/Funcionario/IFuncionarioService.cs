@@ -7,8 +7,12 @@ namespace WAMiTramiteGestion.Services
 {
     public interface IFuncionarioService
     {
+        FuncionarioAccesosDTO? FuncionarioActual { get; set; }
         Task<FuncionarioAccesosDTO> IniciarSesion(FuncionarioLoginDTO funcionarioLoginDTO);
         void CerrarSesion();
-        FuncionarioAccesosDTO? FuncionarioActual { get; set; }
+
+        Task<List<FuncionarioRegistroDTO>> ObtenerTodosLosFuncionarios();
+        Task<FuncionarioRegistroDTO?> ObtenerFuncionarioPorId(long id);
+        Task<bool> RegistrarNuevoFuncionario(FuncionarioNuevoDTO funcionarioNuevo);
     }
 }

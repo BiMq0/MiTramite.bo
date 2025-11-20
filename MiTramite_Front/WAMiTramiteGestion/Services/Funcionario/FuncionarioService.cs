@@ -1,6 +1,8 @@
 using MiTramite_Shared.Endpoints;
 using MiTramite_Shared.DTOs.FuncionarioDTOs;
 using System.Net;
+using System.Text.Json;
+using Microsoft.JSInterop;
 namespace WAMiTramiteGestion.Services
 {
     public class FuncionarioService : IFuncionarioService
@@ -55,7 +57,7 @@ namespace WAMiTramiteGestion.Services
             return funcionarios!;
         }
 
-        public async Task<FuncionarioRegistroDTO?> ObtenerFuncionarioPorId(int id)
+        public async Task<FuncionarioRegistroDTO?> ObtenerFuncionarioPorId(long id)
         {
             var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.OBTENER_POR_ID + id;
             var response = await _httpClient.GetAsync(url);
@@ -67,7 +69,6 @@ namespace WAMiTramiteGestion.Services
 
             return null;
         }
-        // TODO: Terminar implementacion de seccion de registro de funcionarios con rol gerente
 
         public async Task<bool> RegistrarNuevoFuncionario(FuncionarioNuevoDTO funcionarioNuevo)
         {

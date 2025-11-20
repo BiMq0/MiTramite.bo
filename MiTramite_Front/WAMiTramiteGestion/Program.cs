@@ -7,7 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped(sp =>
 {
-    return new HttpClient
+    return new HttpClient(
+        new HttpClientHandler
+        {
+            UseCookies = true,
+        }
+    )
     {
         BaseAddress = new Uri(Config.ApiUrl)
     };
