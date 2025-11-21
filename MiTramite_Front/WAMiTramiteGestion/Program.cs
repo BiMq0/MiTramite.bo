@@ -1,44 +1,36 @@
 using WAMiTramiteGestion.Components;
 using WAMiTramiteGestion.Handlers;
+using WAMiTramiteGestion.Services.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Configurar HttpClients para manejar cookies correctamente en Server y WebAssembly
+builder.Services.AddApiHttpClients(Config.ApiUrl);
 
-builder.Services.AddScoped(sp =>
-{
-    return new HttpClient(
-        new HttpClientHandler
-        {
-            UseCookies = true,
-        }
-    )
-    {
-        BaseAddress = new Uri(Config.ApiUrl)
-    };
-});
+// Blazor híbrido
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents();
+
+// Registrar servicios
 builder.Services.AddSingleton<LoginStateService>();
 builder.Services.AddScopedServices();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode();
 
 app.Run();

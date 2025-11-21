@@ -50,7 +50,7 @@ namespace MiTramite_Back.Middleware.Tokens
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
                 signingCredentials: creds,
-                expires: DateTime.UtcNow.AddHours(2),
+                expires: DateTime.UtcNow.AddDays(2),
                 notBefore: DateTime.UtcNow
             );
 
@@ -62,11 +62,12 @@ namespace MiTramite_Back.Middleware.Tokens
             return new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false,
-                SameSite = SameSiteMode.Lax,
+                Secure = true,
+                SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.UtcNow.AddDays(2),
                 Path = "/"
             };
+
         }
     }
 }

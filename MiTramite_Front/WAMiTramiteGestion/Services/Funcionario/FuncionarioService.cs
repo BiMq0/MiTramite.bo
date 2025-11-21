@@ -2,16 +2,16 @@ using MiTramite_Shared.Endpoints;
 using MiTramite_Shared.DTOs.FuncionarioDTOs;
 using System.Net;
 using System.Text.Json;
-using Microsoft.JSInterop;
+using WAMiTramiteGestion.Services.Base;
+
 namespace WAMiTramiteGestion.Services
 {
-    public class FuncionarioService : IFuncionarioService
+    public class FuncionarioService : BaseApiService, IFuncionarioService
     {
-        private readonly HttpClient _httpClient;
         public FuncionarioAccesosDTO? FuncionarioActual { get; set; }
-        public FuncionarioService(HttpClient httpClient)
+
+        public FuncionarioService(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
         {
-            _httpClient = httpClient;
         }
 
         public async Task<FuncionarioAccesosDTO> IniciarSesion(FuncionarioLoginDTO funcionarioLoginDTO)
@@ -19,62 +19,43 @@ namespace WAMiTramiteGestion.Services
             try
             {
                 var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.LOGIN;
-                var response = await _httpClient.PostAsJsonAsync(url, funcionarioLoginDTO);
-                var funcionario = await response.Content.ReadFromJsonAsync<FuncionarioAccesosDTO>();
-                if (response.IsSuccessStatusCode)
+                var funcionario = await PostAsync<FuncionarioAccesosDTO>(url, funcionarioLoginDTO);
+
+                if (funcionario != null)
                 {
                     FuncionarioActual = funcionario;
-                    return FuncionarioActual!;
+                    return FuncionarioActual;
                 }
-                else if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    throw new UnauthorizedAccessException("Credenciales inválidas. Por favor, verifique su usuario y contraseña.");
-                }
-                else if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                    throw new UnauthorizedAccessException("El usuario no fue encontrado. Por favor, verifique sus datos.");
-                }
-                else
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Error al iniciar sesión: {response.StatusCode}, Detalles: {errorContent}");
-                }
+
+                throw new Exception("Error al procesar la respuesta del login.");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw new UnauthorizedAccessException("Credenciales inválidas. Por favor, verifique su usuario y contraseña.");
             }
             catch (HttpRequestException httpEx)
             {
                 throw new Exception("Error de conexión al servidor. Por favor, intente nuevamente más tarde.", httpEx);
             }
-
         }
 
         public async Task<List<FuncionarioRegistroDTO>> ObtenerTodosLosFuncionarios()
         {
             var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.OBTENER_TODOS;
-            var response = await _httpClient.GetAsync(url);
-
-            response.EnsureSuccessStatusCode();
-            var funcionarios = await response.Content.ReadFromJsonAsync<List<FuncionarioRegistroDTO>>();
-            return funcionarios!;
+            var funcionarios = await GetAsync<List<FuncionarioRegistroDTO>>(url);
+            return funcionarios ?? new List<FuncionarioRegistroDTO>();
         }
 
         public async Task<FuncionarioRegistroDTO?> ObtenerFuncionarioPorId(long id)
         {
             var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.OBTENER_POR_ID + id;
-            var response = await _httpClient.GetAsync(url);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<FuncionarioRegistroDTO>();
-            }
-
-            return null;
+            return await GetAsync<FuncionarioRegistroDTO>(url);
         }
 
         public async Task<bool> RegistrarNuevoFuncionario(FuncionarioNuevoDTO funcionarioNuevo)
         {
             var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.REGISTER;
-            var response = await _httpClient.PostAsJsonAsync(url, funcionarioNuevo);
-            return response.IsSuccessStatusCode;
+            return await PostAsync(url, funcionarioNuevo);
         }
 
         public void CerrarSesion()

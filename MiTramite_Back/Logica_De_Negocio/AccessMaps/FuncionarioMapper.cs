@@ -10,7 +10,12 @@ public static class FuncionarioMapper
 {
     public static void Map(this WebApplication app)
     {
-        var funcionarios = app.MapGroup(FuncionarioEndpoints.BASE);
+        var funcionarios = app.MapGroup(FuncionarioEndpoints.BASE)
+    .RequireAuthorization(new AuthorizeAttribute
+    {
+        AuthenticationSchemes = "Bearer"
+    });
+
 
         funcionarios.MapPost(FuncionarioEndpoints.LOGIN, async (FuncionarioLoginDTO funcionarioLogin, IFuncionarioService service, ITokenService tokenService, HttpContext httpContext) =>
         {
@@ -23,7 +28,6 @@ public static class FuncionarioMapper
                 var token = await tokenService.GenerarTokenFuncionario(funcionarioAccesosDTO);
 
                 httpContext.Response.Cookies.Append("token", token, tokenService.ConfigurarCookie());
-
                 return Results.Ok(funcionarioAccesosDTO);
             }
             catch (KeyNotFoundException)
@@ -38,7 +42,7 @@ public static class FuncionarioMapper
             {
                 return Results.Problem(detail: ex.Message, statusCode: 500);
             }
-        });
+        }).AllowAnonymous();
 
         funcionarios.MapPost(FuncionarioEndpoints.REGISTER, async (FuncionarioNuevoDTO funcionarioRegister, IFuncionarioService service) =>
         {
@@ -78,6 +82,7 @@ public static class FuncionarioMapper
             try
             {
                 var dtos = await service.ObtenerTodosLosFuncionariosAsync();
+                Console.WriteLine("Devolviendo funcionarios: " + dtos.Count);
                 return Results.Ok(dtos);
             }
             catch (Exception ex)
@@ -85,5 +90,6 @@ public static class FuncionarioMapper
                 return Results.Problem(detail: ex.Message, statusCode: 500);
             }
         });
+
     }
 }

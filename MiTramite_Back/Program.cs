@@ -59,7 +59,18 @@ builder.Services.AddScopedServices();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 // Middlewares
-builder.Services.AddHttpContextAccessor();
+builder.Services.AddCors(options =>
+{
+   options.AddPolicy("AllowFrontend", policy =>
+   {
+      policy.WithOrigins("http://localhost:5080")
+             .AllowCredentials()
+             .AllowAnyHeader()
+             .AllowAnyMethod();
+   });
+});
+
+
 
 var app = builder.Build();
 
@@ -72,12 +83,16 @@ if (app.Environment.IsDevelopment())
    });
 }
 
+app.UseCors("AllowFrontend");
+
+
+
 app.UseRouting();
 app.UseCookiePolicy(new CookiePolicyOptions
 {
-   MinimumSameSitePolicy = SameSiteMode.Lax,
+   MinimumSameSitePolicy = SameSiteMode.None,
    HttpOnly = HttpOnlyPolicy.Always,
-   Secure = CookieSecurePolicy.SameAsRequest
+   Secure = CookieSecurePolicy.None
 });
 
 app.UseAuthentication();
@@ -85,5 +100,16 @@ app.UseAuthorization();
 
 app.MapEndpoints();
 app.MapGet("/", () => Results.Redirect("/swagger"));
-app.MapGet("/api/verify", [Authorize] async () => Results.Ok("Token disponible y válido"));
+app.MapGet("/api/verify", async () => Results.Ok("Token disponible y válido")).RequireAuthorization(new AuthorizeAttribute
+{
+   AuthenticationSchemes = "Bearer"
+});
+
+
+app.MapPost("/api/logout", (HttpContext context) =>
+{
+   context.Response.Cookies.Delete("token");
+   return Results.Ok("Sesión cerrada");
+}).AllowAnonymous();
+
 app.Run();

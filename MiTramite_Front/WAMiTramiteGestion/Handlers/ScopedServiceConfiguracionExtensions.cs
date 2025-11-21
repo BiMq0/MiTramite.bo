@@ -6,7 +6,7 @@ using WAMiTramiteGestion.Services;
 
 namespace WAMiTramiteGestion.Handlers
 {
-    public static class ServiceCollectionExtensions
+    public static class ScopedServiceConfigurationExtensions
     {
         public static IServiceCollection AddScopedServices(this IServiceCollection services)
         {
