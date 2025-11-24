@@ -14,5 +14,6 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.FuncionarioRep
         Task<List<FuncionarioRegistroDTO>> ObtenerTodosLosFuncionariosAsync(CancellationToken cancellationToken = default);
         Task<FuncionarioEditDTO> ObtenerFuncionarioPorIdAsync(int id, CancellationToken cancellationToken = default);
         Task<bool> CrearFuncionarioAsync(FuncionarioNuevoDTO funcionarioCreate, CancellationToken cancellationToken = default);
+        Task<bool> ActualizarFuncionarioAsync(FuncionarioEditDTO funcionarioEdit, CancellationToken cancellationToken = default);
     }
 }

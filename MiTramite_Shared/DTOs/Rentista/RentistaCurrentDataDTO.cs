@@ -23,5 +23,10 @@ namespace MiTramite_Shared.DTOs.RentistaDTOs
             ApellidoMaterno = rentista.ApellidoMaterno;
             Correo = rentista.Correo;
         }
+
+        public RentistaCurrentDataDTO()
+        {
+
+        }
     }
 }

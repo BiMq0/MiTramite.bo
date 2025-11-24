@@ -1,0 +1,149 @@
+@page "/nuevo-tramite/{idRentista:int}"
+@rendermode InteractiveServer
+@using WAMiTramite.Components
+@using WAMiTramite.Services
+@inject NavigationManager Navigation
+@inject IRentistaService RentistaService
+
+<div class="container-fluid px-0">
+    <div class="row mb-4 mx-0">
+        <div class="col-12">
+            <h5 class="mb-4">
+                <i class="bi bi-file-earmark-plus me-2 text-primary"></i>
+                Trámites Disponibles
+            </h5>
+        </div>
+
+        @if (tramitesDisponibles.Any())
+        {
+            @foreach (var tramite in tramitesDisponibles)
+            {
+                <div class="col-md-6 mb-4">
+                    <TramiteCard Tramite="tramite" OnIniciarTramite="IniciarTramite" />
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    No hay trámites disponibles en este momento.
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Próximamente -->
+    <div class="row mx-0">
+        <div class="col-12">
+            <div class="card border-2 border-dashed">
+                <div class="card-body text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-clock-history text-muted display-4"></i>
+                    </div>
+                    <h5 class="text-muted mb-3">Próximamente</h5>
+                    <p class="text-muted mb-4">
+                        Estamos trabajando en nuevos trámites digitales para brindarte una mejor experiencia.
+                        <br>
+                        Pronto podrás acceder a:
+                    </p>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="p-3">
+                                <i class="bi bi-building text-primary fs-2 mb-2"></i>
+                                <div class="small text-muted">Licencias de Funcionamiento</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3">
+                                <i class="bi bi-house text-primary fs-2 mb-2"></i>
+                                <div class="small text-muted">Permisos de Construcción</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3">
+                                <i class="bi bi-file-earmark-text text-primary fs-2 mb-2"></i>
+                                <div class="small text-muted">Certificados Municipales</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button class="btn btn-outline-primary" disabled>
+                            <i class="bi bi-bell me-2"></i>
+                            Notificarme cuando estén disponibles
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .card {
+        border: none;
+        border-radius: 12px;
+    }
+
+    .border-dashed {
+        border-style: dashed !important;
+        border-color: #dee2e6 !important;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public int IdRentista { get; set; }
+
+    private List<TramiteCard.TramiteDisponibleDTO> tramitesDisponibles = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"NuevoTramite cargado para rentista: {IdRentista}");
+        // TODO: En producción, obtendríamos del servicio: await RentistaService.ObtenerTramites(IdRentista);
+        CargarTramitesDemo();
+    }
+
+    private void CargarTramitesDemo()
+    {
+        tramitesDisponibles = new List<TramiteCard.TramiteDisponibleDTO>
+{
+new()
+{
+IdTipoTramite = 1,
+NombreTramite = "Afiliación de Trabajador Dependiente",
+DescripcionTramite = "Registra a tu trabajador dependiente en el sistema municipal para acceder a beneficios laborales y sociales.",
+DiasEstimados = 5,
+Estado = "Disponible",
+ArchivosRequeridos = new List<string> { "Cédula de identidad", "Contrato de trabajo" }
+},
+new()
+{
+IdTipoTramite = 2,
+NombreTramite = "Acceso a Renta Dignidad",
+DescripcionTramite = "Solicita el acceso al beneficio de Renta Dignidad para adultos mayores de 60 años.",
+DiasEstimados = 7,
+Estado = "Disponible",
+ArchivosRequeridos = new List<string> { "Cédula de identidad", "Certificado de nacimiento" }
+}
+};
+    }
+
+    private void IniciarTramite(int idTipoTramite)
+    {
+        Console.WriteLine($"Iniciando trámite con ID: {idTipoTramite}");
+        Navigation.NavigateTo($"/detalles-tramite/{IdRentista}/{idTipoTramite}");
+    }
+}

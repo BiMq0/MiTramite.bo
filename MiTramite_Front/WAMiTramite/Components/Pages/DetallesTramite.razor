@@ -1,0 +1,252 @@
+@page "/detalles-tramite/{idRentista:int}/{idTipoTramite:int}"
+@rendermode InteractiveServer
+@using WAMiTramite.Components.Modals
+@using WAMiTramite.Services
+@inject NavigationManager Navigation
+@inject IRentistaService RentistaService
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <a href="/nuevo-tramite/@IdRentista" class="btn btn-outline-primary btn-sm mb-3">
+                <i class="bi bi-arrow-left me-1"></i>
+                Volver
+            </a>
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        @tramite?.NombreTramite
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <p class="text-muted">@tramite?.DescripcionTramite</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        Tiempo estimado: @tramite?.DiasEstimados días
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <h6 class="mb-3">Archivos Requeridos</h6>
+
+                    @if (tramite?.ArchivosRequeridos?.Count > 0)
+                    {
+                        @for (int i = 0; i < tramite.ArchivosRequeridos.Count; i++)
+                        {
+                            var archivo = tramite.ArchivosRequeridos[i];
+                            <div class="card mb-3">
+                                <div class="card-body p-3">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-file-pdf text-danger fs-5 me-2"></i>
+                                                <div>
+                                                    <div class="fw-semibold">@archivo</div>
+                                                    <small class="text-muted">Máximo: 5 MB | Formato: PDF</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            @if (archivosSubidos.Count > i && archivosSubidos[i] != null)
+                                            {
+                                                <div class="badge bg-success">
+                                                    <i class="bi bi-check-circle me-1"></i>
+                                                    Archivo cargado
+                                                </div>
+                                                <button class="btn btn-sm btn-outline-danger ms-2"
+                                                    @onclick="@((MouseEventArgs e) => EliminarArchivo(i))">
+                                                    <i class="bi bi-trash me-1"></i>
+                                                    Cambiar
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <input type="file" accept=".pdf" class="form-control form-control-sm"
+                                                    @onchange="@((ChangeEventArgs e) => CargarArchivoHandler(e, i))" />
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    <div class="mt-4">
+                        <button class="btn btn-primary" @onclick="EnviarDocumentos"
+                            disabled="@(!TodosArchivosSubidos())">
+                            <i class="bi bi-cloud-upload me-2"></i>
+                            Enviar Documentos
+                        </button>
+                        <a href="/nuevo-tramite" class="btn btn-outline-secondary ms-2">
+                            <i class="bi bi-x-circle me-1"></i>
+                            Cancelar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<ConfirmModal Visible="@mostrarConfirmacion" Title="Confirmar envío"
+    Message="¿Está seguro que desea enviar todos los documentos? Una vez enviados no podrá modificarlos."
+    ConfirmText="Enviar" CancelText="Cancelar" OnConfirm="ConfirmarEnvio" OnCancel="CancelarEnvio" />
+
+<OperationStatusModal Visible="@mostrarResultado" IsSuccess="@operacionExitosa"
+    Title="@(operacionExitosa ? "¡Éxito!" : "Error")" Message="@mensajeResultado" OnClose="CerrarResultado" />
+
+@code {
+    [Parameter]
+    public int IdRentista { get; set; }
+
+    [Parameter]
+    public int IdTipoTramite { get; set; }
+
+    private TramiteDetalleDTO? tramite;
+    private List<byte[]?> archivosSubidos = new();
+    private bool mostrarConfirmacion = false;
+    private bool mostrarResultado = false;
+    private bool operacionExitosa = false;
+    private string mensajeResultado = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"DetallesTramite cargado para rentista: {IdRentista}, tramite: {IdTipoTramite}");
+        // TODO: En producción: tramite = await RentistaService.ObtenerTramitePorId(IdRentista, IdTipoTramite);
+        CargarTramiteDemo();
+
+        if (tramite?.ArchivosRequeridos?.Count > 0)
+        {
+            archivosSubidos = Enumerable.Range(0, tramite.ArchivosRequeridos.Count)
+            .Select(_ => (byte[]?)null)
+            .ToList();
+        }
+    }
+
+    private void CargarTramiteDemo()
+    {
+        tramite = IdTipoTramite == 1
+        ? new TramiteDetalleDTO
+        {
+            IdTipoTramite = 1,
+            NombreTramite = "Afiliación de Trabajador Dependiente",
+            DescripcionTramite = "Registra a tu trabajador dependiente en el sistema municipal para acceder a beneficios laborales y sociales.",
+            DiasEstimados = 5,
+            ArchivosRequeridos = new List<string> { "Carnet de Identidad", "Afiliación de Trabajador" }
+        }
+        : new TramiteDetalleDTO
+        {
+            IdTipoTramite = 2,
+            NombreTramite = "Acceso a Renta Dignidad",
+            DescripcionTramite = "Solicita el acceso al beneficio de Renta Dignidad para adultos mayores de 60 años.",
+            DiasEstimados = 7,
+            ArchivosRequeridos = new List<string> { "Carnet de Identidad", "Certificado de Nacimiento" }
+        };
+    }
+
+    private async Task CargarArchivo(ChangeEventArgs e, int index)
+    {
+        var file = (e.Value as IBrowserFile);
+        if (file != null)
+        {
+            if (file.ContentType != "application/pdf")
+            {
+                mensajeResultado = "Solo se permiten archivos PDF.";
+                operacionExitosa = false;
+                mostrarResultado = true;
+                return;
+            }
+
+            const long maxSize = 5 * 1024 * 1024;
+            if (file.Size > maxSize)
+            {
+                mensajeResultado = "El archivo no puede superar 5 MB.";
+                operacionExitosa = false;
+                mostrarResultado = true;
+                return;
+            }
+
+            using (var stream = file.OpenReadStream(maxSize))
+            {
+                byte[] buffer = new byte[file.Size];
+                await stream.ReadAsync(buffer, 0, (int)file.Size);
+                archivosSubidos[index] = buffer;
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task CargarArchivoHandler(ChangeEventArgs e, int index)
+    {
+        await CargarArchivo(e, index);
+    }
+
+    private void EliminarArchivo(int index)
+    {
+        archivosSubidos[index] = null;
+        StateHasChanged();
+    }
+
+    private bool TodosArchivosSubidos()
+    {
+        return tramite?.ArchivosRequeridos?.Count > 0 &&
+        archivosSubidos.Count == tramite.ArchivosRequeridos.Count &&
+        archivosSubidos.All(a => a != null);
+    }
+
+    private void EnviarDocumentos()
+    {
+        mostrarConfirmacion = true;
+    }
+
+    private void CancelarEnvio()
+    {
+        mostrarConfirmacion = false;
+    }
+
+    private async Task ConfirmarEnvio()
+    {
+        mostrarConfirmacion = false;
+
+        try
+        {
+            operacionExitosa = true;
+            mensajeResultado = "Los documentos han sido enviados correctamente. Tu solicitud será procesada en los próximos días.";
+            mostrarResultado = true;
+
+            await Task.Delay(2000);
+            Navigation.NavigateTo($"/mis-tramites/{IdRentista}");
+        }
+        catch (Exception ex)
+        {
+            operacionExitosa = false;
+            mensajeResultado = $"Hubo un error al enviar los documentos: {ex.Message}";
+            mostrarResultado = true;
+        }
+    }
+
+    private void CerrarResultado()
+    {
+        mostrarResultado = false;
+    }
+
+    private class TramiteDetalleDTO
+    {
+        public int IdTipoTramite { get; set; }
+        public string NombreTramite { get; set; } = string.Empty;
+        public string DescripcionTramite { get; set; } = string.Empty;
+        public int DiasEstimados { get; set; }
+        public List<string>? ArchivosRequeridos { get; set; }
+    }
+}

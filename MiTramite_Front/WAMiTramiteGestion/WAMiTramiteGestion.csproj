@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\MiTramite_Shared\MiTramite_Shared.csproj" />
+    <ProjectReference Include="..\..\MiTramite_Domain\MiTramite_Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

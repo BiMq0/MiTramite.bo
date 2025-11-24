@@ -23,7 +23,7 @@ namespace MiTramite_Shared.DTOs.FuncionarioDTOs
 
         [Required(ErrorMessage = "La fecha de nacimiento del funcionario es obligatoria.")]
         [MayorDeEdad(18, ErrorMessage = "El funcionario debe ser mayor de edad.")]
-        public DateTime? FechaNacimiento { get; set; } = DateTime.Now;
+        public DateTime FechaNacimiento { get; set; } = DateTime.Now;
 
         [Required(ErrorMessage = "El correo del funcionario es obligatorio.")]
         [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "El correo del funcionario no es válido.")]

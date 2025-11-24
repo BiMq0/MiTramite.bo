@@ -1,4 +1,8 @@
+@page "/mis-tramites/{idRentista:int}"
 @rendermode InteractiveServer
+@using WAMiTramite.Components.Modals
+@using WAMiTramite.Services
+@inject IRentistaService RentistaService
 
 <div class="container-fluid">
     <!-- Filtros y búsqueda -->
@@ -153,64 +157,92 @@
     </div>
 </div>
 
+<!-- Modals -->
+<ConfirmModal
+    Visible="@mostrarConfirmacion"
+    Title="Confirmar acción"
+    Message="@mensajeConfirmacion"
+    ConfirmText="Aceptar"
+    CancelText="Cancelar"
+    OnConfirm="ConfirmarAccion"
+    OnCancel="CancelarAccion" />
+
+<OperationStatusModal
+    Visible="@mostrarResultado"
+    IsSuccess="@operacionExitosa"
+    Title="@(operacionExitosa ? "¡Éxito!" : "Error")"
+    Message="@mensajeResultado"
+    OnClose="CerrarResultado" />
+
 @code {
+    [Parameter]
+    public int IdRentista { get; set; }
+
     private string filtroTexto = string.Empty;
     private string filtroEstado = string.Empty;
     private List<TramiteViewModel> tramites = new();
     private List<TramiteViewModel> tramitesFiltrados = new();
+    private bool mostrarConfirmacion = false;
+    private bool mostrarResultado = false;
+    private bool operacionExitosa = false;
+    private string mensajeConfirmacion = string.Empty;
+    private string mensajeResultado = string.Empty;
+    private string accionActual = string.Empty;
+    private string idSolicitudActual = string.Empty;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine($"MisTramites cargado para rentista: {IdRentista}");
+        // TODO: En producción: tramites = await RentistaService.ObtenerTramites(IdRentista);
         CargarTramitesDemo();
         tramitesFiltrados = tramites;
     }
 
     private void CargarTramitesDemo()
     {
-        // Datos de demostración - en producción vendrían del backend
         tramites = new List<TramiteViewModel>
-{
-new() {
-IdSolicitud = "TR-2024-001",
-TipoTramite = "Afiliación de Trabajador Dependiente",
-FuncionarioAsignado = "María González Pérez",
-Fecha = DateTime.Now.AddDays(-5),
-Estado = "En Proceso",
-Reasignado = false
-},
-new() {
-IdSolicitud = "TR-2024-002",
-TipoTramite = "Acceso a Renta Dignidad",
-FuncionarioAsignado = "Carlos Mamani Quispe",
-Fecha = DateTime.Now.AddDays(-10),
-Estado = "Completado",
-Reasignado = true
-},
-new() {
-IdSolicitud = "TR-2024-003",
-TipoTramite = "Afiliación de Trabajador Dependiente",
-FuncionarioAsignado = "Ana Lucia Vargas",
-Fecha = DateTime.Now.AddDays(-15),
-Estado = "Pendiente",
-Reasignado = false
-},
-new() {
-IdSolicitud = "TR-2024-004",
-TipoTramite = "Acceso a Renta Dignidad",
-FuncionarioAsignado = "Jorge Luis Mendoza",
-Fecha = DateTime.Now.AddDays(-20),
-Estado = "En Revisión",
-Reasignado = false
-},
-new() {
-IdSolicitud = "TR-2024-005",
-TipoTramite = "Afiliación de Trabajador Dependiente",
-FuncionarioAsignado = "Patricia Condori Silva",
-Fecha = DateTime.Now.AddDays(-25),
-Estado = "Rechazado",
-Reasignado = true
-}
-};
+        {
+            new() {
+                IdSolicitud = "TR-2024-001",
+                TipoTramite = "Afiliación de Trabajador Dependiente",
+                FuncionarioAsignado = "María González Pérez",
+                Fecha = DateTime.Now.AddDays(-5),
+                Estado = "En Proceso",
+                Reasignado = false
+            },
+            new() {
+                IdSolicitud = "TR-2024-002",
+                TipoTramite = "Acceso a Renta Dignidad",
+                FuncionarioAsignado = "Carlos Mamani Quispe",
+                Fecha = DateTime.Now.AddDays(-10),
+                Estado = "Completado",
+                Reasignado = true
+            },
+            new() {
+                IdSolicitud = "TR-2024-003",
+                TipoTramite = "Afiliación de Trabajador Dependiente",
+                FuncionarioAsignado = "Ana Lucia Vargas",
+                Fecha = DateTime.Now.AddDays(-15),
+                Estado = "Pendiente",
+                Reasignado = false
+            },
+            new() {
+                IdSolicitud = "TR-2024-004",
+                TipoTramite = "Acceso a Renta Dignidad",
+                FuncionarioAsignado = "Jorge Luis Mendoza",
+                Fecha = DateTime.Now.AddDays(-20),
+                Estado = "En Revisión",
+                Reasignado = false
+            },
+            new() {
+                IdSolicitud = "TR-2024-005",
+                TipoTramite = "Afiliación de Trabajador Dependiente",
+                FuncionarioAsignado = "Patricia Condori Silva",
+                Fecha = DateTime.Now.AddDays(-25),
+                Estado = "Rechazado",
+                Reasignado = true
+            }
+        };
     }
 
     private void FiltrarTramites()
@@ -254,29 +286,83 @@ Reasignado = true
 
     private void ActualizarTramites()
     {
-        // TODO: Implementar actualización desde el backend
         Console.WriteLine("Actualizando trámites...");
-        // Simular actualización
         CargarTramitesDemo();
         FiltrarTramites();
     }
 
     private void VerDetalle(string idSolicitud)
     {
-        // TODO: Implementar navegación a página de detalle
-        Console.WriteLine($"Ver detalle del trámite: {idSolicitud}");
+        idSolicitudActual = idSolicitud;
+        accionActual = "ver-detalle";
+        mensajeConfirmacion = $"¿Deseas ver los detalles del trámite {idSolicitud}?";
+        mostrarConfirmacion = true;
     }
 
     private void DescargarResultado(string idSolicitud)
     {
-        // TODO: Implementar descarga de resultado
-        Console.WriteLine($"Descargar resultado del trámite: {idSolicitud}");
+        idSolicitudActual = idSolicitud;
+        accionActual = "descargar";
+        mensajeConfirmacion = $"¿Deseas descargar el resultado del trámite {idSolicitud}?";
+        mostrarConfirmacion = true;
     }
 
     private void CompletarDocumentos(string idSolicitud)
     {
-        // TODO: Implementar navegación a completar documentos
-        Console.WriteLine($"Completar documentos del trámite: {idSolicitud}");
+        idSolicitudActual = idSolicitud;
+        accionActual = "completar-docs";
+        mensajeConfirmacion = $"¿Deseas completar documentos para el trámite {idSolicitud}?";
+        mostrarConfirmacion = true;
+    }
+
+    private void CancelarAccion()
+    {
+        mostrarConfirmacion = false;
+        accionActual = string.Empty;
+        idSolicitudActual = string.Empty;
+    }
+
+    private async Task ConfirmarAccion()
+    {
+        mostrarConfirmacion = false;
+
+        try
+        {
+            switch (accionActual)
+            {
+                case "ver-detalle":
+                    operacionExitosa = true;
+                    mensajeResultado = $"Abriendo detalles del trámite {idSolicitudActual}...";
+                    break;
+                case "descargar":
+                    operacionExitosa = true;
+                    mensajeResultado = $"Descargando resultado del trámite {idSolicitudActual}...";
+                    break;
+                case "completar-docs":
+                    operacionExitosa = true;
+                    mensajeResultado = $"Redirigiendo para completar documentos...";
+                    break;
+                default:
+                    operacionExitosa = false;
+                    mensajeResultado = "Acción no reconocida.";
+                    break;
+            }
+            mostrarResultado = true;
+        }
+        catch (Exception ex)
+        {
+            operacionExitosa = false;
+            mensajeResultado = $"Hubo un error: {ex.Message}";
+            mostrarResultado = true;
+        }
+
+        accionActual = string.Empty;
+        idSolicitudActual = string.Empty;
+    }
+
+    private void CerrarResultado()
+    {
+        mostrarResultado = false;
     }
 
     public class TramiteViewModel
@@ -291,7 +377,6 @@ Reasignado = true
 }
 
 <style>
-    /* Custom badge styles with gradients */
     .badge-success {
         background: linear-gradient(135deg, #38a169, #48bb78) !important;
         color: white;
@@ -317,53 +402,8 @@ Reasignado = true
         color: white;
     }
 
-    /* Responsive styles for MisTramites */
-    @@media (max-width: 992px) {
-
-        .row.mb-4 .col-md-8,
-        .row.mb-4 .col-md-4 {
-            margin-bottom: 1rem;
-        }
-
-        .input-group {
-            margin-bottom: 1rem;
-        }
-    }
-
     @@media (max-width: 768px) {
-        .container-fluid {
-            padding: 0.5rem;
-        }
 
-        .card-header {
-            padding: 0.75rem;
-        }
-
-        .card-header .d-flex {
-            flex-direction: column;
-            align-items: flex-start !important;
-        }
-
-        .card-header .d-flex>button {
-            margin-top: 0.5rem;
-            width: 100%;
-        }
-
-        .table-responsive {
-            font-size: 0.875rem;
-        }
-
-        .btn-group {
-            flex-direction: column;
-            width: 100%;
-        }
-
-        .btn-group .btn {
-            border-radius: 0.25rem !important;
-            margin-bottom: 0.25rem;
-        }
-
-        /* Hide less important columns on mobile */
         .table th:nth-child(3),
         .table th:nth-child(4),
         .table th:nth-child(6),
@@ -372,79 +412,5 @@ Reasignado = true
         .table td:nth-child(6) {
             display: none;
         }
-    }
-
-    @@media (max-width: 576px) {
-        .card-header h6 {
-            font-size: 0.9rem;
-        }
-
-        .table th,
-        .table td {
-            padding: 0.5rem 0.25rem;
-            font-size: 0.8rem;
-        }
-
-        /* Show only essential columns on very small screens */
-        .table th:nth-child(2),
-        .table td:nth-child(2) {
-            max-width: 120px;
-            word-wrap: break-word;
-        }
-
-        .fw-semibold {
-            font-size: 0.75rem;
-        }
-
-        .badge {
-            font-size: 0.65rem;
-            padding: 0.25rem 0.4rem;
-        }
-
-        code {
-            font-size: 0.7rem;
-        }
-
-        /* Stack filters vertically */
-        .row.mb-4 {
-            flex-direction: column;
-        }
-
-        .input-group {
-            margin-bottom: 0.75rem;
-        }
-
-        .form-select {
-            margin-bottom: 0.75rem;
-        }
-    }
-
-    /* Button hover effects */
-    .btn-group .btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        transition: all 0.2s ease;
-    }
-
-    /* Enhanced table row hover */
-    .table-hover tbody tr:hover {
-        background-color: rgba(26, 54, 93, 0.05);
-    }
-
-    /* Improved badge visibility */
-    .badge {
-        font-weight: 600;
-        font-size: 0.75rem;
-        padding: 0.4rem 0.6rem;
-        border-radius: 0.5rem;
-    }
-
-    /* Better code styling */
-    code.text-primary {
-        background-color: rgba(26, 54, 93, 0.1);
-        color: #1a365d !important;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-weight: 600;
     }
 </style>

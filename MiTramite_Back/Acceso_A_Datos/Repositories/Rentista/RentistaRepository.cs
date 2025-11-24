@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MiTramite_Back.Acceso_A_Datos.Context;
 using MiTramite_Domain.Entities;
 using MiTramite_Shared.DTOs.RentistaDTOs;
+using Npgsql;
 
 namespace MiTramite_Back.Acceso_A_Datos.Repositories.RentistaRep
 {
@@ -13,24 +14,37 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.RentistaRep
         {
             _context = context;
         }
+
+        // AUTENTICACIÓN
         public async Task<bool> RegistrarRentistaAsync(RentistaSignupDTO rentistaSignup, CancellationToken cancellationToken = default)
         {
-            var nuevoRentista = new Rentista
+            try
             {
-                CI = rentistaSignup.CI!,
-                Nombres = rentistaSignup.Nombres!,
-                ApellidoPaterno = rentistaSignup.ApellidoPaterno!,
-                ApellidoMaterno = rentistaSignup.ApellidoMaterno!,
-                FechaNacimiento = rentistaSignup.FechaNacimiento,
-                Correo = rentistaSignup.Correo!,
-                PasswordHash = rentistaSignup.Password!,
-            };
+                var nuevoRentista = new Rentista
+                {
+                    CI = rentistaSignup.CI!,
+                    Nombres = rentistaSignup.Nombres!,
+                    ApellidoPaterno = rentistaSignup.ApellidoPaterno!,
+                    ApellidoMaterno = rentistaSignup.ApellidoMaterno!,
+                    Telefono = rentistaSignup.Telefono!,
+                    FechaNacimiento = rentistaSignup.FechaNacimiento,
+                    Correo = rentistaSignup.Correo!,
+                    PasswordHash = rentistaSignup.Password!,
+                };
 
-            await _context.Rentistas.AddAsync(nuevoRentista, cancellationToken);
-            var result = await _context.SaveChangesAsync(cancellationToken);
+                await _context.Rentistas.AddAsync(nuevoRentista, cancellationToken);
+                var result = await _context.SaveChangesAsync(cancellationToken);
 
-            return result > 0;
+                return result > 0;
+            }
+            catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx)
+            {
+                if (pgEx.SqlState == "23505") // Unique violation
+                    throw new InvalidOperationException($"El CI '{rentistaSignup.CI}' ya está registrado", ex);
+                throw;
+            }
         }
+
         public async Task<Rentista> IniciarSesionRentistaAsync(RentistaLoginDTO rentistaLogin, CancellationToken cancellationToken = default)
         {
             var rentista = await _context.Rentistas
@@ -48,6 +62,13 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.RentistaRep
                 throw new UnauthorizedAccessException("Credenciales inválidas.");
             }
             return rentista;
+        }
+
+        // TRÁMITES
+        public async Task<bool> CrearSolicitudTramiteAsync(int idRentista, int idTipoTramite, CancellationToken cancellationToken = default)
+        {
+            // TODO: Implementar - Crear nueva SolicitudTramite
+            throw new NotImplementedException();
         }
     }
 }

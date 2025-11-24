@@ -15,8 +15,14 @@ namespace MiTramite_Back.Handlers
         {
             using (var scope = app.Services.CreateScope())
             {
+                // Autenticación
                 FuncionarioMapper.Map(app);
                 RentistaMapper.Map(app);
+
+                // Archivos y Trámites
+                ArchivoMapper.Map(app);
+                TipoArchivoMapper.Map(app);
+                TipoTramiteMapper.Map(app);
             }
         }
     }

@@ -5,8 +5,8 @@
 @rendermode InteractiveServer
 
 <div class="container py-5">
-    <div class="position-fixed"><button class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/"))"><i
-                class="bi bi-arrow-left"></i> Volver</button>
+    <div><button class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/"))"><i class="bi bi-arrow-left"></i>
+            Volver</button>
     </div>
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
@@ -143,7 +143,7 @@
         {
 
             var result = await RentistaService.IniciarSesionRentista(loginModel);
-            if (result)
+            if (result != null)
             {
                 Console.WriteLine($"Login exitoso: {loginModel.Correo}");
                 Navigation.NavigateTo("/dashboard");

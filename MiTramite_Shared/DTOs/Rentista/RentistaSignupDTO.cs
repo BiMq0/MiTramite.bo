@@ -27,9 +27,13 @@ namespace MiTramite_Shared.DTOs.RentistaDTOs
 
 
         [Required(ErrorMessage = "La fecha de nacimiento es obligatoria.")]
-        [MayorDeEdad(18)]
+        [LimiteEdad(100, ErrorMessage = "La edad máxima permitida es de 100 años.")]
+        [MayorDeEdad(18, ErrorMessage = "El rentista debe ser mayor de edad.")]
         public DateTime FechaNacimiento { get; set; } = DateTime.Now;
 
+        [Required(ErrorMessage = "El teléfono del funcionario es obligatorio.")]
+        [RegularExpression(@"^[67]+[0-9]{7,}$", ErrorMessage = "El teléfono del funcionario solo puede contener números y debe comenzar con 6 o 7 con un máximo de 8 dígitos.")]
+        public string Telefono { get; set; }
 
         [Required(ErrorMessage = "El correo electrónico es obligatorio.")]
         [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "El correo electrónico no es válido.")]

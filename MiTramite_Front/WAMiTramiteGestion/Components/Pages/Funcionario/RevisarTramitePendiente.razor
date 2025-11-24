@@ -1,0 +1,332 @@
+@page "/funcionario/tramites-pendientes/revisar/{IdSolicitudTramite:long}"
+<!-- #region DATOS DE EJEMPLO TEMPORALES - CAMBIAR A MiTramite_Shared.DTOs.TramiteDTOs CUANDO ESTÉ DISPONIBLE -->
+@using MiTramite_Front.Services.Tramite
+<!-- #endregion -->
+@using MiTramite_Domain.Constants
+@inject Services.ITramiteService TramiteService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Revisar Trámite Pendiente</PageTitle>
+
+<div class="container-fluid px-4" style="max-height: calc(100vh - 120px); overflow-y: auto;">
+    <div class="mb-4 mt-3">
+        <button class="btn btn-outline-secondary btn-sm mb-3" @onclick="VolverATramitesPendientes">
+            <i class="bi bi-arrow-left me-2"></i>Volver
+        </button>
+        <h2 class="fw-bold text-primary mb-1">
+            <i class="bi bi-file-earmark-check me-2"></i>Revisar Trámite
+        </h2>
+        <p class="text-muted">Revisa los detalles y documentos del trámite</p>
+    </div>
+
+    #region Datos de Ejemplo
+
+    <div class="row">
+        <!-- Información del Trámite -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-bottom py-3">
+                    <h5 class="fw-bold text-primary mb-0">
+                        <i class="bi bi-info-circle me-2"></i>Información del Trámite
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <label class="text-muted small">ID Trámite</label>
+                            <p class="fw-bold">#TRX-2025-001</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="text-muted small">Tipo de Trámite</label>
+                            <p class="fw-bold">Renta Dignidad</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <label class="text-muted small">Fecha Solicitud</label>
+                            <p class="fw-bold">23/11/2025</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="text-muted small">Fecha Conclusión</label>
+                            <p class="fw-bold">30/11/2025</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small">Estado</label>
+                        <div>
+                            <span class="badge"
+                                style="background-color: #F0AD4E; color: #333; font-size: 0.9rem; padding: 0.5rem 0.75rem;">
+                                Pendiente
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Nota:</strong> Este trámite está pendiente de aprobación
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del Rentista -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-bottom py-3">
+                    <h5 class="fw-bold text-primary mb-0">
+                        <i class="bi bi-person me-2"></i>Información del Rentista
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="text-muted small">Nombre Completo</label>
+                        <p class="fw-bold">Juan Carlos Pérez López</p>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <label class="text-muted small">Documento</label>
+                            <p class="fw-bold">12345678</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="text-muted small">Teléfono</label>
+                            <p class="fw-bold">+591 76543210</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small">Email</label>
+                        <p class="fw-bold">juan.perez@email.com</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small">Dirección</label>
+                        <p class="fw-bold">Calle Principal 123, La Paz, Bolivia</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archivos Subidos -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-light border-bottom py-3">
+            <h5 class="fw-bold text-primary mb-0">
+                <i class="bi bi-file-pdf me-2"></i>Documentos Subidos
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card border border-light">
+                        <div class="card-body">
+                            <i class="bi bi-file-pdf text-danger me-2"></i>
+                            <strong>Documento_Identidad.pdf</strong>
+                            <small class="text-muted d-block">2.5 MB</small>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-outline-primary" @onclick="VerArchivo1">
+                                    <i class="bi bi-eye me-1"></i> Ver
+                                </button>
+                                <a href="#" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-download me-1"></i> Descargar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card border border-light">
+                        <div class="card-body">
+                            <i class="bi bi-file-pdf text-danger me-2"></i>
+                            <strong>Solicitud_Renta_Dignidad.pdf</strong>
+                            <small class="text-muted d-block">1.8 MB</small>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-outline-primary" @onclick="VerArchivo2">
+                                    <i class="bi bi-eye me-1"></i> Ver
+                                </button>
+                                <a href="#" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-download me-1"></i> Descargar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TODO: Cargar archivos con TramiteService.ObtenerArchivosTramite(IdSolicitudTramite)
+            @if (archivos.Count > 0)
+            {
+                        <div class="row">
+                            @foreach (var archivo in archivos)
+                            {
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card border border-light">
+                                                <div class="card-body">
+                                                    <i class="bi bi-file-pdf text-danger me-2"></i>
+                                                    <strong>@archivo.NombreArchivo</strong>
+                                                    <small class="text-muted d-block">@archivo.TamanioArchivo KB</small>
+                                                    <div class="mt-2">
+                                                        <button class="btn btn-sm btn-outline-primary" @onclick="() => VerArchivoEnIframe(archivo)">
+                                                            <i class="bi bi-eye me-1"></i> Ver
+                                                        </button>
+                                                        <a href="@archivo.UrlDescarga" class="btn btn-sm btn-outline-secondary">
+                                                            <i class="bi bi-download me-1"></i> Descargar
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                            }
+                        </div>
+            }
+            else
+            {
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            No hay archivos subidos para este trámite
+                        </div>
+            }
+            -->
+        </div>
+    </div>
+
+    #endregion
+
+    <!-- Vista Previa de PDF -->
+    <!-- TODO: Mostrar iframe del PDF seleccionado
+    @if (!string.IsNullOrEmpty(urlPdfVisualizando))
+    {
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-light border-bottom py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold text-primary mb-0">
+                                <i class="bi bi-eye me-2"></i>Visualización del Documento
+                            </h5>
+                            <button class="btn btn-sm btn-outline-secondary" @onclick="CerrarVistaPrevia">
+                                <i class="bi bi-x me-1"></i> Cerrar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <iframe src="@urlPdfVisualizando" style="width: 100%; height: 600px; border: none;"></iframe>
+                    </div>
+                </div>
+    }
+    -->
+
+    <!-- Botones de Acción -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-light border-bottom py-3">
+            <h5 class="fw-bold text-primary mb-0">
+                <i class="bi bi-check-circle me-2"></i>Acción
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="d-flex gap-3">
+                <button class="btn btn-success" @onclick="MostrarModalAprobar">
+                    <i class="bi bi-check-circle me-2"></i>Aprobar Trámite
+                </button>
+                <button class="btn btn-danger" @onclick="MostrarModalRechazar">
+                    <i class="bi bi-x-circle me-2"></i>Rechazar Trámite
+                </button>
+                <button class="btn btn-outline-secondary" @onclick="VolverATramitesPendientes">
+                    <i class="bi bi-arrow-left me-2"></i>Volver
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TODO: Modal para rechazar con motivo -->
+<!-- Modal de Rechazo (implementar con componente separado) -->
+
+@code {
+    [Parameter]
+    public long IdSolicitudTramite { get; set; }
+
+    // TODO: Variables para datos
+    // private DetallesTramiteDTO tramiteDetalle = new();
+    // private List<ArchivoTramiteDTO> archivos = new();
+    private string? urlPdfVisualizando = null;
+
+    private void VolverATramitesPendientes()
+    {
+        NavigationManager.NavigateTo("/funcionario/tramites-pendientes");
+    }
+
+    private void MostrarModalAprobar()
+    {
+        // TODO: Mostrar modal de confirmación de aprobación
+    }
+
+    private void MostrarModalRechazar()
+    {
+        // TODO: Mostrar modal para ingresar motivo de rechazo
+    }
+
+    private void MostrarVistaPrevia(string nombreArchivo)
+    {
+        urlPdfVisualizando = $"https://example.com/archivos/{nombreArchivo}";
+    }
+
+    private void VerArchivo1()
+    {
+        urlPdfVisualizando = "https://example.com/archivos/documento_identidad.pdf";
+    }
+
+    private void VerArchivo2()
+    {
+        urlPdfVisualizando = "https://example.com/archivos/solicitud_renta.pdf";
+    }
+
+    private void CerrarVistaPrevia()
+    {
+        urlPdfVisualizando = null;
+    }
+
+    // TODO: Cargar datos al inicializar
+    // protected override async Task OnInitializedAsync()
+    // {
+    // try
+    // {
+    // // tramiteDetalle = await TramiteService.ObtenerDetallesTramite(IdSolicitudTramite);
+    // // archivos = await TramiteService.ObtenerArchivosTramite(IdSolicitudTramite);
+    // }
+    // catch (Exception ex)
+    // {
+    // // Manejar error
+    // }
+    // }
+}
+// archivos = await TramiteService.ObtenerArchivosTramite(IdSolicitudTramite);
+// }
+// catch (Exception ex)
+// {
+// // Manejar error
+// }
+// }
+
+// private void VerArchivoEnIframe(ArchivoTramiteDTO archivo)
+// {
+// urlPdfVisualizando = archivo.UrlArchivo;
+// }
+
+// private void CerrarVistaPrevia()
+// {
+// urlPdfVisualizando = null;
+// }
+
+// private async Task AprobarTramite()
+// {
+// // TODO: Llamar a TramiteService.AprobarTramite(IdSolicitudTramite)
+// // Redirigir a trámites pendientes
+// }
+
+// private async Task RechazarTramiteConMotivo(string motivo)
+// {
+// // TODO: Llamar a TramiteService.RechazarTramite(IdSolicitudTramite, motivo)
+// // Redirigir a trámites pendientes
+// }
+}

@@ -2,16 +2,17 @@ using MiTramite_Shared.Endpoints;
 using MiTramite_Shared.DTOs.FuncionarioDTOs;
 using System.Net;
 using System.Text.Json;
-using WAMiTramiteGestion.Services.Base;
 
 namespace WAMiTramiteGestion.Services
 {
-    public class FuncionarioService : BaseApiService, IFuncionarioService
+    public class FuncionarioService : IFuncionarioService
     {
         public FuncionarioAccesosDTO? FuncionarioActual { get; set; }
+        private readonly HttpClient _httpClient;
 
-        public FuncionarioService(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
+        public FuncionarioService(IHttpClientFactory httpClientFactory)
         {
+            _httpClient = httpClientFactory.CreateClient("ApiClient");
         }
 
         public async Task<FuncionarioAccesosDTO> IniciarSesion(FuncionarioLoginDTO funcionarioLoginDTO)
@@ -19,7 +20,8 @@ namespace WAMiTramiteGestion.Services
             try
             {
                 var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.LOGIN;
-                var funcionario = await PostAsync<FuncionarioAccesosDTO>(url, funcionarioLoginDTO);
+                var response = await _httpClient.PostAsJsonAsync(url, funcionarioLoginDTO);
+                var funcionario = await response.Content.ReadFromJsonAsync<FuncionarioAccesosDTO>();
 
                 if (funcionario != null)
                 {
@@ -39,25 +41,44 @@ namespace WAMiTramiteGestion.Services
             }
         }
 
+        #region Métodos de Gerente
+
         public async Task<List<FuncionarioRegistroDTO>> ObtenerTodosLosFuncionarios()
         {
             var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.OBTENER_TODOS;
-            var funcionarios = await GetAsync<List<FuncionarioRegistroDTO>>(url);
-            return funcionarios ?? new List<FuncionarioRegistroDTO>();
+            var response = await _httpClient.GetFromJsonAsync<List<FuncionarioRegistroDTO>>(url);
+
+            return response ?? new List<FuncionarioRegistroDTO>();
         }
 
-        public async Task<FuncionarioRegistroDTO?> ObtenerFuncionarioPorId(long id)
+        public async Task<FuncionarioEditDTO> ObtenerFuncionarioPorId(long id)
         {
-            var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.OBTENER_POR_ID + id;
-            return await GetAsync<FuncionarioRegistroDTO>(url);
+            var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.OBTENER_POR_ID;
+
+            url = url.Replace("{id}", id.ToString());
+            var response = await _httpClient.GetFromJsonAsync<FuncionarioEditDTO>(url);
+            return response!;
         }
 
         public async Task<bool> RegistrarNuevoFuncionario(FuncionarioNuevoDTO funcionarioNuevo)
         {
             var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.REGISTER;
-            return await PostAsync(url, funcionarioNuevo);
+            var response = await _httpClient.PostAsJsonAsync(url, funcionarioNuevo);
+            return response.IsSuccessStatusCode;
         }
+        public async Task<bool> ActualizarFuncionario(FuncionarioEditDTO funcionarioEdit)
+        {
+            var url = FuncionarioEndpoints.BASE + FuncionarioEndpoints.ACTUALIZAR_DATOS;
+            url = url.Replace("{id}", funcionarioEdit.IdFuncionario.ToString());
+            var response = await _httpClient.PutAsJsonAsync(url, funcionarioEdit);
+            return response.IsSuccessStatusCode;
+        }
+        #endregion
 
+        #region Métodos de Funcionario Estándar
+
+
+        #endregion
         public void CerrarSesion()
         {
             FuncionarioActual = null;

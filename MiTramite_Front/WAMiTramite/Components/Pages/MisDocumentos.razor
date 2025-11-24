@@ -1,5 +1,9 @@
+@page "/mis-documentos/{idRentista:int}"
 @rendermode InteractiveServer
+@using WAMiTramite.Components.Modals
+@using WAMiTramite.Services
 @inject IJSRuntime JSRuntime
+@inject IRentistaService RentistaService
 
 <div class="container-fluid">
     <div class="row">
@@ -85,7 +89,7 @@
                                                     </button>
                                                     <button class="btn btn-sm text-white"
                                                         style="background: linear-gradient(135deg, #e53e3e, #fc8181); border: none;"
-                                                        @onclick="@(() => EliminarDocumento(documento.Id))" title="Eliminar">
+                                                        @onclick="@(() => ConfirmarEliminarDocumento(documento.Id))" title="Eliminar">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>
@@ -117,65 +121,89 @@
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>
 
-@code {
-    private List<DocumentoViewModel> documentos = new();
+<!-- Modals -->
+<ConfirmModal
+    Visible="@mostrarConfirmacionEliminar"
+    Title="Confirmar eliminación"
+    Message="¿Está seguro que desea eliminar este documento? Esta acción no se puede deshacer."
+    ConfirmText="Eliminar"
+    CancelText="Cancelar"
+    OnConfirm="ConfirmarEliminar"
+    OnCancel="CancelarEliminar" />
 
-    protected override void OnInitialized()
+<OperationStatusModal
+    Visible="@mostrarResultado"
+    IsSuccess="@operacionExitosa"
+    Title="@(operacionExitosa ? "¡Éxito!" : "Error")"
+    Message="@mensajeResultado"
+    OnClose="CerrarResultado" />
+
+@code {
+    [Parameter]
+    public int IdRentista { get; set; }
+
+    private List<DocumentoViewModel> documentos = new();
+    private bool mostrarConfirmacionEliminar = false;
+    private bool mostrarResultado = false;
+    private bool operacionExitosa = false;
+    private string mensajeResultado = string.Empty;
+    private int documentoAEliminar = 0;
+
+    protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine($"MisDocumentos cargado para rentista: {IdRentista}");
+        // TODO: En producción: documentos = (await RentistaService.ObtenerDocumentos(IdRentista))?.Select(...).ToList();
         CargarDocumentosDemo();
     }
 
     private void CargarDocumentosDemo()
     {
-        // Datos de demostración - en producción vendrían del backend
         documentos = new List<DocumentoViewModel>
-{
-new() {
-Id = 1,
-TipoDocumento = "Cédula de Identidad",
-Descripcion = "Documento de identificación personal",
-NombreArchivo = "cedula_juan_perez.pdf",
-Extension = ".pdf",
-FechaSubida = DateTime.Now.AddDays(-10),
-Tamano = 2048576, // 2MB
-UrlArchivo = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" // PDF de ejemplo
-},
-new() {
-Id = 2,
-TipoDocumento = "Certificado de Nacimiento",
-Descripcion = "Certificado oficial de nacimiento",
-NombreArchivo = "certificado_nacimiento.jpg",
-Extension = ".jpg",
-FechaSubida = DateTime.Now.AddDays(-5),
-Tamano = 1536000, // 1.5MB
-UrlArchivo = "https://via.placeholder.com/800x600/007bff/ffffff?text=Certificado+de+Nacimiento"
-},
-new() {
-Id = 3,
-TipoDocumento = "Contrato de Trabajo",
-Descripcion = "Contrato laboral vigente",
-NombreArchivo = "contrato_trabajo_2024.pdf",
-Extension = ".pdf",
-FechaSubida = DateTime.Now.AddDays(-3),
-Tamano = 1024000, // 1MB
-UrlArchivo = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
-},
-new() {
-Id = 4,
-TipoDocumento = "Comprobante de Domicilio",
-Descripcion = "Factura de servicios básicos",
-NombreArchivo = "factura_luz_noviembre.docx",
-Extension = ".docx",
-FechaSubida = DateTime.Now.AddDays(-1),
-Tamano = 512000, // 512KB
-UrlArchivo = ""
-}
-};
+        {
+            new() {
+                Id = 1,
+                TipoDocumento = "Cédula de Identidad",
+                Descripcion = "Documento de identificación personal",
+                NombreArchivo = "cedula_juan_perez.pdf",
+                Extension = ".pdf",
+                FechaSubida = DateTime.Now.AddDays(-10),
+                Tamano = 2048576,
+                UrlArchivo = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+            },
+            new() {
+                Id = 2,
+                TipoDocumento = "Certificado de Nacimiento",
+                Descripcion = "Certificado oficial de nacimiento",
+                NombreArchivo = "certificado_nacimiento.jpg",
+                Extension = ".jpg",
+                FechaSubida = DateTime.Now.AddDays(-5),
+                Tamano = 1536000,
+                UrlArchivo = "https://via.placeholder.com/800x600/007bff/ffffff?text=Certificado+de+Nacimiento"
+            },
+            new() {
+                Id = 3,
+                TipoDocumento = "Contrato de Trabajo",
+                Descripcion = "Contrato laboral vigente",
+                NombreArchivo = "contrato_trabajo_2024.pdf",
+                Extension = ".pdf",
+                FechaSubida = DateTime.Now.AddDays(-3),
+                Tamano = 1024000,
+                UrlArchivo = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+            },
+            new() {
+                Id = 4,
+                TipoDocumento = "Comprobante de Domicilio",
+                Descripcion = "Factura de servicios básicos",
+                NombreArchivo = "factura_luz_noviembre.docx",
+                Extension = ".docx",
+                FechaSubida = DateTime.Now.AddDays(-1),
+                Tamano = 512000,
+                UrlArchivo = ""
+            }
+        };
     }
 
     private string GetDocumentIcon(string tipoDocumento)
@@ -204,12 +232,6 @@ UrlArchivo = ""
         return $"{len:0.##} {sizes[order]}";
     }
 
-    private bool IsImageFile(string extension)
-    {
-        string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-        return imageExtensions.Contains(extension.ToLower());
-    }
-
     private async Task AbrirDocumentoEnNuevaPestaña(DocumentoViewModel documento)
     {
         if (!string.IsNullOrWhiteSpace(documento.UrlArchivo))
@@ -218,20 +240,17 @@ UrlArchivo = ""
         }
         else
         {
-            // Si no hay URL, intentar descargar el documento
             DescargarDocumento(documento.Id);
         }
     }
 
     private void SubirDocumento()
     {
-        // TODO: Implementar subida de documentos
         Console.WriteLine("Abrir modal de subida de documentos");
     }
 
     private void ActualizarDocumentos()
     {
-        // TODO: Implementar actualización desde el backend
         Console.WriteLine("Actualizando documentos...");
         CargarDocumentosDemo();
         StateHasChanged();
@@ -239,18 +258,48 @@ UrlArchivo = ""
 
     private void DescargarDocumento(int documentoId)
     {
-        // TODO: Implementar descarga de documento
         Console.WriteLine($"Descargar documento ID: {documentoId}");
     }
 
-    private void EliminarDocumento(int documentoId)
+    private void ConfirmarEliminarDocumento(int documentoId)
     {
-        // TODO: Implementar eliminación con confirmación
-        Console.WriteLine($"Eliminar documento ID: {documentoId}");
+        documentoAEliminar = documentoId;
+        mostrarConfirmacionEliminar = true;
+    }
 
-        // Simulación de eliminación
-        documentos.RemoveAll(d => d.Id == documentoId);
-        StateHasChanged();
+    private void CancelarEliminar()
+    {
+        mostrarConfirmacionEliminar = false;
+        documentoAEliminar = 0;
+    }
+
+    private async Task ConfirmarEliminar()
+    {
+        mostrarConfirmacionEliminar = false;
+
+        try
+        {
+            // En producción: await RentistaService.EliminarDocumento(idRentista, documentoAEliminar);
+            
+            documentos.RemoveAll(d => d.Id == documentoAEliminar);
+            operacionExitosa = true;
+            mensajeResultado = "Documento eliminado correctamente.";
+            mostrarResultado = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            operacionExitosa = false;
+            mensajeResultado = $"Hubo un error al eliminar el documento: {ex.Message}";
+            mostrarResultado = true;
+        }
+
+        documentoAEliminar = 0;
+    }
+
+    private void CerrarResultado()
+    {
+        mostrarResultado = false;
     }
 
     public class DocumentoViewModel
@@ -267,7 +316,6 @@ UrlArchivo = ""
 }
 
 <style>
-    /* Responsive styles for MisDocumentos */
     @@media (max-width: 768px) {
         .d-flex.gap-2 {
             flex-direction: column;

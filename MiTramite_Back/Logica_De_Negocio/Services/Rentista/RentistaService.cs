@@ -16,9 +16,9 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.RentistaSvc
             _repository = repository;
         }
 
+        // AUTENTICACIÓN
         public async Task<RentistaCurrentDataDTO> IniciarSesionRentista(RentistaLoginDTO rentistaLogin, CancellationToken cancellationToken = default)
         {
-
             var rentista = await _repository.IniciarSesionRentistaAsync(rentistaLogin, cancellationToken);
             return new RentistaCurrentDataDTO(rentista);
         }
@@ -27,13 +27,19 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.RentistaSvc
         {
             rentistaSignup.Password = BCrypt.Net.BCrypt.HashPassword(rentistaSignup.Password);
 
-            // Convertir a UTC para PostgreSQL - especificar que es UTC
+            // Convertir a UTC para PostgreSQL
             if (rentistaSignup.FechaNacimiento.Kind == DateTimeKind.Unspecified)
             {
                 rentistaSignup.FechaNacimiento = DateTime.SpecifyKind(rentistaSignup.FechaNacimiento, DateTimeKind.Utc);
             }
 
             return await _repository.RegistrarRentistaAsync(rentistaSignup, cancellationToken);
+        }
+
+        // TRÁMITES
+        public async Task<bool> CrearSolicitudTramiteAsync(int idRentista, int idTipoTramite, CancellationToken cancellationToken = default)
+        {
+            return await _repository.CrearSolicitudTramiteAsync(idRentista, idTipoTramite, cancellationToken);
         }
     }
 }

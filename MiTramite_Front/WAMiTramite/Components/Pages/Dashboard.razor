@@ -1,4 +1,18 @@
+@page "/dashboard/{idRentista:int}"
 @rendermode InteractiveServer
+@using WAMiTramite.Services
+@inject NavigationManager Navigation
+@inject IRentistaService RentistaService
+
+@code {
+    [Parameter]
+    public int IdRentista { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"Dashboard cargado para rentista: {IdRentista}");
+    }
+}
 
 <div class="container-fluid">
     <!-- Header de bienvenida -->
@@ -42,8 +56,8 @@
                     <i class="bi bi-file-earmark-plus display-4 mb-3" style="color: #1a365d;"></i>
                     <h6 class="card-title" style="color: #1a365d;">Nuevo Trámite</h6>
                     <p class="card-text small text-muted">Inicia un nuevo trámite municipal</p>
-                    <button class="btn btn-sm text-white" style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;"
-                        @onclick="@(() => NavigateToPage("nuevo-tramite"))">Comenzar</button>
+                    <a href="/nuevo-tramite" class="btn btn-sm text-white"
+                        style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;">Comenzar</a>
                 </div>
             </div>
         </div>
@@ -53,8 +67,8 @@
                     <i class="bi bi-search display-4 mb-3" style="color: #1a365d;"></i>
                     <h6 class="card-title" style="color: #1a365d;">Consultar Estado</h6>
                     <p class="card-text small text-muted">Verifica el estado de tus trámites</p>
-                    <button class="btn btn-sm text-white" style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;"
-                        @onclick="@(() => NavigateToPage("mis-tramites"))">Consultar</button>
+                    <a href="/mis-tramites" class="btn btn-sm text-white"
+                        style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;">Consultar</a>
                 </div>
             </div>
         </div>
@@ -64,8 +78,8 @@
                     <i class="bi bi-folder2-open display-4 mb-3" style="color: #1a365d;"></i>
                     <h6 class="card-title" style="color: #1a365d;">Mis Documentos</h6>
                     <p class="card-text small text-muted">Accede a tus documentos subidos</p>
-                    <button class="btn btn-sm text-white" style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;" 
-                        @onclick="@(() => NavigateToPage("mis-documentos"))">Ver Documentos</button>
+                    <a href="/mis-documentos" class="btn btn-sm text-white"
+                        style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;">Ver Documentos</a>
                 </div>
             </div>
         </div>
@@ -175,15 +189,15 @@
         .container-fluid {
             padding: 1rem;
         }
-        
+
         .card-body {
             padding: 1.5rem !important;
         }
-        
+
         .display-4 {
             font-size: 2rem !important;
         }
-        
+
         .row.align-items-center .col-md-4 {
             margin-top: 1rem;
             text-align: center !important;
@@ -194,11 +208,11 @@
         .card-body {
             padding: 1rem !important;
         }
-        
+
         .col-md-4.text-end {
             text-align: center !important;
         }
-        
+
         .bg-white.bg-opacity-25 {
             margin-top: 1rem;
         }
@@ -206,11 +220,4 @@
 </style>
 
 @code {
-    private void NavigateToPage(string page)
-    {
-        Navigation.NavigateTo($"/user/{page}");
-    }
-
-    [Inject]
-    private NavigationManager Navigation { get; set; } = default!;
 }

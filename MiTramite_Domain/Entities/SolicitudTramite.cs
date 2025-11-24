@@ -14,6 +14,8 @@ namespace MiTramite_Domain.Entities
         public long IdRentista { get; set; }
         public long IdFuncionario { get; set; }
         public DateTime FechaSolicitud { get; set; }
+        public DateTime FechaEstimadaEntrega => FechaSolicitud.AddDays(TipoTramite.DiasDuracionEstimada);
+
         public int IdEstadoTramite { get; set; }
         public bool Reasignado { get; set; }
 

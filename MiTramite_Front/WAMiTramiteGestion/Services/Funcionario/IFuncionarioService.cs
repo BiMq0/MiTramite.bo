@@ -11,8 +11,16 @@ namespace WAMiTramiteGestion.Services
         FuncionarioAccesosDTO? FuncionarioActual { get; set; }
         Task<FuncionarioAccesosDTO> IniciarSesion(FuncionarioLoginDTO funcionarioLoginDTO);
         void CerrarSesion();
+
+        #region Métodos de Gerente
         Task<List<FuncionarioRegistroDTO>> ObtenerTodosLosFuncionarios();
-        Task<FuncionarioRegistroDTO?> ObtenerFuncionarioPorId(long id);
+        Task<FuncionarioEditDTO> ObtenerFuncionarioPorId(long id);
         Task<bool> RegistrarNuevoFuncionario(FuncionarioNuevoDTO funcionarioNuevo);
+        Task<bool> ActualizarFuncionario(FuncionarioEditDTO funcionarioEdit);
+        #endregion
+
+        #region Métodos de Funcionario Estándar
+
+        #endregion
     }
 }

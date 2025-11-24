@@ -71,5 +71,23 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.FuncionarioSvc
             }
             return funcionarioCreado;
         }
+
+        public async Task<bool> ActualizarFuncionarioAsync(FuncionarioEditDTO funcionarioEdit, CancellationToken cancellationToken = default)
+        {
+            bool funcionarioActualizado = false;
+            try
+            {
+                funcionarioActualizado = await _repository.ActualizarFuncionarioAsync(funcionarioEdit, cancellationToken);
+            }
+            catch (DataException dEx)
+            {
+                throw new DataException($"[DataException] Error al actualizar funcionario: {dEx.InnerException?.Message} {dEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"[Exception] Error al actualizar funcionario: {ex.Message}");
+            }
+            return funcionarioActualizado;
+        }
     }
 }

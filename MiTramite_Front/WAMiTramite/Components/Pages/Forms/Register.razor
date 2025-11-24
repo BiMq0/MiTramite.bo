@@ -2,11 +2,12 @@
 @inject NavigationManager Navigation
 @inject Services.IRentistaService RentistaService
 @using MiTramite_Shared.DTOs.RentistaDTOs
+@using WAMiTramite.Components.Modals
 @rendermode InteractiveServer
 
 <div class="container py-5">
-    <div class="position-fixed"><button class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/"))"><i
-                class="bi bi-arrow-left"></i> Volver</button>
+    <div><button class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo("/"))"><i class="bi bi-arrow-left"></i>
+            Volver</button>
     </div>
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
@@ -27,7 +28,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-card-text me-1"></i>
-                                Cédula de Identidad
+                                Cédula de Identidad <span class="text-danger">*</span>
                             </label>
                             <InputText @bind-Value="registerModel.CI" class="form-control"
                                 placeholder="Ej: 1234567 LP" />
@@ -38,7 +39,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-person me-1"></i>
-                                Nombres
+                                Nombres <span class="text-danger">*</span>
                             </label>
                             <InputText @bind-Value="registerModel.Nombres" class="form-control"
                                 placeholder="Ingresa tus nombres" />
@@ -50,7 +51,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">
                                     <i class="bi bi-person-badge me-1"></i>
-                                    Apellido Paterno
+                                    Apellido Paterno <span class="text-danger">*</span>
                                 </label>
                                 <InputText @bind-Value="registerModel.ApellidoPaterno" class="form-control"
                                     placeholder="Apellido paterno" />
@@ -60,7 +61,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">
                                     <i class="bi bi-person-badge me-1"></i>
-                                    Apellido Materno
+                                    Apellido Materno (Opcional)
                                 </label>
                                 <InputText @bind-Value="registerModel.ApellidoMaterno" class="form-control"
                                     placeholder="Apellido materno" />
@@ -73,7 +74,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-calendar-date me-1"></i>
-                                Fecha de Nacimiento
+                                Fecha de Nacimiento <span class="text-danger">*</span>
                             </label>
                             <InputDate @bind-Value="registerModel.FechaNacimiento" class="form-control" />
                             <ValidationMessage For="@(() => registerModel.FechaNacimiento)" class="text-danger small" />
@@ -83,18 +84,29 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-envelope me-1"></i>
-                                Correo Electrónico
+                                Correo Electrónico <span class="text-danger">*</span>
                             </label>
                             <InputText @bind-Value="registerModel.Correo" type="email" class="form-control"
                                 placeholder="tu@email.com" />
                             <ValidationMessage For="@(() => registerModel.Correo)" class="text-danger small" />
                         </div>
 
+                        <!-- Teléfono -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-telephone me-1"></i>
+                                Teléfono <span class="text-danger">*</span>
+                            </label>
+                            <InputText @bind-Value="registerModel.Telefono" class="form-control"
+                                placeholder="Ej: 76123456" />
+                            <ValidationMessage For="@(() => registerModel.Telefono)" class="text-danger small" />
+                        </div>
+
                         <!-- Contraseña -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-lock me-1"></i>
-                                Contraseña
+                                Contraseña <span class="text-danger">*</span>
                             </label>
                             <div class="input-group">
                                 <InputText @bind-Value="registerModel.Password"
@@ -117,7 +129,8 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="terms" @bind="acceptTerms">
                                 <label class="form-check-label" for="terms">
-                                    Acepto los <a href="#" class="text-primary">términos y condiciones</a>
+                                    Acepto los <button @onclick:preventDefault @onclick="ShowTermsModal"
+                                        class="text-primary border-0 bg-transparent">términos y condiciones</button>
                                     y la política de privacidad
                                 </label>
                             </div>
@@ -165,11 +178,15 @@
     </div>
 </div>
 
+<TermsAndConditionsModal Visible="@showTerms" OnClose="CloseTermsModal" />
+
 @code {
     private RentistaSignupDTO registerModel = new RentistaSignupDTO();
     private bool acceptTerms = false;
     private bool isSubmitting = false;
     private bool showPassword = false;
+    private bool showTerms = false;
+
     private async Task HandleRegistration()
     {
         isSubmitting = true;
@@ -177,7 +194,10 @@
         try
         {
             var resultado = await RentistaService.RegistrarRentista(registerModel);
-            NavigateToLogin();
+            if (resultado)
+                NavigateToLogin();
+            else
+                Console.WriteLine("Error en registro: Resultado negativo");
         }
         catch (Exception ex)
         {
@@ -189,10 +209,22 @@
         }
     }
 
+    private void ShowTermsModal()
+    {
+        showTerms = true;
+        StateHasChanged();
+    }
+
+    private void CloseTermsModal()
+    {
+        showTerms = false;
+    }
+
     private void NavigateToLogin()
     {
         Navigation.NavigateTo("/login");
     }
+
     private void NavigateToLanding()
     {
         Navigation.NavigateTo("/");

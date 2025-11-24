@@ -13,7 +13,7 @@ public static class FuncionarioMapper
         var funcionarios = app.MapGroup(FuncionarioEndpoints.BASE)
     .RequireAuthorization(new AuthorizeAttribute
     {
-        AuthenticationSchemes = "Bearer"
+        AuthenticationSchemes = "Bearer",
     });
 
 
@@ -42,14 +42,16 @@ public static class FuncionarioMapper
             {
                 return Results.Problem(detail: ex.Message, statusCode: 500);
             }
-        }).AllowAnonymous();
+        })
+        .AllowAnonymous()
+        .Produces<FuncionarioAccesosDTO>(StatusCodes.Status200OK);
 
         funcionarios.MapPost(FuncionarioEndpoints.REGISTER, async (FuncionarioNuevoDTO funcionarioRegister, IFuncionarioService service) =>
         {
             try
             {
-                var dto = await service.CrearFuncionarioAsync(funcionarioRegister);
-                return Results.Created($"{FuncionarioEndpoints.BASE}/1", dto);
+                var funcionarioCreado = await service.CrearFuncionarioAsync(funcionarioRegister);
+                return funcionarioCreado ? Results.Ok() : Results.BadRequest(new { error = "No se pudo crear el funcionario." });
             }
             catch (ArgumentException argEx)
             {
@@ -59,37 +61,52 @@ public static class FuncionarioMapper
             {
                 return Results.Problem(detail: ex.Message, statusCode: 500);
             }
-        });
+        }).Produces<FuncionarioNuevoDTO>(StatusCodes.Status201Created);
 
         funcionarios.MapGet(FuncionarioEndpoints.OBTENER_POR_ID, async (int id, IFuncionarioService service) =>
         {
             try
             {
-                var dto = await service.ObtenerFuncionarioPorIdAsync(id);
-                if (dto == null)
+                var funcionario = await service.ObtenerFuncionarioPorIdAsync(id);
+                if (funcionario == null)
                     return Results.NotFound();
 
-                return Results.Ok(dto);
+                return Results.Ok(funcionario);
             }
             catch (Exception ex)
             {
                 return Results.Problem(detail: ex.Message, statusCode: 500);
             }
-        });
+        }).Produces<FuncionarioEditDTO>(StatusCodes.Status200OK);
 
         funcionarios.MapGet(FuncionarioEndpoints.OBTENER_TODOS, async (IFuncionarioService service) =>
         {
             try
             {
-                var dtos = await service.ObtenerTodosLosFuncionariosAsync();
-                Console.WriteLine("Devolviendo funcionarios: " + dtos.Count);
-                return Results.Ok(dtos);
+                var listFuncionarios = await service.ObtenerTodosLosFuncionariosAsync();
+                return Results.Ok(listFuncionarios);
             }
             catch (Exception ex)
             {
                 return Results.Problem(detail: ex.Message, statusCode: 500);
             }
-        });
+        }).Produces<List<FuncionarioEditDTO>>(StatusCodes.Status200OK);
 
+        funcionarios.MapPut(FuncionarioEndpoints.ACTUALIZAR_DATOS, async (FuncionarioEditDTO funcionarioRegister, IFuncionarioService service) =>
+        {
+            try
+            {
+                var funcionarioActualizado = await service.ActualizarFuncionarioAsync(funcionarioRegister);
+                return funcionarioActualizado ? Results.Ok() : Results.BadRequest(new { error = "No se pudo actualizar el funcionario." });
+            }
+            catch (ArgumentException argEx)
+            {
+                return Results.BadRequest(new { error = argEx.Message });
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(detail: ex.Message, statusCode: 500);
+            }
+        }).Produces<bool>(StatusCodes.Status200OK);
     }
 }

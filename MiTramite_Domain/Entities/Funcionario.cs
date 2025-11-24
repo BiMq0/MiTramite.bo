@@ -17,7 +17,7 @@ namespace MiTramite_Domain.Entities
         public string ApellidoMaterno { get; set; } = null!;
         public DateTime? FechaNacimiento { get; set; }
         public string Telefono { get; set; } = null!;
-        public int? PesoDisponibilidad { get; set; }
+        public int? PesoDisponibilidad { get; set; } = 0;
         public string Correo { get; set; } = null!;
         public string PasswordHash { get; set; } = null!;
         public int IdRol { get; set; }

@@ -1,11 +1,21 @@
+using System.Net;
 using WAMiTramiteGestion.Components;
 using WAMiTramiteGestion.Handlers;
-using WAMiTramiteGestion.Services.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar HttpClients para manejar cookies correctamente en Server y WebAssembly
-builder.Services.AddApiHttpClients(Config.ApiUrl);
+builder.Services.AddHttpClient("ApiClient", client =>
+{
+    client.BaseAddress = new Uri(Config.ApiUrl);
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    return new HttpClientHandler
+    {
+        UseCookies = true,
+        CookieContainer = new CookieContainer()
+    };
+});
 
 // Blazor híbrido
 builder.Services.AddRazorComponents()

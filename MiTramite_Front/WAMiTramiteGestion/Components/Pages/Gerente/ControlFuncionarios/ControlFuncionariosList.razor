@@ -1,6 +1,5 @@
 @using MiTramite_Shared.DTOs.FuncionarioDTOs
 @inject Services.IFuncionarioService FuncionarioService
-@rendermode InteractiveWebAssembly
 
 <div class="container-fluid mt-4">
     <!-- Buscador y Filtros -->
@@ -149,7 +148,6 @@
     {
         try
         {
-            // Aquí se llamará al servicio para obtener los funcionarios
             todosFuncionarios = await FuncionarioService.ObtenerTodosLosFuncionarios();
             ActualizarFiltros();
         }
@@ -189,6 +187,7 @@
         };
 
         funcionariosFiltrados = filtrados;
+        StateHasChanged();
     }
 
     private async Task AbrirFormularioAgregar()

@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+
 using Microsoft.EntityFrameworkCore;
 using MiTramite_Back.Acceso_A_Datos.Context;
 using MiTramite_Back.Middleware.Tokens;
@@ -72,11 +70,35 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.FuncionarioRep
                 Nombres = funcionarioCreate.Nombres!,
                 ApellidoPaterno = funcionarioCreate.ApellidoPaterno!,
                 ApellidoMaterno = funcionarioCreate.ApellidoMaterno!,
+                FechaNacimiento = funcionarioCreate.FechaNacimiento,
+                Telefono = funcionarioCreate.Telefono!,
                 Correo = funcionarioCreate.Correo!,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(funcionarioCreate.Password!),
                 IdRol = 1 // Funcionarios por defecto, puesto que no existen más roles que gerentes para crear funcionarios
             };
             _context.Funcionarios.Add(funcionarioNuevo);
+            return await _context.SaveChangesAsync(cancellationToken) > 0;
+        }
+
+        public async Task<bool> ActualizarFuncionarioAsync(FuncionarioEditDTO funcionarioEdit, CancellationToken cancellationToken = default)
+        {
+            var funcionarioExistente = await _context.Funcionarios
+                .FirstOrDefaultAsync(f => f.IdFuncionario == funcionarioEdit.IdFuncionario, cancellationToken);
+
+            if (funcionarioExistente == null)
+            {
+                throw new KeyNotFoundException("Funcionario no encontrado.");
+            }
+
+            funcionarioExistente.Nombres = funcionarioEdit.Nombres!;
+            funcionarioExistente.ApellidoPaterno = funcionarioEdit.ApellidoPaterno!;
+            funcionarioExistente.ApellidoMaterno = funcionarioEdit.ApellidoMaterno!;
+            funcionarioExistente.FechaNacimiento = funcionarioEdit.FechaNacimiento;
+            funcionarioExistente.Telefono = funcionarioEdit.Telefono!;
+            funcionarioExistente.Correo = funcionarioEdit.Correo!;
+            funcionarioExistente.PasswordHash = BCrypt.Net.BCrypt.HashPassword(funcionarioEdit.Password!);
+
+            _context.Funcionarios.Update(funcionarioExistente);
             return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
     }

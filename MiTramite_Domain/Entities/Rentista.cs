@@ -11,7 +11,7 @@ public class Rentista
     public string CI { get; set; } = null!;
     public string Nombres { get; set; } = null!;
     public string ApellidoPaterno { get; set; } = null!;
-    public string ApellidoMaterno { get; set; } = null!;
+    public string? ApellidoMaterno { get; set; }
     public DateTime FechaNacimiento { get; set; }
     public string Telefono { get; set; } = null!;
     public string Correo { get; set; } = null!;

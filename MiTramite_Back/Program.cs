@@ -8,12 +8,15 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //Adicion de Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "MiTramite API", Description = "Documentacion de API para MiTramite", Version = "v1" }); });
+
+
 
 //Database
 builder.Services.AddDbContext<MiTramiteDbContext>(options =>

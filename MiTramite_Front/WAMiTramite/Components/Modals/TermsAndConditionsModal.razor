@@ -1,0 +1,149 @@
+@* Modal de Términos y Condiciones *@
+@if (Visible)
+{
+    <div class="modal-backdrop">
+        <div class="terms-panel">
+            <div class="terms-header">
+                <h5 class="terms-title">Términos y Condiciones</h5>
+                <button type="button" class="btn-close" @onclick="Close" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="terms-body">
+                <section>
+                    <h6>1. Aceptación de los Términos</h6>
+                    <p>
+                        Al registrarte y utilizar la plataforma digital de trámites municipales, aceptas estos términos y
+                        condiciones en su totalidad. Si no estás de acuerdo con alguna parte, debes abstenerte de utilizar
+                        el servicio.
+                    </p>
+                </section>
+
+                <section>
+                    <h6>2. Descripción del Servicio</h6>
+                    <p>
+                        Esta plataforma proporciona servicios de gestión digital de trámites municipales, permitiendo a los
+                        ciudadanos
+                        presentar, dar seguimiento y completar diversos trámites administrativos de forma electrónica,
+                        segura y eficiente.
+                    </p>
+                </section>
+
+                <section>
+                    <h6>3. Recopilación y Uso de Datos Personales</h6>
+                    <p>
+                        Recopilamos información personal incluyendo:
+                    </p>
+                    <ul>
+                        <li>Cédula de Identidad</li>
+                        <li>Nombres y apellidos</li>
+                        <li>Fecha de nacimiento</li>
+                        <li>Correo electrónico</li>
+                        <li>Información relacionada con trámites solicitados</li>
+                    </ul>
+                    <p>
+                        Esta información se utiliza exclusivamente para:
+                    </p>
+                    <ul>
+                        <li>Procesar y gestionar tus trámites digitales</li>
+                        <li>Proporcionarte notificaciones sobre el estado de tus solicitudes</li>
+                        <li>Verificar tu identidad y autenticación</li>
+                        <li>Mejorar la calidad del servicio</li>
+                        <li>Cumplir con obligaciones legales y regulatorias</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h6>4. Seguridad de la Información</h6>
+                    <p>
+                        Implementamos medidas de seguridad técnicas y administrativas para proteger tus datos personales
+                        contra
+                        acceso no autorizado, alteración, divulgación o destrucción. Utilizamos encriptación en la
+                        transmisión de datos
+                        y mantenemos sistemas de backup regularmente.
+                    </p>
+                </section>
+
+                <section>
+                    <h6>5. Responsabilidades del Usuario</h6>
+                    <p>
+                        El usuario es responsable de:
+                    </p>
+                    <ul>
+                        <li>Mantener la confidencialidad de su contraseña</li>
+                        <li>Proporcionar información exacta y verídica</li>
+                        <li>Cumplir con la legislación vigente</li>
+                        <li>No utilizar la plataforma para actividades ilegales o fraudulentas</li>
+                        <li>Notificar inmediatamente sobre acceso no autorizado a su cuenta</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h6>6. Limitación de Responsabilidad</h6>
+                    <p>
+                        La plataforma se proporciona "tal como está". No garantizamos disponibilidad continua, aunque
+                        trabajamos
+                        para minimizar interrupciones. No somos responsables por daños indirectos, pérdida de datos o lucro
+                        cesante
+                        derivados del uso o incapacidad de usar el servicio.
+                    </p>
+                </section>
+
+                <section>
+                    <h6>7. Modificaciones de los Términos</h6>
+                    <p>
+                        Nos reservamos el derecho de modificar estos términos y condiciones en cualquier momento. Las
+                        modificaciones
+                        entrarán en vigor inmediatamente tras su publicación. El uso continuado de la plataforma constituye
+                        aceptación
+                        de los términos modificados.
+                    </p>
+                </section>
+
+                <section>
+                    <h6>8. Privacidad y Política de Datos</h6>
+                    <p>
+                        Tus datos personales se procesan de acuerdo con la legislación de protección de datos aplicable.
+                        Tienes derecho a acceder, rectificar o solicitar la eliminación de tus datos mediante solicitud
+                        formal.
+                        Para más información, consulta nuestra Política de Privacidad completa.
+                    </p>
+                </section>
+
+                <section>
+                    <h6>9. Ley Aplicable</h6>
+                    <p>
+                        Estos términos y condiciones se rigen por las leyes de la República de Bolivia.
+                        Cualquier disputa será resuelta mediante los tribunales competentes del país.
+                    </p>
+                </section>
+
+                <section>
+                    <h6>10. Contacto</h6>
+                    <p>
+                        Para consultas sobre estos términos o sobre el tratamiento de tus datos, contacta a nuestro equipo
+                        de soporte
+                        a través de los canales indicados en la plataforma.
+                    </p>
+                </section>
+            </div>
+
+            <div class="terms-footer">
+                <button type="button" class="btn btn-primary" @onclick="Close">Entendido</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool Visible { get; set; }
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    private async Task Close()
+    {
+        if (OnClose.HasDelegate)
+            await OnClose.InvokeAsync(null);
+    }
+}

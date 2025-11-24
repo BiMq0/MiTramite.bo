@@ -90,21 +90,14 @@
 
                         <!-- Botones -->
                         <div class="modal-footer bg-light border-top mt-4">
-                            @if (puedeEditar)
-                            {
-                                <button type="button" class="btn btn-secondary" @onclick="Cancelar">
-                                    <i class="bi bi-x-circle me-2"></i>Cancelar
-                                </button>
-                                <button type="submit" class="btn btn-success">
-                                    <i class="bi bi-check-circle me-2"></i>Guardar
-                                </button>
-                            }
-                            else if (esRegistroNuevo)
-                            {
-                                <button type="button" class="btn btn-secondary" @onclick="Cerrar">
-                                    <i class="bi bi-arrow-left me-2"></i>Cancelar
-                                </button>
-                            }
+                            <button type="button" class="btn btn-secondary" @onclick="Cerrar">
+                                <i class="bi bi-x-circle me-2"></i>Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle me-2"></i>Guardar
+                            </button>
+
+
                         </div>
                     </EditForm>
                 }
@@ -194,10 +187,10 @@
                             @if (puedeEditar)
                             {
                                 <button type="button" class="btn btn-secondary" @onclick="Cancelar">
-                                    <i class="bi bi-x-circle"></i>Cancelar
+                                    <i class="bi bi-x-circle me-2"></i>Cancelar
                                 </button>
                                 <button type="submit" class="btn btn-success">
-                                    <i class="bi bi-check-circle"></i>Guardar
+                                    <i class="bi bi-check-circle me-2"></i>Guardar
                                 </button>
                             }
                         </div>

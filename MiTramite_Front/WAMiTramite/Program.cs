@@ -1,14 +1,25 @@
+using System.Net;
 using Microsoft.AspNetCore.Components;
 using WAMiTramite.Components;
 using WAMiTramite.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddScoped(sp =>
+// Adicion y manejo de Cookies
+builder.Services.AddHttpClient("ApiClient", client =>
 {
-    return new HttpClient { BaseAddress = new Uri(Config.ApiUrl) };
+    client.BaseAddress = new Uri(Config.ApiUrl);
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    return new HttpClientHandler
+    {
+        UseCookies = true,
+        CookieContainer = new CookieContainer()
+    };
 });
+
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 

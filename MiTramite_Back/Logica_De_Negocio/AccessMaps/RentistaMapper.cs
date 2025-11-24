@@ -1,8 +1,8 @@
 ﻿using MiTramite_Back.Logica_De_Negocio.Services.RentistaSvc;
 using MiTramite_Shared.DTOs.RentistaDTOs;
 using MiTramite_Shared.Endpoints;
-using Microsoft.AspNetCore.Mvc;
 using MiTramite_Back.Middleware.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MiTramite_Back;
 
@@ -12,28 +12,51 @@ public static class RentistaMapper
     {
         var rentistas = app.MapGroup(RentistaEndpoints.BASE);
 
+        // AUTENTICACIÓN
         rentistas.MapPost(RentistaEndpoints.SIGNUP, async (RentistaSignupDTO rentistaNuevo, IRentistaService service) =>
         {
-            return await service.RegistrarNuevoRentista(rentistaNuevo);
-        });
-
-        rentistas.MapPost(RentistaEndpoints.LOGIN, async (RentistaLoginDTO rentistaLogin, IRentistaService service, HttpContext http, ITokenService tokenService) =>
-        {
-            var resultado = await service.IniciarSesionRentista(rentistaLogin);
-            if (resultado != null)
+            try
             {
-                var token = await tokenService.GenerarTokenRentista(resultado);
-                http.Response.Cookies.Append("token", token, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTimeOffset.UtcNow.AddHours(2)
-                });
-                return Results.Ok(resultado);
+                var resultado = await service.RegistrarNuevoRentista(rentistaNuevo);
+                return resultado
+                    ? Results.Created($"{RentistaEndpoints.BASE}/signup", new { message = "Rentista registrado exitosamente" })
+                    : Results.BadRequest(new { error = "No se pudo registrar el rentista" });
             }
-            return Results.Unauthorized();
+            catch (InvalidOperationException ex)
+            {
+                return Results.Conflict(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(detail: ex.Message, statusCode: 500);
+            }
         });
 
+        rentistas.MapPost(RentistaEndpoints.LOGIN, async (RentistaLoginDTO rentistaLogin, IRentistaService service, ITokenService tokenService, HttpContext httpContext) =>
+        {
+            try
+            {
+                var resultado = await service.IniciarSesionRentista(rentistaLogin);
+                if (resultado == null)
+                    return Results.Unauthorized();
+
+                var token = await tokenService.GenerarTokenRentista(resultado);
+                httpContext.Response.Cookies.Append("token", token, tokenService.ConfigurarCookie());
+
+                return Results.Ok(new { message = "Login exitoso", data = resultado });
+            }
+            catch (KeyNotFoundException)
+            {
+                return Results.NotFound(new { error = "Rentista no encontrado" });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(detail: ex.Message, statusCode: 500);
+            }
+        });
     }
 }
