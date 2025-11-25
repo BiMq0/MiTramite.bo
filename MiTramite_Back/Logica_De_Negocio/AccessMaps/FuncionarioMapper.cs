@@ -22,12 +22,17 @@ public static class FuncionarioMapper
             try
             {
                 var funcionarioAccesosDTO = await service.IniciarSesionFuncionario(funcionarioLogin);
+                Console.WriteLine("[FUNCIONARIO MAPPER] Datos de acceso del funcionario obtenidos.");
+                Console.WriteLine(funcionarioAccesosDTO);
+
                 if (funcionarioAccesosDTO == null)
                     return Results.Unauthorized();
 
                 var token = await tokenService.GenerarTokenFuncionario(funcionarioAccesosDTO);
-
+                Console.WriteLine("[FUNCIONARIO MAPPER] Token generado para funcionario.");
                 httpContext.Response.Cookies.Append("token", token, tokenService.ConfigurarCookie());
+                Console.WriteLine("[FUNCIONARIO MAPPER] Login de funcionario exitoso.");
+                Console.WriteLine(funcionarioAccesosDTO);
                 return Results.Ok(funcionarioAccesosDTO);
             }
             catch (KeyNotFoundException)

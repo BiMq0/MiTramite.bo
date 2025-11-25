@@ -34,11 +34,22 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.FuncionarioRep
                 throw new KeyNotFoundException("Funcionario no encontrado.");
             }
 
-            if (!BCrypt.Net.BCrypt.Verify(funcionarioLogin.Password, funcionario.PasswordHash))
+            Console.WriteLine($"[FUNCIONARIO REPO] Intentando verificar contraseña para funcionario: {funcionarioLogin.CodigoFuncionario}");
+            Console.WriteLine($"[FUNCIONARIO REPO] Contraseña ingresada: '{funcionarioLogin.Password}'");
+            Console.WriteLine($"[FUNCIONARIO REPO] Hash almacenado en BD: '{funcionario.PasswordHash}'");
+            Console.WriteLine($"[FUNCIONARIO REPO] Longitud de contraseña ingresada: {funcionarioLogin.Password?.Length}");
+            Console.WriteLine($"[FUNCIONARIO REPO] Longitud de hash: {funcionario.PasswordHash?.Length}");
+
+            bool passwordValida = BCrypt.Net.BCrypt.Verify(funcionarioLogin.Password, funcionario.PasswordHash);
+            Console.WriteLine($"[FUNCIONARIO REPO] ¿Contraseña válida?: {passwordValida}");
+
+            if (!passwordValida)
             {
+                Console.WriteLine($"[FUNCIONARIO REPO] ❌ ERROR: Contraseña incorrecta para {funcionarioLogin.CodigoFuncionario}");
                 throw new UnauthorizedAccessException("Correo o contraseña incorrecta.");
             }
 
+            Console.WriteLine($"[FUNCIONARIO REPO] ✅ Contraseña verificada correctamente");
             var funcionarioToReturn = new FuncionarioAccesosDTO(funcionario);
             return funcionarioToReturn;
         }
