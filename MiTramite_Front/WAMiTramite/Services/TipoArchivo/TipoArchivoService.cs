@@ -12,10 +12,9 @@ public class TipoArchivoService : ITipoArchivoService
         _client = clientFactory.CreateClient("ApiClient");
     }
 
-    public async Task<List<TipoArchivoParaSubirDTO>> ObtenerArchivosRequeridosPorTramite(int idTipoTramite)
+    public async Task<List<TipoArchivoParaSubirDTO>> OBtenerTiposDeDocumentoParaSubir()
     {
-        string url = $"tipoArchivo/tramite/{idTipoTramite}";
-        Console.WriteLine("URL de archivos requeridos: " + _client.BaseAddress + url);
+        string url = TipoArchivoEndpoints.BASE + TipoArchivoEndpoints.OBTENER_TODOS;
         try
         {
             var resultado = await _client.GetAsync(url);
@@ -29,27 +28,6 @@ public class TipoArchivoService : ITipoArchivoService
         catch (Exception ex)
         {
             Console.WriteLine($"Error al obtener archivos requeridos: {ex.Message}");
-            return new List<TipoArchivoParaSubirDTO>();
-        }
-    }
-
-    public async Task<List<TipoArchivoParaSubirDTO>> ObtenerArchivosNoSubidosPorRentista(int idRentista, int idTipoTramite)
-    {
-        string url = $"tipoArchivo/no-subidos/{idRentista}/{idTipoTramite}";
-        Console.WriteLine("URL de archivos no subidos: " + _client.BaseAddress + url);
-        try
-        {
-            var resultado = await _client.GetAsync(url);
-            if (resultado.IsSuccessStatusCode)
-            {
-                var archivos = await resultado.Content.ReadFromJsonAsync<List<TipoArchivoParaSubirDTO>>();
-                return archivos ?? new List<TipoArchivoParaSubirDTO>();
-            }
-            return new List<TipoArchivoParaSubirDTO>();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error al obtener archivos no subidos: {ex.Message}");
             return new List<TipoArchivoParaSubirDTO>();
         }
     }

@@ -1,0 +1,119 @@
+@page "/ver-tramite/{idSolicitud:long}"
+@rendermode InteractiveServer
+@using WAMiTramite.Services
+@using MiTramite_Shared.DTOs.SolicitudTramiteDTOs
+@inject NavigationManager Navigation
+@inject ISolicitudTramiteService SolicitudTramiteService
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <button class="btn btn-outline-primary btn-sm mb-3" @onclick="Volver">
+                <i class="bi bi-arrow-left me-1"></i>
+                Volver
+            </button>
+
+            @if (solicitud != null)
+            {
+                <div class="card">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-file-earmark-text me-2"></i>
+                            @solicitud.NombreTipoTramite
+                        </h5>
+                        <span class="badge @GetEstadoBadgeClass(solicitud.Estado)">
+                            @solicitud.Estado
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3">Detalles de la Solicitud</h6>
+                                <dl class="row">
+                                    <dt class="col-sm-4">ID Solicitud</dt>
+                                    <dd class="col-sm-8">@solicitud.IdSolicitudTramite</dd>
+
+                                    <dt class="col-sm-4">Fecha</dt>
+                                    <dd class="col-sm-8">@solicitud.FechaSolicitud.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                                    <dt class="col-sm-4">Funcionario</dt>
+                                    <dd class="col-sm-8">@(string.IsNullOrEmpty(solicitud.NombreFuncionarioAsignado) ?
+                                                                            "Pendiente de asignación" : solicitud.NombreFuncionarioAsignado)</dd>
+
+                                    <dt class="col-sm-4">Reasignado</dt>
+                                    <dd class="col-sm-8">@solicitud.Reassigned</dd>
+                                </dl>
+                            </div>
+                        </div>
+
+                        @if (solicitud.Estado == "Completado" || solicitud.Estado == "Aprobado")
+                        {
+                            <div class="alert alert-success">
+                                <i class="bi bi-check-circle-fill me-2"></i>
+                                Este trámite ha sido completado exitosamente.
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else if (cargando)
+            {
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    No se pudo cargar la información del trámite.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public long IdSolicitud { get; set; }
+
+    private SolicitudTramiteRegistroDTO? solicitud;
+    private bool cargando = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            solicitud = await SolicitudTramiteService.ObtenerSolicitudDeTramitePorId((int)IdSolicitud);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar solicitud: {ex.Message}");
+        }
+        finally
+        {
+            cargando = false;
+        }
+    }
+
+    private void Volver()
+    {
+        Navigation.NavigateTo("/mis-tramites");
+    }
+
+    private string GetEstadoBadgeClass(string estado)
+    {
+        return estado switch
+        {
+            "Completado" => "bg-success",
+            "Aprobado" => "bg-success",
+            "Pendiente" => "bg-warning text-dark",
+            "En Revisión" => "bg-info text-dark",
+            "En Proceso" => "bg-primary",
+            "Rechazado" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

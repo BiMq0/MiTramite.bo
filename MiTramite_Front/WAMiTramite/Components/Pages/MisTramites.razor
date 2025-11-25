@@ -2,7 +2,10 @@
 @rendermode InteractiveServer
 @using WAMiTramite.Components.Modals
 @using WAMiTramite.Services
+@using MiTramite_Shared.DTOs.SolicitudTramiteDTOs
 @inject IRentistaService RentistaService
+@inject ISolicitudTramiteService SolicitudTramiteService
+@inject NavigationManager Navigation
 
 <div class="container-fluid">
     <!-- Filtros y búsqueda -->
@@ -19,7 +22,7 @@
         </div>
         <div class="col-md-4 col-12">
             <select class="form-select" style="border-color: #1a365d;" @bind="filtroEstado"
-                @bind:after="FiltrarTramites">
+                @bind:after="@(() => FiltrarTramites())">
                 <option value="">Todos los estados</option>
                 <option value="En Proceso">En Proceso</option>
                 <option value="Completado">Completado</option>
@@ -69,10 +72,10 @@
                                     {
                                         <tr>
                                             <td>
-                                                <code class="text-primary">@tramite.IdSolicitud</code>
+                                                <code class="text-primary">@tramite.IdSolicitudTramite</code>
                                             </td>
                                             <td>
-                                                <div class="fw-semibold">@tramite.TipoTramite</div>
+                                                <div class="fw-semibold">@tramite.NombreTipoTramite</div>
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center">
@@ -81,13 +84,13 @@
                                                         <i class="bi bi-person text-secondary"></i>
                                                     </div>
                                                     <div>
-                                                        <div class="small fw-semibold">@tramite.FuncionarioAsignado</div>
+                                                        <div class="small fw-semibold">@tramite.NombreFuncionarioAsignado</div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
-                                                <div class="small">@tramite.Fecha.ToString("dd/MM/yyyy")</div>
-                                                <div class="small text-muted">@tramite.Fecha.ToString("HH:mm")</div>
+                                                <div class="small">@tramite.FechaSolicitud.ToString("dd/MM/yyyy")</div>
+                                                <div class="small text-muted">@tramite.FechaSolicitud.ToString("HH:mm")</div>
                                             </td>
                                             <td>
                                                 <span class="badge @GetEstadoBadgeClass(tramite.Estado)">
@@ -96,11 +99,10 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                @if (tramite.Reasignado)
+                                                @if (tramite.Reassigned == "Sí" || tramite.Reassigned == "Si")
                                                 {
-                                                    <span class="badge bg-warning">
-                                                        <i class="bi bi-arrow-repeat me-1"></i>
-                                                        Sí
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="bi bi-arrow-repeat me-1"></i> Sí
                                                     </span>
                                                 }
                                                 else
@@ -112,25 +114,26 @@
                                                 <div class="btn-group" role="group">
                                                     <button class="btn btn-sm text-white"
                                                         style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;"
-                                                        @onclick="@(() => VerDetalle(tramite.IdSolicitud))" title="Ver detalle">
+                                                        @onclick="@(() => VerDetalle(tramite.IdSolicitudTramite))"
+                                                        title="Ver detalles">
                                                         <i class="bi bi-eye"></i>
                                                     </button>
                                                     @if (tramite.Estado == "Completado")
                                                     {
                                                         <button class="btn btn-sm text-white"
                                                             style="background: linear-gradient(135deg, #38a169, #48bb78); border: none;"
-                                                            @onclick="@(() => DescargarResultado(tramite.IdSolicitud))"
+                                                            @onclick="@(() => DescargarResultado(tramite.IdSolicitudTramite))"
                                                             title="Descargar resultado">
                                                             <i class="bi bi-download"></i>
                                                         </button>
                                                     }
-                                                    @if (tramite.Estado == "Pendiente")
+                                                    @if (tramite.Estado == "Pendiente" || tramite.Estado == "En Revisión")
                                                     {
                                                         <button class="btn btn-sm text-white"
                                                             style="background: linear-gradient(135deg, #d69e2e, #f6e05e); border: none;"
-                                                            @onclick="@(() => CompletarDocumentos(tramite.IdSolicitud))"
+                                                            @onclick="@(() => CompletarDocumentos(tramite.IdSolicitudTramite))"
                                                             title="Completar documentos">
-                                                            <i class="bi bi-file-earmark-plus"></i>
+                                                            <i class="bi bi-file-earmark-arrow-up"></i>
                                                         </button>
                                                     }
                                                 </div>
@@ -144,7 +147,7 @@
                                         <td colspan="7" class="text-center py-5 text-muted">
                                             <i class="bi bi-inbox display-4 mb-3"></i>
                                             <div>No se encontraron trámites</div>
-                                            <small>Los trámites aparecerán aquí una vez que los inicies</small>
+                                            <small>Intenta ajustar los filtros de búsqueda</small>
                                         </td>
                                     </tr>
                                 }
@@ -158,100 +161,59 @@
 </div>
 
 <!-- Modals -->
-<ConfirmModal
-    Visible="@mostrarConfirmacion"
-    Title="Confirmar acción"
-    Message="@mensajeConfirmacion"
-    ConfirmText="Aceptar"
-    CancelText="Cancelar"
-    OnConfirm="ConfirmarAccion"
-    OnCancel="CancelarAccion" />
+<ConfirmModal Visible="@mostrarConfirmacion" Title="Confirmar acción" Message="@mensajeConfirmacion"
+    ConfirmText="Aceptar" CancelText="Cancelar" OnConfirm="ConfirmarAccion" OnCancel="CancelarAccion" />
 
-<OperationStatusModal
-    Visible="@mostrarResultado"
-    IsSuccess="@operacionExitosa"
-    Title="@(operacionExitosa ? "¡Éxito!" : "Error")"
-    Message="@mensajeResultado"
-    OnClose="CerrarResultado" />
+<OperationStatusModal Visible="@mostrarResultado" IsSuccess="@operacionExitosa"
+    Title="@(operacionExitosa ? "¡Éxito!" : "Error")" Message="@mensajeResultado" OnClose="CerrarResultado" />
 
 @code {
     [Parameter]
     public int IdRentista { get; set; }
 
+    private List<SolicitudTramiteRegistroDTO> tramites = new();
+    private List<SolicitudTramiteRegistroDTO> tramitesFiltrados = new();
     private string filtroTexto = string.Empty;
     private string filtroEstado = string.Empty;
-    private List<TramiteViewModel> tramites = new();
-    private List<TramiteViewModel> tramitesFiltrados = new();
+
     private bool mostrarConfirmacion = false;
     private bool mostrarResultado = false;
     private bool operacionExitosa = false;
     private string mensajeConfirmacion = string.Empty;
     private string mensajeResultado = string.Empty;
     private string accionActual = string.Empty;
-    private string idSolicitudActual = string.Empty;
+    private long idSolicitudActual = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine($"MisTramites cargado para rentista: {IdRentista}");
-        // TODO: En producción: tramites = await RentistaService.ObtenerTramites(IdRentista);
-        CargarTramitesDemo();
-        tramitesFiltrados = tramites;
+        await CargarTramites();
     }
 
-    private void CargarTramitesDemo()
+    private async Task CargarTramites()
     {
-        tramites = new List<TramiteViewModel>
+        try
         {
-            new() {
-                IdSolicitud = "TR-2024-001",
-                TipoTramite = "Afiliación de Trabajador Dependiente",
-                FuncionarioAsignado = "María González Pérez",
-                Fecha = DateTime.Now.AddDays(-5),
-                Estado = "En Proceso",
-                Reasignado = false
-            },
-            new() {
-                IdSolicitud = "TR-2024-002",
-                TipoTramite = "Acceso a Renta Dignidad",
-                FuncionarioAsignado = "Carlos Mamani Quispe",
-                Fecha = DateTime.Now.AddDays(-10),
-                Estado = "Completado",
-                Reasignado = true
-            },
-            new() {
-                IdSolicitud = "TR-2024-003",
-                TipoTramite = "Afiliación de Trabajador Dependiente",
-                FuncionarioAsignado = "Ana Lucia Vargas",
-                Fecha = DateTime.Now.AddDays(-15),
-                Estado = "Pendiente",
-                Reasignado = false
-            },
-            new() {
-                IdSolicitud = "TR-2024-004",
-                TipoTramite = "Acceso a Renta Dignidad",
-                FuncionarioAsignado = "Jorge Luis Mendoza",
-                Fecha = DateTime.Now.AddDays(-20),
-                Estado = "En Revisión",
-                Reasignado = false
-            },
-            new() {
-                IdSolicitud = "TR-2024-005",
-                TipoTramite = "Afiliación de Trabajador Dependiente",
-                FuncionarioAsignado = "Patricia Condori Silva",
-                Fecha = DateTime.Now.AddDays(-25),
-                Estado = "Rechazado",
-                Reasignado = true
-            }
-        };
+            tramites = await SolicitudTramiteService.ObtenerSolicitudesDelRentista(IdRentista);
+            FiltrarTramites();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error cargando trámites: {ex.Message}");
+        }
     }
 
-    private void FiltrarTramites()
+    private void FiltrarTramites(ChangeEventArgs? e = null)
     {
+        if (e != null)
+        {
+            // Si viene de un evento input, actualizamos el valor
+        }
+
         tramitesFiltrados = tramites.Where(t =>
         (string.IsNullOrEmpty(filtroTexto) ||
-        t.IdSolicitud.Contains(filtroTexto, StringComparison.OrdinalIgnoreCase) ||
-        t.TipoTramite.Contains(filtroTexto, StringComparison.OrdinalIgnoreCase) ||
-        t.FuncionarioAsignado.Contains(filtroTexto, StringComparison.OrdinalIgnoreCase)) &&
+        t.IdSolicitudTramite.ToString().Contains(filtroTexto, StringComparison.OrdinalIgnoreCase) ||
+        t.NombreTipoTramite.Contains(filtroTexto, StringComparison.OrdinalIgnoreCase) ||
+        t.NombreFuncionarioAsignado.Contains(filtroTexto, StringComparison.OrdinalIgnoreCase)) &&
         (string.IsNullOrEmpty(filtroEstado) || t.Estado == filtroEstado)
         ).ToList();
 
@@ -284,22 +246,17 @@
         };
     }
 
-    private void ActualizarTramites()
+    private async Task ActualizarTramites()
     {
-        Console.WriteLine("Actualizando trámites...");
-        CargarTramitesDemo();
-        FiltrarTramites();
+        await CargarTramites();
     }
 
-    private void VerDetalle(string idSolicitud)
+    private void VerDetalle(long idSolicitud)
     {
-        idSolicitudActual = idSolicitud;
-        accionActual = "ver-detalle";
-        mensajeConfirmacion = $"¿Deseas ver los detalles del trámite {idSolicitud}?";
-        mostrarConfirmacion = true;
+        Navigation.NavigateTo($"/ver-tramite/{idSolicitud}");
     }
 
-    private void DescargarResultado(string idSolicitud)
+    private void DescargarResultado(long idSolicitud)
     {
         idSolicitudActual = idSolicitud;
         accionActual = "descargar";
@@ -307,7 +264,7 @@
         mostrarConfirmacion = true;
     }
 
-    private void CompletarDocumentos(string idSolicitud)
+    private void CompletarDocumentos(long idSolicitud)
     {
         idSolicitudActual = idSolicitud;
         accionActual = "completar-docs";
@@ -319,7 +276,7 @@
     {
         mostrarConfirmacion = false;
         accionActual = string.Empty;
-        idSolicitudActual = string.Empty;
+        idSolicitudActual = 0;
     }
 
     private async Task ConfirmarAccion()
@@ -357,22 +314,12 @@
         }
 
         accionActual = string.Empty;
-        idSolicitudActual = string.Empty;
+        idSolicitudActual = 0;
     }
 
     private void CerrarResultado()
     {
         mostrarResultado = false;
-    }
-
-    public class TramiteViewModel
-    {
-        public string IdSolicitud { get; set; } = string.Empty;
-        public string TipoTramite { get; set; } = string.Empty;
-        public string FuncionarioAsignado { get; set; } = string.Empty;
-        public DateTime Fecha { get; set; }
-        public string Estado { get; set; } = string.Empty;
-        public bool Reasignado { get; set; }
     }
 }
 

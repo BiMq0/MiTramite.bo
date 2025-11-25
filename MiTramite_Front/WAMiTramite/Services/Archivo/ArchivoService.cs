@@ -1,5 +1,6 @@
 ﻿
 using MiTramite_Shared.DTOs.ArchivoDTOs;
+using MiTramite_Shared.Endpoints;
 
 namespace WAMiTramite.Services;
 
@@ -12,25 +13,9 @@ public class ArchivoService : IArchivoService
         _client = clientFactory.CreateClient("ApiClient");
     }
 
-    public async Task<bool> SubirArchivo(ArchivoNuevoDTO archivo)
-    {
-        string url = "archivo/nuevo";
-        Console.WriteLine("URL: " + _client.BaseAddress + url);
-        try
-        {
-            var respuesta = await _client.PostAsJsonAsync(url, archivo);
-            return respuesta.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error: {ex.Message}");
-            return false;
-        }
-    }
-
     public async Task<List<ArchivoRegistroDTO>> ObtenerArchivosDelRentista(int idRentista)
     {
-        string url = $"archivo/rentista/{idRentista}";
+        string url = ArchivoEndpoints.BASE + ArchivoEndpoints.OBTENER_DOCUMENTOS_POR_RENTISTA.Replace("{idRentista}", idRentista.ToString());
         Console.WriteLine("URL: " + _client.BaseAddress + url);
         try
         {
@@ -49,9 +34,26 @@ public class ArchivoService : IArchivoService
         }
     }
 
-    public async Task<bool> EliminarArchivo(int idRentista, long idArchivo)
+    public async Task<bool> SubirArchivo(ArchivoNuevoDTO archivo)
     {
-        string url = $"archivo/{idRentista}/{idArchivo}";
+        string url = ArchivoEndpoints.BASE + ArchivoEndpoints.SUBIR_DOCUMENTO;
+        Console.WriteLine("URL: " + _client.BaseAddress + url);
+        try
+        {
+            var respuesta = await _client.PostAsJsonAsync(url, archivo);
+            return respuesta.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> EliminarArchivo(long idArchivo)
+    {
+        string url = ArchivoEndpoints.BASE + ArchivoEndpoints.ELIMINAR_DOCUMENTO
+            .Replace("{idDocumento}", idArchivo.ToString());
         Console.WriteLine("URL: " + _client.BaseAddress + url);
         try
         {

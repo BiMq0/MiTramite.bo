@@ -4,6 +4,6 @@ namespace WAMiTramite.Services;
 
 public interface ITipoTramiteService
 {
-    Task<List<TipoTramiteDTO>> ObtenerTramitesDisponibles(int idRentista);
+    Task<List<TipoTramiteDTO>> ObtenerTramitesDisponibles();
     Task<TipoTramiteDTO?> ObtenerTramitePorId(int idTipoTramite);
 }

@@ -2,94 +2,131 @@
 @rendermode InteractiveServer
 @using WAMiTramite.Components.Modals
 @using WAMiTramite.Services
+@using MiTramite_Shared.DTOs.ArchivoDTOs
+@using MiTramite_Shared.DTOs.TipoArchivoDTOs
 @inject IJSRuntime JSRuntime
-@inject IRentistaService RentistaService
+@inject IArchivoService ArchivoService
+@inject ITipoArchivoService TipoArchivoService
 
 <div class="container-fluid">
-    <div class="row">
-        <!-- Tabla de documentos -->
+    <div class="row mb-4">
         <div class="col-12">
-            <div class="card">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0 text-primary">
+                        <i class="bi bi-cloud-upload me-2"></i>
+                        Subir Nuevos Documentos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tipo de Documento</th>
+                                    <th>Requisitos</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (tiposDisponibles != null && tiposDisponibles.Any())
+                                {
+                                    @foreach (var tipo in tiposDisponibles)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">@tipo.Nombre</div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info text-dark">Max @tipo.PesoMaximoMB MB</span>
+                                                <span class="badge bg-secondary">PDF</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <InputFile OnChange="@(e => SubirArchivo(e, tipo))"
+                                                        class="form-control form-control-sm" accept=".pdf"
+                                                        style="max-width: 250px;" />
+                                                    @if (subiendoArchivoId == tipo.IdTipoArchivo)
+                                                    {
+                                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                            <span class="visually-hidden">Subiendo...</span>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-3">
+                                            Cargando tipos de documentos...
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Tabla de documentos subidos -->
+        <div class="col-12">
+            <div class="card shadow-sm">
                 <div class="card-header bg-light">
                     <div class="d-flex justify-content-between align-items-center">
                         <h6 class="mb-0">
                             <i class="bi bi-folder2-open me-2"></i>
-                            Mis Documentos (@documentos.Count)
+                            Mis Documentos Guardados (@(documentosSubidos?.Count ?? 0))
                         </h6>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-sm text-white"
-                                style="background: linear-gradient(135deg, #38a169, #48bb78); border: none;"
-                                @onclick="SubirDocumento">
-                                <i class="bi bi-cloud-upload me-1"></i>
-                                <span class="d-none d-sm-inline">Subir Documento</span>
-                                <span class="d-sm-none">Subir</span>
-                            </button>
-                            <button class="btn btn-sm text-white"
-                                style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;"
-                                @onclick="ActualizarDocumentos">
-                                <i class="bi bi-arrow-clockwise me-1"></i>
-                                <span class="d-none d-sm-inline">Actualizar</span>
-                            </button>
-                        </div>
+                        <button class="btn btn-sm btn-outline-primary" @onclick="CargarDatos">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+                        </button>
                     </div>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                        <table class="table table-hover mb-0 align-middle">
                             <thead class="table-light">
                                 <tr>
-                                    <th scope="col">Tipo de Documento</th>
-                                    <th scope="col">Nombre del Archivo</th>
-                                    <th scope="col">Fecha de Subida</th>
-                                    <th scope="col">Tamaño</th>
-                                    <th scope="col">Acciones</th>
+                                    <th scope="col">Documento</th>
+                                    <th scope="col">Detalles</th>
+                                    <th scope="col" class="text-end">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @if (documentos.Any())
+                                @if (documentosSubidos != null && documentosSubidos.Any())
                                 {
-                                    @foreach (var documento in documentos)
+                                    @foreach (var documento in documentosSubidos)
                                     {
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <i
-                                                        class="bi @GetDocumentIcon(documento.TipoDocumento) me-2 text-primary fs-5"></i>
+                                                    <i class="bi bi-file-earmark-pdf text-danger fs-4 me-3"></i>
                                                     <div>
-                                                        <div class="fw-semibold">@documento.TipoDocumento</div>
-                                                        <small class="text-muted">@documento.Descripcion</small>
+                                                        <div class="fw-bold">@documento.Nombre</div>
+                                                        <small
+                                                            class="text-muted">@ObtenerNombreTipo(documento.IdTipoArchivo)</small>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
-                                                <div class="small">
-                                                    <div class="fw-semibold">@documento.NombreArchivo</div>
-                                                    <small class="text-muted">@documento.Extension.ToUpper()</small>
-                                                </div>
+                                                <span
+                                                    class="badge bg-light text-dark border">@FormatFileSize(documento.Peso)</span>
                                             </td>
-                                            <td>
-                                                <div class="small">@documento.FechaSubida.ToString("dd/MM/yyyy")</div>
-                                                <div class="small text-muted">@documento.FechaSubida.ToString("HH:mm")</div>
-                                            </td>
-                                            <td>
-                                                <small class="text-muted">@FormatFileSize(documento.Tamano)</small>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group" role="group">
-                                                    <button class="btn btn-sm text-white"
-                                                        style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;"
-                                                        @onclick="@(() => AbrirDocumentoEnNuevaPestaña(documento))"
-                                                        title="Ver documento">
-                                                        <i class="bi bi-eye"></i>
-                                                    </button>
-                                                    <button class="btn btn-sm text-white"
-                                                        style="background: linear-gradient(135deg, #38a169, #48bb78); border: none;"
-                                                        @onclick="@(() => DescargarDocumento(documento.Id))" title="Descargar">
+                                            <td class="text-end">
+                                                <div class="btn-group">
+                                                    <a href="@ObtenerUrlDescarga(documento)" download="@documento.Nombre"
+                                                        class="btn btn-sm btn-outline-primary" title="Descargar">
                                                         <i class="bi bi-download"></i>
-                                                    </button>
-                                                    <button class="btn btn-sm text-white"
-                                                        style="background: linear-gradient(135deg, #e53e3e, #fc8181); border: none;"
-                                                        @onclick="@(() => ConfirmarEliminarDocumento(documento.Id))" title="Eliminar">
+                                                    </a>
+                                                    <button class="btn btn-sm btn-outline-danger"
+                                                        @onclick="@(() => ConfirmarEliminarDocumento(documento.IdArchivo))"
+                                                        title="Eliminar">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>
@@ -100,18 +137,9 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="5" class="text-center py-5 text-muted">
-                                            <i class="bi bi-cloud-upload display-4 mb-3"></i>
-                                            <div>No hay documentos subidos</div>
-                                            <small>Los documentos que subas aparecerán aquí</small>
-                                            <div class="mt-3">
-                                                <button class="btn btn-sm text-white"
-                                                    style="background: linear-gradient(135deg, #1a365d, #3182ce); border: none;"
-                                                    @onclick="SubirDocumento">
-                                                    <i class="bi bi-cloud-upload me-1"></i>
-                                                    Subir primer documento
-                                                </button>
-                                            </div>
+                                        <td colspan="4" class="text-center py-5 text-muted">
+                                            <i class="bi bi-inbox display-4 mb-3 d-block"></i>
+                                            No tienes documentos guardados aún.
                                         </td>
                                     </tr>
                                 }
@@ -125,98 +153,131 @@
 </div>
 
 <!-- Modals -->
-<ConfirmModal
-    Visible="@mostrarConfirmacionEliminar"
-    Title="Confirmar eliminación"
-    Message="¿Está seguro que desea eliminar este documento? Esta acción no se puede deshacer."
-    ConfirmText="Eliminar"
-    CancelText="Cancelar"
-    OnConfirm="ConfirmarEliminar"
-    OnCancel="CancelarEliminar" />
+<ConfirmModal Visible="@mostrarConfirmacionEliminar" Title="Confirmar eliminación"
+    Message="¿Está seguro que desea eliminar este documento? Esta acción no se puede deshacer." ConfirmText="Eliminar"
+    CancelText="Cancelar" OnConfirm="EjecutarEliminacion" OnCancel="CancelarEliminar" />
 
-<OperationStatusModal
-    Visible="@mostrarResultado"
-    IsSuccess="@operacionExitosa"
-    Title="@(operacionExitosa ? "¡Éxito!" : "Error")"
-    Message="@mensajeResultado"
-    OnClose="CerrarResultado" />
+<OperationStatusModal Visible="@mostrarResultado" IsSuccess="@operacionExitosa"
+    Title="@(operacionExitosa ? "¡Éxito!" : "Error")" Message="@mensajeResultado" OnClose="CerrarResultado" />
 
 @code {
     [Parameter]
     public int IdRentista { get; set; }
 
-    private List<DocumentoViewModel> documentos = new();
+    private List<ArchivoRegistroDTO> documentosSubidos = new();
+    private List<TipoArchivoParaSubirDTO> tiposDisponibles = new();
+
     private bool mostrarConfirmacionEliminar = false;
     private bool mostrarResultado = false;
     private bool operacionExitosa = false;
     private string mensajeResultado = string.Empty;
-    private int documentoAEliminar = 0;
+    private long documentoAEliminar = 0;
+    private int subiendoArchivoId = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine($"MisDocumentos cargado para rentista: {IdRentista}");
-        // TODO: En producción: documentos = (await RentistaService.ObtenerDocumentos(IdRentista))?.Select(...).ToList();
-        CargarDocumentosDemo();
+        await CargarDatos();
     }
 
-    private void CargarDocumentosDemo()
+    private async Task CargarDatos()
     {
-        documentos = new List<DocumentoViewModel>
+        try
         {
-            new() {
-                Id = 1,
-                TipoDocumento = "Cédula de Identidad",
-                Descripcion = "Documento de identificación personal",
-                NombreArchivo = "cedula_juan_perez.pdf",
-                Extension = ".pdf",
-                FechaSubida = DateTime.Now.AddDays(-10),
-                Tamano = 2048576,
-                UrlArchivo = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
-            },
-            new() {
-                Id = 2,
-                TipoDocumento = "Certificado de Nacimiento",
-                Descripcion = "Certificado oficial de nacimiento",
-                NombreArchivo = "certificado_nacimiento.jpg",
-                Extension = ".jpg",
-                FechaSubida = DateTime.Now.AddDays(-5),
-                Tamano = 1536000,
-                UrlArchivo = "https://via.placeholder.com/800x600/007bff/ffffff?text=Certificado+de+Nacimiento"
-            },
-            new() {
-                Id = 3,
-                TipoDocumento = "Contrato de Trabajo",
-                Descripcion = "Contrato laboral vigente",
-                NombreArchivo = "contrato_trabajo_2024.pdf",
-                Extension = ".pdf",
-                FechaSubida = DateTime.Now.AddDays(-3),
-                Tamano = 1024000,
-                UrlArchivo = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
-            },
-            new() {
-                Id = 4,
-                TipoDocumento = "Comprobante de Domicilio",
-                Descripcion = "Factura de servicios básicos",
-                NombreArchivo = "factura_luz_noviembre.docx",
-                Extension = ".docx",
-                FechaSubida = DateTime.Now.AddDays(-1),
-                Tamano = 512000,
-                UrlArchivo = ""
+            var taskTipos = TipoArchivoService.OBtenerTiposDeDocumentoParaSubir();
+            var taskDocumentos = ArchivoService.ObtenerArchivosDelRentista(IdRentista);
+
+            await Task.WhenAll(taskTipos, taskDocumentos);
+
+            tiposDisponibles = await taskTipos;
+            documentosSubidos = await taskDocumentos;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error cargando datos: {ex.Message}");
+        }
+    }
+
+    private async Task SubirArchivo(InputFileChangeEventArgs e, TipoArchivoParaSubirDTO tipo)
+    {
+        var file = e.File;
+        if (file == null) return;
+
+        // Validar tamaño (MB a Bytes)
+        long maxBytes = tipo.PesoMaximoMB * 1024 * 1024;
+        if (file.Size > maxBytes)
+        {
+            operacionExitosa = false;
+            mensajeResultado = $"El archivo excede el tamaño máximo de {tipo.PesoMaximoMB} MB.";
+            mostrarResultado = true;
+            return;
+        }
+
+        // Validar tipo (solo PDF por ahora según requerimiento)
+        if (!file.Name.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+        {
+            operacionExitosa = false;
+            mensajeResultado = "Solo se permiten archivos PDF.";
+            mostrarResultado = true;
+            return;
+        }
+
+        subiendoArchivoId = tipo.IdTipoArchivo;
+        StateHasChanged();
+
+        try
+        {
+            using var stream = file.OpenReadStream(maxBytes);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            var contenido = ms.ToArray();
+
+            var archivoNuevo = new ArchivoNuevoDTO
+            {
+                IdRentista = IdRentista,
+                IdTipoArchivo = tipo.IdTipoArchivo,
+                Nombre = file.Name,
+                Peso = (int)file.Size,
+                Contenido = contenido
+            };
+
+            var resultado = await ArchivoService.SubirArchivo(archivoNuevo);
+
+            if (resultado)
+            {
+                operacionExitosa = true;
+                mensajeResultado = "Documento subido correctamente.";
+                await CargarDatos(); // Recargar lista
             }
-        };
+            else
+            {
+                operacionExitosa = false;
+                mensajeResultado = "Error al subir el documento. Intente nuevamente.";
+            }
+        }
+        catch (Exception ex)
+        {
+            operacionExitosa = false;
+            mensajeResultado = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            subiendoArchivoId = 0;
+            mostrarResultado = true;
+            StateHasChanged();
+        }
     }
 
-    private string GetDocumentIcon(string tipoDocumento)
+    private string ObtenerNombreTipo(int idTipo)
     {
-        return tipoDocumento.ToLower() switch
-        {
-            var t when t.Contains("cedula") => "bi-card-text",
-            var t when t.Contains("certificado") => "bi-award",
-            var t when t.Contains("contrato") => "bi-file-earmark-text",
-            var t when t.Contains("comprobante") => "bi-receipt",
-            var t when t.Contains("factura") => "bi-receipt",
-            _ => "bi-file-earmark"
-        };
+        var tipo = tiposDisponibles.FirstOrDefault(t => t.IdTipoArchivo == idTipo);
+        return tipo?.Nombre ?? "Desconocido";
+    }
+
+    private string ObtenerUrlDescarga(ArchivoRegistroDTO documento)
+    {
+        if (documento.Contenido == null || documento.Contenido.Length == 0) return "#";
+        var base64 = Convert.ToBase64String(documento.Contenido);
+        return $"data:application/pdf;base64,{base64}";
     }
 
     private string FormatFileSize(long bytes)
@@ -232,36 +293,7 @@
         return $"{len:0.##} {sizes[order]}";
     }
 
-    private async Task AbrirDocumentoEnNuevaPestaña(DocumentoViewModel documento)
-    {
-        if (!string.IsNullOrWhiteSpace(documento.UrlArchivo))
-        {
-            await JSRuntime.InvokeVoidAsync("open", documento.UrlArchivo, "_blank");
-        }
-        else
-        {
-            DescargarDocumento(documento.Id);
-        }
-    }
-
-    private void SubirDocumento()
-    {
-        Console.WriteLine("Abrir modal de subida de documentos");
-    }
-
-    private void ActualizarDocumentos()
-    {
-        Console.WriteLine("Actualizando documentos...");
-        CargarDocumentosDemo();
-        StateHasChanged();
-    }
-
-    private void DescargarDocumento(int documentoId)
-    {
-        Console.WriteLine($"Descargar documento ID: {documentoId}");
-    }
-
-    private void ConfirmarEliminarDocumento(int documentoId)
+    private void ConfirmarEliminarDocumento(long documentoId)
     {
         documentoAEliminar = documentoId;
         mostrarConfirmacionEliminar = true;
@@ -273,117 +305,56 @@
         documentoAEliminar = 0;
     }
 
-    private async Task ConfirmarEliminar()
+    private async Task EjecutarEliminacion()
     {
         mostrarConfirmacionEliminar = false;
 
         try
         {
-            // En producción: await RentistaService.EliminarDocumento(idRentista, documentoAEliminar);
-            
-            documentos.RemoveAll(d => d.Id == documentoAEliminar);
-            operacionExitosa = true;
-            mensajeResultado = "Documento eliminado correctamente.";
-            mostrarResultado = true;
-            StateHasChanged();
+            var resultado = await ArchivoService.EliminarArchivo(documentoAEliminar);
+
+            if (resultado)
+            {
+                operacionExitosa = true;
+                mensajeResultado = "Documento eliminado correctamente.";
+                await CargarDatos();
+            }
+            else
+            {
+                operacionExitosa = false;
+                mensajeResultado = "No se pudo eliminar el documento.";
+            }
         }
         catch (Exception ex)
         {
             operacionExitosa = false;
-            mensajeResultado = $"Hubo un error al eliminar el documento: {ex.Message}";
-            mostrarResultado = true;
+            mensajeResultado = $"Error: {ex.Message}";
         }
-
-        documentoAEliminar = 0;
+        finally
+        {
+            mostrarResultado = true;
+            documentoAEliminar = 0;
+            StateHasChanged();
+        }
     }
 
     private void CerrarResultado()
     {
         mostrarResultado = false;
     }
-
-    public class DocumentoViewModel
-    {
-        public int Id { get; set; }
-        public string TipoDocumento { get; set; } = string.Empty;
-        public string Descripcion { get; set; } = string.Empty;
-        public string NombreArchivo { get; set; } = string.Empty;
-        public string Extension { get; set; } = string.Empty;
-        public DateTime FechaSubida { get; set; }
-        public long Tamano { get; set; }
-        public string UrlArchivo { get; set; } = string.Empty;
-    }
 }
 
 <style>
+    /* Estilos responsivos */
     @@media (max-width: 768px) {
-        .d-flex.gap-2 {
-            flex-direction: column;
-            gap: 0.5rem !important;
-        }
-
-        .btn-sm {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-        }
-
-        .table-responsive {
-            font-size: 0.875rem;
-        }
-
-        .card-header h6 {
-            font-size: 0.9rem;
-        }
-
         .btn-group {
-            flex-direction: column;
-            width: 100%;
-        }
-
-        .btn-group .btn {
-            border-radius: 0.25rem !important;
-            margin-bottom: 0.25rem;
-        }
-    }
-
-    @@media (max-width: 576px) {
-        .container-fluid {
-            padding: 0.5rem;
-        }
-
-        .card-header {
-            padding: 0.75rem;
-        }
-
-        .card-header .d-flex {
-            flex-direction: column;
-            align-items: flex-start !important;
-        }
-
-        .card-header .d-flex>div:last-child {
-            margin-top: 0.5rem;
-            width: 100%;
+            display: flex;
         }
 
         .table th,
         .table td {
-            padding: 0.5rem 0.25rem;
-            font-size: 0.8rem;
-        }
-
-        .table th:nth-child(3),
-        .table th:nth-child(4),
-        .table td:nth-child(3),
-        .table td:nth-child(4) {
-            display: none;
-        }
-
-        .fw-semibold {
-            font-size: 0.85rem;
-        }
-
-        .small {
-            font-size: 0.75rem !important;
+            padding: 0.5rem;
+            font-size: 0.9rem;
         }
     }
 </style>

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using MiTramite_Back.AccessMaps;
+using MiTramite_Back.Logica_De_Negocio.AccessMaps;
 
 namespace MiTramite_Back.Handlers
 {
@@ -23,6 +24,7 @@ namespace MiTramite_Back.Handlers
                 ArchivoMapper.Map(app);
                 TipoArchivoMapper.Map(app);
                 TipoTramiteMapper.Map(app);
+                SolicitusTramiteMapper.Map(app);
             }
         }
     }

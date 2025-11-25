@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MiTramite_Back.Acceso_A_Datos.Context;
 using MiTramite_Back.Middleware.Tokens;
+using MiTramite_Back.Logica_De_Negocio.Services.EmailSvc;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -59,7 +60,6 @@ builder.Services.AddAuthorization();
 // Scopes y Repositories
 builder.Services.AddScopedRepositories();
 builder.Services.AddScopedServices();
-builder.Services.AddScoped<ITokenService, TokenService>();
 
 // Middlewares
 builder.Services.AddCors(options =>

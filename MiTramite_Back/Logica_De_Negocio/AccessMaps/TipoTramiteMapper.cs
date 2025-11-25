@@ -1,5 +1,6 @@
 using MiTramite_Back.Logica_De_Negocio.Services.TramiteSvc;
 using Microsoft.AspNetCore.Authorization;
+using MiTramite_Shared.Endpoints;
 
 namespace MiTramite_Back.AccessMaps
 {
@@ -7,10 +8,13 @@ namespace MiTramite_Back.AccessMaps
     {
         public static void Map(this WebApplication app)
         {
-            var tiposTramite = app.MapGroup("api/tipo-tramite");
+            var tiposTramite = app.MapGroup(TipoTramiteEndpoints.BASE)
+                .RequireAuthorization(new AuthorizeAttribute
+                {
+                    AuthenticationSchemes = "Bearer",
+                });
 
-            // OBTENER TODOS LOS TIPOS DE TRÁMITE
-            tiposTramite.MapGet("/obtener-todos", [Authorize] async (ITipoTramiteService service) =>
+            tiposTramite.MapGet(TipoTramiteEndpoints.OBTENER_TODOS, async (ITipoTramiteService service) =>
             {
                 try
                 {
@@ -23,17 +27,14 @@ namespace MiTramite_Back.AccessMaps
                 }
             });
 
-            // OBTENER POR ID
-            tiposTramite.MapGet("/{idTipoTramite:int}", [Authorize] async (int idTipoTramite, ITipoTramiteService service) =>
+            tiposTramite.MapGet(TipoTramiteEndpoints.OBTENER_POR_ID, async (int idTipoTramite, ITipoTramiteService service) =>
             {
                 try
                 {
-                    var tipo = await service.ObtenerPorIdAsync(idTipoTramite);
-                    return Results.Ok(tipo);
-                }
-                catch (KeyNotFoundException)
-                {
-                    return Results.NotFound(new { error = "Tipo de trámite no encontrado" });
+                    var tipoTramite = await service.ObtenerPorIdAsync(idTipoTramite);
+                    return tipoTramite != null
+                        ? Results.Ok(tipoTramite)
+                        : Results.NotFound(new { error = "Tipo de trámite no encontrado" });
                 }
                 catch (Exception ex)
                 {

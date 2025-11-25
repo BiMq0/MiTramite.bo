@@ -1,4 +1,5 @@
 using MiTramite_Shared.DTOs.SolicitudTramiteDTOs;
+using MiTramite_Shared.Endpoints;
 
 namespace WAMiTramite.Services;
 
@@ -13,7 +14,8 @@ public class SolicitudTramiteService : ISolicitudTramiteService
 
     public async Task<bool> CrearSolicitud(SolicitudTramiteNuevoDTO solicitud)
     {
-        string url = "solicitudTramite/nuevo";
+        string url = SolicitudTramiteEndpoints.BASE + SolicitudTramiteEndpoints.CREAR_SOLICITUD_TRAMITE.Replace("{idRentista}", solicitud.IdRentista.ToString());
+
         Console.WriteLine("URL: " + _client.BaseAddress + url);
         try
         {
@@ -27,24 +29,47 @@ public class SolicitudTramiteService : ISolicitudTramiteService
         }
     }
 
-    public async Task<List<object>> ObtenerSolicitudesDelRentista(int idRentista)
+    public async Task<List<SolicitudTramiteRegistroDTO>> ObtenerSolicitudesDelRentista(int idRentista)
     {
-        string url = $"solicitudTramite/rentista/{idRentista}";
+        string url = SolicitudTramiteEndpoints.BASE + SolicitudTramiteEndpoints.OBTENER_TRAMITES_POR_RENTISTA.Replace("{idRentista}", idRentista.ToString());
+
         Console.WriteLine("URL: " + _client.BaseAddress + url);
         try
         {
             var resultado = await _client.GetAsync(url);
             if (resultado.IsSuccessStatusCode)
             {
-                var datos = await resultado.Content.ReadFromJsonAsync<List<object>>();
-                return datos ?? new List<object>();
+                var datos = await resultado.Content.ReadFromJsonAsync<List<SolicitudTramiteRegistroDTO>>();
+                return datos ?? new List<SolicitudTramiteRegistroDTO>();
             }
-            return new List<object>();
+            return new List<SolicitudTramiteRegistroDTO>();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
-            return new List<object>();
+            return new List<SolicitudTramiteRegistroDTO>();
+        }
+    }
+
+    public async Task<SolicitudTramiteRegistroDTO> ObtenerSolicitudDeTramitePorId(int idSolicitudTramite)
+    {
+        string url = SolicitudTramiteEndpoints.BASE + SolicitudTramiteEndpoints.OBTENER_TRAMITE_POR_ID.Replace("{idTramite}", idSolicitudTramite.ToString());
+
+        Console.WriteLine("URL: " + _client.BaseAddress + url);
+        try
+        {
+            var resultado = await _client.GetAsync(url);
+            if (resultado.IsSuccessStatusCode)
+            {
+                var dato = await resultado.Content.ReadFromJsonAsync<SolicitudTramiteRegistroDTO>();
+                return dato!;
+            }
+            return null!;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            return null!;
         }
     }
 }

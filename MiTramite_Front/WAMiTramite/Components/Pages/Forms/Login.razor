@@ -146,7 +146,7 @@
             if (result != null)
             {
                 Console.WriteLine($"Login exitoso: {loginModel.Correo}");
-                Navigation.NavigateTo("/dashboard");
+                Navigation.NavigateTo($"/dashboard/{result.IdRentista}");
             }
             else
             {

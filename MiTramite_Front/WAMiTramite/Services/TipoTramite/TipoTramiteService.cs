@@ -12,9 +12,9 @@ public class TipoTramiteService : ITipoTramiteService
         _client = clientFactory.CreateClient("ApiClient");
     }
 
-    public async Task<List<TipoTramiteDTO>> ObtenerTramitesDisponibles(int idRentista)
+    public async Task<List<TipoTramiteDTO>> ObtenerTramitesDisponibles()
     {
-        string url = $"tipoTramite/disponibles/{idRentista}";
+        string url = TipoTramiteEndpoints.BASE + TipoTramiteEndpoints.OBTENER_TODOS;
         Console.WriteLine("URL de trámites disponibles: " + _client.BaseAddress + url);
         try
         {
@@ -35,7 +35,7 @@ public class TipoTramiteService : ITipoTramiteService
 
     public async Task<TipoTramiteDTO?> ObtenerTramitePorId(int idTipoTramite)
     {
-        string url = $"tipoTramite/{idTipoTramite}";
+        string url = TipoTramiteEndpoints.BASE + TipoTramiteEndpoints.OBTENER_POR_ID.Replace("{idTipoTramite}", idTipoTramite.ToString());
         Console.WriteLine("URL de trámite por ID: " + _client.BaseAddress + url);
         try
         {
