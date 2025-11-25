@@ -6,7 +6,11 @@ namespace WAMiTramite.Services;
 public class RentistaService : IRentistaService
 {
     private readonly HttpClient _client;
-    public RentistaCurrentDataDTO rentistaCurrentData { get; set; }
+    public RentistaCurrentDataDTO? rentistaCurrentData
+    {
+        get => RentistaStateStore.Current;
+        set => RentistaStateStore.Set(value);
+    }
     public RentistaService(IHttpClientFactory clientFactory)
     {
         _client = clientFactory.CreateClient("ApiClient");
@@ -18,8 +22,8 @@ public class RentistaService : IRentistaService
         Console.WriteLine("URL de inicio de sesion: " + _client.BaseAddress + url);
         var resultado = await _client.PostAsJsonAsync(url, rentistaLoginDTO);
         var rentista = await resultado.Content.ReadFromJsonAsync<RentistaCurrentDataDTO>();
-        rentistaCurrentData = rentista!;
-        return rentistaCurrentData;
+        rentistaCurrentData = rentista;
+        return rentistaCurrentData!;
     }
 
     public async Task<bool> RegistrarRentista(RentistaSignupDTO rentistaSignupDTO)

@@ -24,14 +24,12 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep
         {
             try
             {
-                // Verificar que el rentista existe
                 var rentistaExiste = await _context.Rentistas
                     .AnyAsync(r => r.IdRentista == solicitudNueva.IdRentista, cancellationToken);
 
                 if (!rentistaExiste)
                     throw new KeyNotFoundException($"El rentista con ID {solicitudNueva.IdRentista} no existe");
 
-                // Verificar que el tipo de trámite existe
                 var tipoTramiteExiste = await _context.TipoTramites
                     .AnyAsync(tt => tt.IdTipoTramite == solicitudNueva.IdTipoTramite, cancellationToken);
 
@@ -39,7 +37,7 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep
                     throw new KeyNotFoundException($"El tipo de trámite con ID {solicitudNueva.IdTipoTramite} no existe");
 
                 var funcionario = await _context.Funcionarios
-                    .Where(f => f.IdRol == 2)
+                    .Where(f => f.IdRol == 1)
                     .OrderBy(f => f.PesoDisponibilidad ?? int.MaxValue)
                     .FirstOrDefaultAsync(cancellationToken);
 

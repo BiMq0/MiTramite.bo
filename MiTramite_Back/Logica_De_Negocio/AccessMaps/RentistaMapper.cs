@@ -46,7 +46,7 @@ public static class RentistaMapper
                 var token = await tokenService.GenerarTokenRentista(resultado);
                 httpContext.Response.Cookies.Append("token", token, tokenService.ConfigurarCookie());
                 Console.WriteLine("[RENTISTA MAPPER] Login exitoso, token generado y cookie configurada.");
-                return Results.Ok(new { message = "Login exitoso", data = resultado });
+                return Results.Ok(resultado);
             }
             catch (KeyNotFoundException)
             {

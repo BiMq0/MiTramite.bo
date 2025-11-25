@@ -2,6 +2,7 @@
 @using MiTramite_Shared.DTOs.RentistaDTOs
 @inject NavigationManager Navigation
 @inject Services.IRentistaService RentistaService
+@using Services
 @rendermode InteractiveServer
 
 <div class="container py-5">
@@ -147,7 +148,7 @@
             {
                 Console.WriteLine($"Login exitoso: {loginModel.Correo}");
                 Console.WriteLine($"Rentista recuperado: {result.IdRentista}");
-                Navigation.NavigateTo($"/dashboard/{result.IdRentista}");
+                Navigation.NavigateTo($"/dashboard/{RentistaStateStore.Current!.IdRentista}");
             }
             else
             {

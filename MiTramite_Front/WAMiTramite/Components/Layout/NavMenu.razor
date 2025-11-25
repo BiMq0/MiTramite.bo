@@ -1,7 +1,7 @@
 @* NavMenu - Solo sidebar sin wrapper de layout *@
 @using Microsoft.AspNetCore.Components.Routing
 @using WAMiTramite.Services
-@inject IRentistaService RentistaService
+@using Services
 @rendermode InteractiveServer
 
 <div class="mobile-overlay @(sidebarOpen ? "show" : "")" @onclick="ToggleSidebar"></div>
@@ -35,26 +35,26 @@
         {
             <nav class="nav flex-column">
                 <NavLink class="nav-link text-white d-flex align-items-center py-3 px-3 border-0 bg-transparent"
-                    href='@($"/dashboard/{RentistaService.rentistaCurrentData.IdRentista}")' Match="NavLinkMatch.All"
+                    href='@($"/dashboard/{RentistaStateStore.Current!.IdRentista}")' Match="NavLinkMatch.All"
                     @onclick="CloseSidebar">
                     <i class="bi bi-speedometer2 me-3 fs-5"></i>
                     <span>Dashboard</span>
                 </NavLink>
 
                 <NavLink class="nav-link text-white d-flex align-items-center py-3 px-3 border-0 bg-transparent"
-                    href='@($"/nuevo-tramite/{RentistaService.rentistaCurrentData.IdRentista}")' @onclick="CloseSidebar">
+                    href='@($"/nuevo-tramite/{RentistaStateStore.Current!.IdRentista}")' @onclick="CloseSidebar">
                     <i class="bi bi-file-earmark-plus me-3 fs-5"></i>
                     <span>Nuevo Trámite</span>
                 </NavLink>
 
                 <NavLink class="nav-link text-white d-flex align-items-center py-3 px-3 border-0 bg-transparent"
-                    href='@($"/mis-tramites/{RentistaService.rentistaCurrentData.IdRentista}")' @onclick="CloseSidebar">
+                    href='@($"/mis-tramites/{RentistaStateStore.Current!.IdRentista}")' @onclick="CloseSidebar">
                     <i class="bi bi-list-check me-3 fs-5"></i>
                     <span>Mis Trámites</span>
                 </NavLink>
 
                 <NavLink class="nav-link text-white d-flex align-items-center py-3 px-3 border-0 bg-transparent"
-                    href='@($"/mis-documentos/{RentistaService.rentistaCurrentData.IdRentista}")' @onclick="CloseSidebar">
+                    href='@($"/mis-documentos/{RentistaStateStore.Current!.IdRentista}")' @onclick="CloseSidebar">
                     <i class="bi bi-folder2-open me-3 fs-5"></i>
                     <span>Mis Documentos</span>
                 </NavLink>
