@@ -18,16 +18,19 @@ public static class RentistaMapper
             try
             {
                 var resultado = await service.RegistrarNuevoRentista(rentistaNuevo);
+                Console.WriteLine("[RENTISTA MAPPER] Registro de nuevo rentista iniciado.");
                 return resultado
                     ? Results.Created($"{RentistaEndpoints.BASE}/signup", new { message = "Rentista registrado exitosamente" })
                     : Results.BadRequest(new { error = "No se pudo registrar el rentista" });
             }
             catch (InvalidOperationException ex)
             {
+                Console.WriteLine($"[RENTISTA MAPPER] Conflicto al registrar nuevo rentista: {ex.Message}");
                 return Results.Conflict(new { error = ex.Message });
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"[RENTISTA MAPPER] Error inesperado al registrar nuevo rentista: {ex.Message}");
                 return Results.Problem(detail: ex.Message, statusCode: 500);
             }
         });
@@ -42,7 +45,7 @@ public static class RentistaMapper
 
                 var token = await tokenService.GenerarTokenRentista(resultado);
                 httpContext.Response.Cookies.Append("token", token, tokenService.ConfigurarCookie());
-
+                Console.WriteLine("[RENTISTA MAPPER] Login exitoso, token generado y cookie configurada.");
                 return Results.Ok(new { message = "Login exitoso", data = resultado });
             }
             catch (KeyNotFoundException)

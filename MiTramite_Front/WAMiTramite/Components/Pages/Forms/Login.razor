@@ -146,6 +146,7 @@
             if (result != null)
             {
                 Console.WriteLine($"Login exitoso: {loginModel.Correo}");
+                Console.WriteLine($"Rentista recuperado: {result.IdRentista}");
                 Navigation.NavigateTo($"/dashboard/{result.IdRentista}");
             }
             else
