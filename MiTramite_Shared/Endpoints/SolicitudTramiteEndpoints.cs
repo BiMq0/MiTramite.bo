@@ -9,4 +9,7 @@ public static class SolicitudTramiteEndpoints
     public const string COMPLETAR_TRAMITES = "/completar-tramite/{idTramite}";
     public const string RECHAZAR_TRAMITE = "/rechazar-tramite/{idTramite}";
 
+    // Nuevos endpoints
+    public const string OBTENER_TRAMITES_POR_FUNCIONARIO = "/obtener-tramites-funcionario/{idFuncionario}";
+    public const string OBTENER_TODOS = "/obtener-todos";
 }

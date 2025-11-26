@@ -1,228 +1,136 @@
-@page "/funcionario/historial-tramites/detalles/{IdSolicitudTramite:long}"
-<!-- #region DATOS DE EJEMPLO TEMPORALES - CAMBIAR A MiTramite_Shared.DTOs.TramiteDTOs CUANDO ESTÉ DISPONIBLE -->
-@using MiTramite_Front.Services.Tramite
-<!-- #endregion -->
+@page "/funcionario/historial-tramites/ver-detalles/{IdSolicitudTramite:long}"
+@using MiTramite_Shared.DTOs.SolicitudTramiteDTOs
 @using MiTramite_Domain.Constants
 @inject Services.ITramiteService TramiteService
 @inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
-<PageTitle>Detalles del Trámite</PageTitle>
+<PageTitle>Detalles del Trámite - Historial</PageTitle>
 
 <div class="container-fluid px-4" style="max-height: calc(100vh - 120px); overflow-y: auto;">
     <div class="mb-4 mt-3">
-        <button class="btn btn-outline-secondary btn-sm mb-3" @onclick="VolverAHistorial">
-            <i class="bi bi-arrow-left me-2"></i>Volver
+        <button class="btn btn-outline-secondary btn-sm mb-3" @onclick="VolverAlHistorial">
+            <i class="bi bi-arrow-left me-2"></i>Volver al Historial
         </button>
         <h2 class="fw-bold text-primary mb-1">
             <i class="bi bi-file-earmark-text me-2"></i>Detalles del Trámite
         </h2>
-        <p class="text-muted">Revisa la información completa y documentos del trámite procesado</p>
+        <p class="text-muted">Información completa del trámite procesado</p>
     </div>
 
-    #region Datos de Ejemplo
-
-    <div class="row">
-        <!-- Información del Trámite -->
-        <div class="col-lg-6 mb-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-light border-bottom py-3">
-                    <h5 class="fw-bold text-primary mb-0">
-                        <i class="bi bi-info-circle me-2"></i>Información del Trámite
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-sm-6">
-                            <label class="text-muted small">ID Trámite</label>
-                            <p class="fw-bold">#TRX-2025-002</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="text-muted small">Tipo de Trámite</label>
-                            <p class="fw-bold">Afiliación</p>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-sm-6">
-                            <label class="text-muted small">Fecha Solicitud</label>
-                            <p class="fw-bold">22/11/2025</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="text-muted small">Fecha Conclusión</label>
-                            <p class="fw-bold">29/11/2025</p>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="text-muted small">Estado</label>
-                        <div>
-                            <span class="badge"
-                                style="background-color: #5CB85C; color: white; font-size: 0.9rem; padding: 0.5rem 0.75rem;">
-                                Completado
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="alert alert-success">
-                        <i class="bi bi-check-circle me-2"></i>
-                        <strong>Completado:</strong> Este trámite fue aprobado correctamente
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Información del Rentista -->
-        <div class="col-lg-6 mb-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-light border-bottom py-3">
-                    <h5 class="fw-bold text-primary mb-0">
-                        <i class="bi bi-person me-2"></i>Información del Rentista
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="text-muted small">Nombre Completo</label>
-                        <p class="fw-bold">María López García</p>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-sm-6">
-                            <label class="text-muted small">Documento</label>
-                            <p class="fw-bold">87654321</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="text-muted small">Teléfono</label>
-                            <p class="fw-bold">+591 75543210</p>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="text-muted small">Email</label>
-                        <p class="fw-bold">maria.lopez@email.com</p>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="text-muted small">Dirección</label>
-                        <p class="fw-bold">Avenida Arce 456, La Paz, Bolivia</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Archivos Subidos -->
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-header bg-light border-bottom py-3">
-            <h5 class="fw-bold text-primary mb-0">
-                <i class="bi bi-file-pdf me-2"></i>Documentos Subidos
-            </h5>
-        </div>
-        <div class="card-body">
-            <!-- TODO: Cargar archivos con TramiteService.ObtenerArchivosTramite(IdSolicitudTramite)
-            @if (archivos.Count > 0)
-            {
-                            <div class="row">
-                                @foreach (var archivo in archivos)
-                                {
-                                                <div class="col-md-6 mb-3">
-                                                    <div class="card border border-light">
-                                                        <div class="card-body">
-                                                            <i class="bi bi-file-pdf text-danger me-2"></i>
-                                                            <strong>@archivo.NombreArchivo</strong>
-                                                            <small class="text-muted d-block">@archivo.TamanioArchivo KB</small>
-                                                            <div class="mt-2">
-                                                                <button class="btn btn-sm btn-outline-primary" @onclick="() => VerArchivoEnIframe(archivo)">
-                                                                    <i class="bi bi-eye me-1"></i> Ver
-                                                                </button>
-                                                                <a href="@archivo.UrlDescarga" class="btn btn-sm btn-outline-secondary">
-                                                                    <i class="bi bi-download me-1"></i> Descargar
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                }
-                            </div>
-            }
-            else
-            {
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle me-2"></i>
-                                No hay archivos subidos para este trámite
-                            </div>
-            }
-            -->
-        </div>
-    </div>
-
-    #endregion
-
-    <!-- Vista Previa de PDF -->
-    <!-- TODO: Mostrar iframe del PDF seleccionado
-    @if (!string.IsNullOrEmpty(urlPdfVisualizando))
+    @if (tramite == null)
     {
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-header bg-light border-bottom py-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="fw-bold text-primary mb-0">
-                                    <i class="bi bi-eye me-2"></i>Visualización del Documento
-                                </h5>
-                                <button class="btn btn-sm btn-outline-secondary" @onclick="CerrarVistaPrevia">
-                                    <i class="bi bi-x me-1"></i> Cerrar
-                                </button>
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-3 text-muted">Cargando detalles...</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light border-bottom py-3">
+                        <h5 class="fw-bold text-primary mb-0">
+                            <i class="bi bi-info-circle me-2"></i>Información del Trámite
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <label class="text-muted small">ID Trámite</label>
+                                <p class="fw-bold">#TRX-@tramite.IdSolicitudTramite</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="text-muted small">Tipo de Trámite</label>
+                                <p class="fw-bold">@tramite.NombreTipoTramite</p>
                             </div>
                         </div>
-                        <div class="card-body p-0">
-                            <iframe src="@urlPdfVisualizando" style="width: 100%; height: 600px; border: none;"></iframe>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <label class="text-muted small">Fecha Solicitud</label>
+                                <p class="fw-bold">@tramite.FechaSolicitud.ToShortDateString()</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="text-muted small">Fecha Estimada</label>
+                                <p class="fw-bold">@tramite.FechaEstimadaEntrega.ToShortDateString()</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="text-muted small">Estado</label>
+                            <div>
+                                <span class="badge @GetEstadoBadgeClass(tramite.Estado)" style="font-size: 0.9rem; padding: 0.5rem 0.75rem;">
+                                    @tramite.Estado
+                                </span>
+                            </div>
                         </div>
                     </div>
-    }
-    -->
+                </div>
+            </div>
 
-    <!-- Botón Volver -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-body text-center py-4">
-            <button class="btn btn-outline-secondary" @onclick="VolverAHistorial">
-                <i class="bi bi-arrow-left me-2"></i>Volver al Historial
-            </button>
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light border-bottom py-3">
+                        <h5 class="fw-bold text-primary mb-0">
+                            <i class="bi bi-person me-2"></i>Información del Rentista
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="text-muted small">Nombre Completo</label>
+                            <p class="fw-bold">@tramite.NombreRentista</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="text-muted small">Funcionario Asignado</label>
+                            <p class="fw-bold">@tramite.NombreFuncionarioAsignado</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <button class="btn btn-outline-secondary" @onclick="VolverAlHistorial">
+                    <i class="bi bi-arrow-left me-2"></i>Volver al Historial
+                </button>
+            </div>
+        </div>
+    }
 </div>
 
 @code {
     [Parameter]
     public long IdSolicitudTramite { get; set; }
 
-    // private DetallesTramiteDTO tramiteDetalle = new();
-    // private List<ArchivoTramiteDTO> archivos = new();
-    // private string? urlPdfVisualizando = null;
+    private SolicitudTramiteRegistroDTO? tramite;
 
-    private void VolverAHistorial()
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            tramite = await TramiteService.ObtenerTramitePorIdAsync(IdSolicitudTramite);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private void VolverAlHistorial()
     {
         NavigationManager.NavigateTo("/funcionario/historial-tramites");
     }
 
-    // TODO: Cargar datos al inicializar
-    // protected override async Task OnInitializedAsync()
-    // {
-    // try
-    // {
-    // tramiteDetalle = await TramiteService.ObtenerDetallesTramite(IdSolicitudTramite);
-    // archivos = await TramiteService.ObtenerArchivosTramite(IdSolicitudTramite);
-    // }
-    // catch (Exception ex)
-    // {
-    // // Manejar error
-    // }
-    // }
-
-    // private void VerArchivoEnIframe(ArchivoTramiteDTO archivo)
-    // {
-    // urlPdfVisualizando = archivo.UrlArchivo;
-    // }
-
-    // private void CerrarVistaPrevia()
-    // {
-    // urlPdfVisualizando = null;
-    // }
+    private string GetEstadoBadgeClass(string estado)
+    {
+        if (estado == TramiteEstados.Completado.ToString()) return "bg-success";
+        if (estado == TramiteEstados.Rechazado.ToString()) return "bg-danger";
+        return "bg-secondary";
+    }
 }

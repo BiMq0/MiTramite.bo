@@ -118,5 +118,29 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramitesSvc
                 throw new InvalidOperationException("Error al rechazar el trámite", ex);
             }
         }
+
+        public async Task<List<SolicitudTramiteRegistroDTO>> ObtenerTramitesPorFuncionarioAsync(long idFuncionario, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await _repository.ObtenerTramitesPorFuncionarioAsync(idFuncionario, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error al obtener los trámites del funcionario", ex);
+            }
+        }
+
+        public async Task<List<SolicitudTramiteRegistroDTO>> ObtenerTodosLosTramitesAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await _repository.ObtenerTodosLosTramitesAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error al obtener todos los trámites", ex);
+            }
+        }
     }
 }

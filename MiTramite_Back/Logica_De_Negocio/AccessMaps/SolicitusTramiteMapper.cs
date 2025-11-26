@@ -108,6 +108,34 @@ namespace MiTramite_Back.Logica_De_Negocio.AccessMaps
                     return Results.Problem(detail: ex.Message, statusCode: 500);
                 }
             }).WithName("RechazarTramite");
+
+            // OBTENER TRÁMITES POR FUNCIONARIO
+            solicitudTramite.MapGet(SolicitudTramiteEndpoints.OBTENER_TRAMITES_POR_FUNCIONARIO, async (long idFuncionario, ISolicitudTramiteService service) =>
+            {
+                try
+                {
+                    var tramites = await service.ObtenerTramitesPorFuncionarioAsync(idFuncionario);
+                    return Results.Ok(tramites);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(detail: ex.Message, statusCode: 500);
+                }
+            }).WithName("ObtenerTramitesPorFuncionario");
+
+            // OBTENER TODOS LOS TRÁMITES (GERENTE)
+            solicitudTramite.MapGet(SolicitudTramiteEndpoints.OBTENER_TODOS, async (ISolicitudTramiteService service) =>
+            {
+                try
+                {
+                    var tramites = await service.ObtenerTodosLosTramitesAsync();
+                    return Results.Ok(tramites);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(detail: ex.Message, statusCode: 500);
+                }
+            }).WithName("ObtenerTodosLosTramites");
         }
     }
 }

@@ -207,6 +207,47 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep
             }
         }
 
+        public async Task<List<SolicitudTramiteRegistroDTO>> ObtenerTramitesPorFuncionarioAsync(long idFuncionario, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var tramites = await _context.SolicitudTramites
+                    .Include(st => st.TipoTramite)
+                    .Include(st => st.Rentista)
+                    .Include(st => st.Funcionario)
+                    .Include(st => st.EstadoTramite)
+                    .Where(st => st.IdFuncionario == idFuncionario)
+                    .OrderByDescending(st => st.FechaSolicitud)
+                    .ToListAsync(cancellationToken);
+
+                return tramites.Select(st => new SolicitudTramiteRegistroDTO(st)).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error al obtener trámites del funcionario", ex);
+            }
+        }
+
+        public async Task<List<SolicitudTramiteRegistroDTO>> ObtenerTodosLosTramitesAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var tramites = await _context.SolicitudTramites
+                    .Include(st => st.TipoTramite)
+                    .Include(st => st.Rentista)
+                    .Include(st => st.Funcionario)
+                    .Include(st => st.EstadoTramite)
+                    .OrderByDescending(st => st.FechaSolicitud)
+                    .ToListAsync(cancellationToken);
+
+                return tramites.Select(st => new SolicitudTramiteRegistroDTO(st)).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error al obtener todos los trámites", ex);
+            }
+        }
+
         private class TramitePrioridad
         {
             public SolicitudTramite Tramite { get; set; }

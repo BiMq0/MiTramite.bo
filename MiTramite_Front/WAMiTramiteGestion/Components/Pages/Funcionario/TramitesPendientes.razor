@@ -1,7 +1,5 @@
 ﻿@page "/funcionario/tramites-pendientes"
-<!-- #region DATOS DE EJEMPLO TEMPORALES - CAMBIAR A MiTramite_Shared.DTOs.TramiteDTOs CUANDO ESTÉ DISPONIBLE -->
-@using MiTramite_Front.Services.Tramite
-<!-- #endregion -->
+@using MiTramite_Shared.DTOs.SolicitudTramiteDTOs
 @using MiTramite_Domain.Constants
 @inject Services.ITramiteService TramiteService
 @inject NavigationManager NavigationManager
@@ -17,117 +15,79 @@
         <p class="text-muted">Revisa y procesa los trámites asignados</p>
     </div>
 
-    #region Datos de Ejemplo
-    <!-- Tabla de trámites pendientes -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-light border-bottom py-3">
-            <h5 class="fw-bold text-primary mb-0">
-                <i class="bi bi-list-check me-2"></i>Listado de Trámites Pendientes
-            </h5>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width: 10%">ID Trámite</th>
-                            <th style="width: 15%">Tipo de Trámite</th>
-                            <th style="width: 18%">Nombre Rentista</th>
-                            <th style="width: 12%">Fecha Solicitud</th>
-                            <th style="width: 12%">Fecha Conclusión</th>
-                            <th style="width: 10%">Estado</th>
-                            <th style="width: 10%">Reasignado</th>
-                            <th style="width: 13%">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Fila 1 -->
-                        <tr>
-                            <td><strong>#TRX-2025-001</strong></td>
-                            <td>Renta Dignidad</td>
-                            <td>Juan Carlos Pérez López</td>
-                            <td>23/11/2025</td>
-                            <td>30/11/2025</td>
-                            <td><span class="badge" style="background-color: #F0AD4E; color: #333;">Pendiente</span>
-                            </td>
-                            <td><span class="badge bg-secondary">No</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary" @onclick="() => IrARevisarTramite(1)">
-                                    <i class="bi bi-eye me-1"></i>Revisar
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Fila 2 -->
-                        <tr>
-                            <td><strong>#TRX-2025-004</strong></td>
-                            <td>Afiliación a Trabajador</td>
-                            <td>María Elena García Rodríguez</td>
-                            <td>22/11/2025</td>
-                            <td>29/11/2025</td>
-                            <td><span class="badge" style="background-color: #5BC0DE; color: white;">En Proceso</span>
-                            </td>
-                            <td><span class="badge bg-danger">Sí</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary" @onclick="() => IrARevisarTramite(4)">
-                                    <i class="bi bi-eye me-1"></i>Revisar
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Fila 3 -->
-                        <tr>
-                            <td><strong>#TRX-2025-005</strong></td>
-                            <td>Actualización de Datos</td>
-                            <td>Roberto Sánchez Martínez</td>
-                            <td>21/11/2025</td>
-                            <td>28/11/2025</td>
-                            <td><span class="badge" style="background-color: #F0AD4E; color: #333;">Pendiente</span>
-                            </td>
-                            <td><span class="badge bg-secondary">No</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary" @onclick="() => IrARevisarTramite(5)">
-                                    <i class="bi bi-eye me-1"></i>Revisar
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Fila 4 -->
-                        <tr>
-                            <td><strong>#TRX-2025-006</strong></td>
-                            <td>Cambio de Domicilio</td>
-                            <td>Carmen Flores Ramírez</td>
-                            <td>20/11/2025</td>
-                            <td>27/11/2025</td>
-                            <td><span class="badge" style="background-color: #5BC0DE; color: white;">En Proceso</span>
-                            </td>
-                            <td><span class="badge bg-secondary">No</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary" @onclick="() => IrARevisarTramite(6)">
-                                    <i class="bi bi-eye me-1"></i>Revisar
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Fila 5 -->
-                        <tr>
-                            <td><strong>#TRX-2025-007</strong></td>
-                            <td>Renta Dignidad</td>
-                            <td>Felipe González Torres</td>
-                            <td>19/11/2025</td>
-                            <td>26/11/2025</td>
-                            <td><span class="badge" style="background-color: #F0AD4E; color: #333;">Pendiente</span>
-                            </td>
-                            <td><span class="badge bg-danger">Sí</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary" @onclick="() => IrARevisarTramite(7)">
-                                    <i class="bi bi-eye me-1"></i>Revisar
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+    @if (tramites == null)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
             </div>
+            <p class="mt-3 text-muted">Cargando trámites...</p>
         </div>
-    </div>
-    #endregion
-</div>
+    }
+    else
+    {
+        var tramitesPendientes = tramites
+            .Where(t => t.Estado == TramiteEstados.Pendiente.ToString() || t.Estado == TramiteEstados.EnProceso.ToString())
+            .ToList();
+
+        @if (!tramitesPendientes.Any())
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>No hay trámites pendientes en este momento.
+            </div>
+        }
+        else
+        {
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-bottom py-3">
+                    <h5 class="fw-bold text-primary mb-0">
+                        <i class="bi bi-list-check me-2"></i>Listado de Trámites Pendientes (@tramitesPendientes.Count)
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 10%">ID Trámite</th>
+                                    <th style="width: 20%">Tipo de Trámite</th>
+                                    <th style="width: 20%">Nombre Rentista</th>
+                                    <th style="width: 15%">Fecha Solicitud</th>
+                                    <th style="width: 15%">Fecha Estimada</th>
+                                    <th style="width: 10%">Estado</th>
+                                    <th style="width: 10%">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var tramite in tramitesPendientes)
+                                {
+                                    <tr>
+                                        <td><strong>#TRX-@tramite.IdSolicitudTramite</strong></td>
+                                        <td>@tramite.NombreTipoTramite</td>
+                                        <td>@tramite.NombreRentista</td>
+                                        <td>@tramite.FechaSolicitud.ToShortDateString()</td>
+                                        <td>@tramite.FechaEstimadaEntrega.ToShortDateString()</td>
+                                        <td>
+                                            <span class="badge @GetEstadoBadgeClass(tramite.Estado)">
+                                                @tramite.Estado
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" @onclick="() => RevisarTramite(tramite.IdSolicitudTramite)">
+                                                <i class="bi bi-eye me-1"></i>Revisar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+                    
+            </div>
 
 <style>
     .table th {
@@ -149,24 +109,31 @@
 </style>
 
 @code {
-    // TODO: Crear lista de SolicitudTramiteDTO
-    // private List<SolicitudTramiteDTO> tramitesPendientes = new();
+    private List<SolicitudTramiteRegistroDTO>? tramites;
+    private long idFuncionario = 1; // TODO: Obtener del estado de autenticación
 
-    // TODO: Cargar datos en OnInitializedAsync
-    // protected override async Task OnInitializedAsync()
-    // {
-    // try
-    // {
-    // // tramitesPendientes = await TramiteService.ObtenerTramitesPendientes();
-    // }
-    // catch (Exception ex)
-    // {
-    // // Manejar error
-    // }
-    // }
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            tramites = await TramiteService.ObtenerTramitesPorFuncionarioAsync(idFuncionario);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar trámites: {ex.Message}");
+            tramites = new List<SolicitudTramiteRegistroDTO>();
+        }
+    }
 
-    private void IrARevisarTramite(long idSolicitudTramite)
+    private void RevisarTramite(long idSolicitudTramite)
     {
         NavigationManager.NavigateTo($"/funcionario/tramites-pendientes/revisar/{idSolicitudTramite}");
+    }
+
+    private string GetEstadoBadgeClass(string estado)
+    {
+        if (estado == TramiteEstados.Pendiente.ToString()) return "bg-warning text-dark";
+        if (estado == TramiteEstados.EnProceso.ToString()) return "bg-info text-dark";
+        return "bg-secondary";
     }
 }

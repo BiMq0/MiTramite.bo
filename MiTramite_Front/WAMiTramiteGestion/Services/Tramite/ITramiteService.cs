@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-// #region DATOS DE EJEMPLO TEMPORALES - CAMBIAR A MiTramite_Shared.DTOs.TramiteDTOs CUANDO ESTÉ DISPONIBLE
-using MiTramite_Front.Services.Tramite;
-// #endregion
+using MiTramite_Shared.DTOs.SolicitudTramiteDTOs;
 
 namespace WAMiTramiteGestion.Services
 {
@@ -12,39 +10,33 @@ namespace WAMiTramiteGestion.Services
         #region Métodos de Funcionario
 
         /// <summary>
-        /// Obtiene todos los trámites pendientes asignados al funcionario actual
+        /// Obtiene todos los trámites asignados al funcionario
         /// </summary>
-        Task<List<SolicitudTramiteDTO>> ObtenerTramitesPendientes();
-
-        /// <summary>
-        /// Obtiene el historial de trámites completados del funcionario
-        /// </summary>
-        Task<List<SolicitudTramiteDTO>> ObtenerHistorialTramites();
+        Task<List<SolicitudTramiteRegistroDTO>> ObtenerTramitesPorFuncionarioAsync(long idFuncionario);
 
         /// <summary>
         /// Obtiene los detalles completos de un trámite específico
         /// </summary>
-        Task<DetallesTramiteDTO> ObtenerDetallesTramite(long idSolicitudTramite);
+        Task<SolicitudTramiteRegistroDTO?> ObtenerTramitePorIdAsync(long idSolicitudTramite);
 
         /// <summary>
-        /// Obtiene la lista de archivos subidos para un trámite
+        /// Completa un trámite (aprobación)
         /// </summary>
-        Task<List<ArchivoTramiteDTO>> ObtenerArchivosTramite(long idSolicitudTramite);
-
-        /// <summary>
-        /// Aprueba un trámite pendiente
-        /// </summary>
-        Task<bool> AprobarTramite(long idSolicitudTramite);
+        Task<bool> CompletarTramiteAsync(long idSolicitudTramite);
 
         /// <summary>
         /// Rechaza un trámite con un motivo especificado
         /// </summary>
-        Task<bool> RechazarTramite(long idSolicitudTramite, string motivo);
+        Task<bool> RechazarTramiteAsync(long idSolicitudTramite, string motivo);
+
+        #endregion
+
+        #region Métodos de Gerente
 
         /// <summary>
-        /// Obtiene un resumen del dashboard del funcionario
+        /// Obtiene todos los trámites del sistema (vista de gerente)
         /// </summary>
-        Task<ResumenDashboardFuncionarioDTO> ObtenerResumenDashboard();
+        Task<List<SolicitudTramiteRegistroDTO>> ObtenerTodosLosTramitesAsync();
 
         #endregion
     }

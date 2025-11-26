@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
-// #region DATOS DE EJEMPLO TEMPORALES - CAMBIAR A MiTramite_Shared.DTOs.TramiteDTOs CUANDO ESTÉ DISPONIBLE
-using MiTramite_Front.Services.Tramite;
-// #endregion
+using MiTramite_Shared.DTOs.SolicitudTramiteDTOs;
 using MiTramite_Shared.Endpoints;
 
 namespace WAMiTramiteGestion.Services
@@ -12,141 +11,94 @@ namespace WAMiTramiteGestion.Services
     {
         private readonly HttpClient _httpClient;
 
-        public TramiteService(IHttpClientFactory httpClientFactory)
+        public TramiteService(HttpClient httpClient)
         {
-            _httpClient = httpClientFactory.CreateClient("ApiClient");
+            _httpClient = httpClient;
         }
 
         #region Métodos de Funcionario
 
-        public async Task<List<SolicitudTramiteDTO>> ObtenerTramitesPendientes()
+        public async Task<List<SolicitudTramiteRegistroDTO>> ObtenerTramitesPorFuncionarioAsync(long idFuncionario)
         {
             try
             {
-                // var url = TramiteEndpoints.BASE + TramiteEndpoints.TRAMITES_PENDIENTES;
-                // var response = await _httpClient.GetFromJsonAsync<List<SolicitudTramiteDTO>>(url);
-                // return response ?? new List<SolicitudTramiteDTO>();
-
-                // TODO: Implementar cuando esté disponible el endpoint
-                return new List<SolicitudTramiteDTO>();
+                var url = $"{SolicitudTramiteEndpoints.BASE}{SolicitudTramiteEndpoints.OBTENER_TRAMITES_POR_FUNCIONARIO}";
+                url = url.Replace("{idFuncionario}", idFuncionario.ToString());
+                var response = await _httpClient.GetFromJsonAsync<List<SolicitudTramiteRegistroDTO>>(url);
+                return response ?? new List<SolicitudTramiteRegistroDTO>();
             }
             catch (Exception ex)
             {
-                // TODO: Manejar excepción
-                throw;
+                Console.WriteLine($"Error al obtener trámites del funcionario: {ex.Message}");
+                return new List<SolicitudTramiteRegistroDTO>();
             }
         }
 
-        public async Task<List<SolicitudTramiteDTO>> ObtenerHistorialTramites()
+        public async Task<SolicitudTramiteRegistroDTO?> ObtenerTramitePorIdAsync(long idSolicitudTramite)
         {
             try
             {
-                // var url = TramiteEndpoints.BASE + TramiteEndpoints.HISTORIAL_TRAMITES;
-                // var response = await _httpClient.GetFromJsonAsync<List<SolicitudTramiteDTO>>(url);
-                // return response ?? new List<SolicitudTramiteDTO>();
-
-                // TODO: Implementar cuando esté disponible el endpoint
-                return new List<SolicitudTramiteDTO>();
+                var url = $"{SolicitudTramiteEndpoints.BASE}{SolicitudTramiteEndpoints.OBTENER_TRAMITE_POR_ID}";
+                url = url.Replace("{idTramite}", idSolicitudTramite.ToString());
+                var response = await _httpClient.GetFromJsonAsync<SolicitudTramiteRegistroDTO>(url);
+                return response;
             }
             catch (Exception ex)
             {
-                // TODO: Manejar excepción
-                throw;
+                Console.WriteLine($"Error al obtener detalles del trámite: {ex.Message}");
+                return null;
             }
         }
 
-        public async Task<DetallesTramiteDTO> ObtenerDetallesTramite(long idSolicitudTramite)
+        public async Task<bool> CompletarTramiteAsync(long idSolicitudTramite)
         {
             try
             {
-                // var url = TramiteEndpoints.BASE + TramiteEndpoints.OBTENER_DETALLES;
-                // url = url.Replace("{id}", idSolicitudTramite.ToString());
-                // var response = await _httpClient.GetFromJsonAsync<DetallesTramiteDTO>(url);
-                // return response!;
-
-                // TODO: Implementar cuando esté disponible el endpoint
-                return new DetallesTramiteDTO();
+                var url = $"{SolicitudTramiteEndpoints.BASE}{SolicitudTramiteEndpoints.COMPLETAR_TRAMITES}";
+                url = url.Replace("{idTramite}", idSolicitudTramite.ToString());
+                var response = await _httpClient.PostAsJsonAsync(url, new { });
+                return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
             {
-                // TODO: Manejar excepción
-                throw;
-            }
-        }
-
-        public async Task<List<ArchivoTramiteDTO>> ObtenerArchivosTramite(long idSolicitudTramite)
-        {
-            try
-            {
-                // var url = TramiteEndpoints.BASE + TramiteEndpoints.OBTENER_ARCHIVOS;
-                // url = url.Replace("{id}", idSolicitudTramite.ToString());
-                // var response = await _httpClient.GetFromJsonAsync<List<ArchivoTramiteDTO>>(url);
-                // return response ?? new List<ArchivoTramiteDTO>();
-
-                // TODO: Implementar cuando esté disponible el endpoint
-                return new List<ArchivoTramiteDTO>();
-            }
-            catch (Exception ex)
-            {
-                // TODO: Manejar excepción
-                throw;
-            }
-        }
-
-        public async Task<bool> AprobarTramite(long idSolicitudTramite)
-        {
-            try
-            {
-                // var url = TramiteEndpoints.BASE + TramiteEndpoints.APROBAR_TRAMITE;
-                // url = url.Replace("{id}", idSolicitudTramite.ToString());
-                // var response = await _httpClient.PostAsJsonAsync(url, new { });
-                // return response.IsSuccessStatusCode;
-
-                // TODO: Implementar cuando esté disponible el endpoint
+                Console.WriteLine($"Error al completar trámite: {ex.Message}");
                 return false;
             }
-            catch (Exception ex)
-            {
-                // TODO: Manejar excepción
-                throw;
-            }
         }
 
-        public async Task<bool> RechazarTramite(long idSolicitudTramite, string motivo)
+        public async Task<bool> RechazarTramiteAsync(long idSolicitudTramite, string motivo)
         {
             try
             {
-                // var url = TramiteEndpoints.BASE + TramiteEndpoints.RECHAZAR_TRAMITE;
-                // url = url.Replace("{id}", idSolicitudTramite.ToString());
-                // var request = new { Motivo = motivo };
-                // var response = await _httpClient.PostAsJsonAsync(url, request);
-                // return response.IsSuccessStatusCode;
-
-                // TODO: Implementar cuando esté disponible el endpoint
+                var url = $"{SolicitudTramiteEndpoints.BASE}{SolicitudTramiteEndpoints.RECHAZAR_TRAMITE}";
+                url = url.Replace("{idTramite}", idSolicitudTramite.ToString());
+                url += $"?motivo={Uri.EscapeDataString(motivo)}";
+                var response = await _httpClient.PostAsync(url, null);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al rechazar trámite: {ex.Message}");
                 return false;
             }
-            catch (Exception ex)
-            {
-                // TODO: Manejar excepción
-                throw;
-            }
         }
 
-        public async Task<ResumenDashboardFuncionarioDTO> ObtenerResumenDashboard()
+        #endregion
+
+        #region Métodos de Gerente
+
+        public async Task<List<SolicitudTramiteRegistroDTO>> ObtenerTodosLosTramitesAsync()
         {
             try
             {
-                // var url = TramiteEndpoints.BASE + TramiteEndpoints.RESUMEN_DASHBOARD;
-                // var response = await _httpClient.GetFromJsonAsync<ResumenDashboardFuncionarioDTO>(url);
-                // return response!;
-
-                // TODO: Implementar cuando esté disponible el endpoint
-                return new ResumenDashboardFuncionarioDTO();
+                var url = $"{SolicitudTramiteEndpoints.BASE}{SolicitudTramiteEndpoints.OBTENER_TODOS}";
+                var response = await _httpClient.GetFromJsonAsync<List<SolicitudTramiteRegistroDTO>>(url);
+                return response ?? new List<SolicitudTramiteRegistroDTO>();
             }
             catch (Exception ex)
             {
-                // TODO: Manejar excepción
-                throw;
+                Console.WriteLine($"Error al obtener todos los trámites: {ex.Message}");
+                return new List<SolicitudTramiteRegistroDTO>();
             }
         }
 
