@@ -11,9 +11,9 @@ namespace WAMiTramiteGestion.Services
     {
         private readonly HttpClient _httpClient;
 
-        public TramiteService(HttpClient httpClient)
+        public TramiteService(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient("ApiClient");
         }
 
         #region Métodos de Funcionario
