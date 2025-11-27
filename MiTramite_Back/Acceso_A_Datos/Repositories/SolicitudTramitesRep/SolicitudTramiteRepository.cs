@@ -36,10 +36,7 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep
                 if (!tipoTramiteExiste)
                     throw new KeyNotFoundException($"El tipo de trámite con ID {solicitudNueva.IdTipoTramite} no existe");
 
-                var funcionario = await _context.Funcionarios
-                    .Where(f => f.IdRol == 1)
-                    .OrderBy(f => f.PesoDisponibilidad ?? int.MaxValue)
-                    .FirstOrDefaultAsync(cancellationToken);
+                var funcionario = await ObtenerFuncionarioConMayorDisponibilidadAsync(cancellationToken);
 
                 if (funcionario == null)
                     throw new InvalidOperationException("No hay funcionarios disponibles para asignar");
@@ -249,12 +246,51 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep
             }
         }
 
+        public async Task<List<SolicitudTramite>> ObtenerTramitesParaBackgroundServiceAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var tramites = await _context.SolicitudTramites
+                    .Include(st => st.TipoTramite)
+                    .Include(st => st.Funcionario)
+                    .Include(st => st.Rentista)
+                    .Where(st => st.IdEstadoTramite == (int)TramiteEstados.Pendiente)
+                    .ToListAsync(cancellationToken);
+
+                return tramites;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error al obtener los trámites para el servicio en segundo plano", ex);
+            }
+        }
         private class TramitePrioridad
         {
             public SolicitudTramite Tramite { get; set; }
             public int Importancia { get; set; }
             public double DiasRestantes { get; set; }
             public double Prioridad { get; set; }
+        }
+
+        public async Task<Funcionario?> ObtenerFuncionarioConMayorDisponibilidadAsync(CancellationToken cancellationToken)
+        {
+            return await _context.Funcionarios
+                .Where(f => f.IdRol == 1) // Por defecto a los funcionarios porque ellos realizan los tramites
+                .OrderBy(f => f.PesoDisponibilidad ?? int.MaxValue)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+        public async Task<bool> ActualizarTramitePorIncumplimiento(SolicitudTramite tramite)
+        {
+            try
+            {
+                _context.SolicitudTramites.Update(tramite);
+                var filasAfectadas = await _context.SaveChangesAsync();
+                return filasAfectadas > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error al actualizar el trámite por incumplimiento", ex);
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 @using MiTramite_Shared.DTOs.SolicitudTramiteDTOs
 @using MiTramite_Domain.Constants
 @inject Services.ITramiteService TramiteService
+@inject Services.IFuncionarioService FuncionarioService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
@@ -143,7 +144,7 @@
 
     private void VolverAlHistorial()
     {
-        NavigationManager.NavigateTo("/funcionario/historial-tramites");
+        NavigationManager.NavigateTo("/funcionario/historial-tramites/");
     }
 
     private const string EstadoFallbackHex = "#6C757D";

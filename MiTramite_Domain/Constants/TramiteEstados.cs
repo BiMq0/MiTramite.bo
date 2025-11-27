@@ -7,7 +7,8 @@ namespace MiTramite_Domain.Constants
         Pendiente = 1,
         EnProceso = 2,
         Completado = 3,
-        Rechazado = 4
+        Rechazado = 4,
+        Urgente = 5
     }
 
     public static class TramiteEstadosHex
@@ -17,6 +18,7 @@ namespace MiTramite_Domain.Constants
         public const string EnProceso = "#5BC0DE"; // blue
         public const string Completado = "#5CB85C"; // green
         public const string Rechazado = "#D9534F"; // red
+        public const string Urgente = "#8b1710ff"; // red
 
         public static string HexFor(TramiteEstados estado) => estado switch
         {
