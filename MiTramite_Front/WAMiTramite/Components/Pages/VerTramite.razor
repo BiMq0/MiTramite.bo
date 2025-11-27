@@ -37,8 +37,9 @@
                                     <dd class="col-sm-8">@solicitud.FechaSolicitud.ToString("dd/MM/yyyy HH:mm")</dd>
 
                                     <dt class="col-sm-4">Funcionario</dt>
-                                    <dd class="col-sm-8">@(string.IsNullOrEmpty(solicitud.NombreFuncionarioAsignado) ?
-                                                                            "Pendiente de asignación" : solicitud.NombreFuncionarioAsignado)</dd>
+                                    <dd class="col-sm-8">@(string.IsNullOrEmpty(solicitud.NombreCompletoFuncionarioAsignado)
+                                                                            ?
+                                                                            "Pendiente de asignación" : solicitud.NombreCompletoFuncionarioAsignado)</dd>
 
                                     <dt class="col-sm-4">Reasignado</dt>
                                     <dd class="col-sm-8">@solicitud.Reassigned</dd>

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using MiTramite_Shared.Endpoints;
 using MiTramite_Shared.DTOs.SolicitudTramiteDTOs;
 using MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramitesSvc;
+using Microsoft.AspNetCore.Mvc;
+
 
 namespace MiTramite_Back.Logica_De_Negocio.AccessMaps
 {
@@ -91,7 +93,7 @@ namespace MiTramite_Back.Logica_De_Negocio.AccessMaps
             }).WithName("CompletarTramite");
 
             // RECHAZAR TRAMITE
-            solicitudTramite.MapPost(SolicitudTramiteEndpoints.RECHAZAR_TRAMITE, async (long idTramite, string motivo, ISolicitudTramiteService service) =>
+            solicitudTramite.MapPost(SolicitudTramiteEndpoints.RECHAZAR_TRAMITE, async (long idTramite, [FromBody] string motivo, ISolicitudTramiteService service) =>
             {
                 try
                 {

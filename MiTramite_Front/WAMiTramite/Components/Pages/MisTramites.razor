@@ -28,7 +28,6 @@
                 <option value="Completado">Completado</option>
                 <option value="Pendiente">Pendiente</option>
                 <option value="Rechazado">Rechazado</option>
-                <option value="En Revisión">En Revisión</option>
             </select>
         </div>
     </div>
@@ -84,7 +83,8 @@
                                                         <i class="bi bi-person text-secondary"></i>
                                                     </div>
                                                     <div>
-                                                        <div class="small fw-semibold">@tramite.NombreFuncionarioAsignado</div>
+                                                        <div class="small fw-semibold">
+                                                            @tramite.NombreCompletoFuncionarioAsignado</div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -213,7 +213,7 @@
         (string.IsNullOrEmpty(filtroTexto) ||
         t.IdSolicitudTramite.ToString().Contains(filtroTexto, StringComparison.OrdinalIgnoreCase) ||
         t.NombreTipoTramite.Contains(filtroTexto, StringComparison.OrdinalIgnoreCase) ||
-        t.NombreFuncionarioAsignado.Contains(filtroTexto, StringComparison.OrdinalIgnoreCase)) &&
+        t.NombreCompletoFuncionarioAsignado.Contains(filtroTexto, StringComparison.OrdinalIgnoreCase)) &&
         (string.IsNullOrEmpty(filtroEstado) || t.Estado == filtroEstado)
         ).ToList();
 

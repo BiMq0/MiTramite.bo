@@ -48,7 +48,7 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.EmailSvc
 
                         Console.WriteLine($"[EMAIL SERVICE] Enviando mensaje vía SMTP...");
                         await client.SendMailAsync(mailMessage);
-                        Console.WriteLine($"[EMAIL SERVICE] ✅ CORREO ENVIADO SATISFACTORIAMENTE a {destinatario}");
+                        Console.WriteLine($"[EMAIL SERVICE] CORREO ENVIADO SATISFACTORIAMENTE a {destinatario}");
                     }
                 }
 
@@ -56,7 +56,7 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.EmailSvc
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[EMAIL SERVICE] ❌ ERROR AL ENVIAR CORREO: {ex.Message}");
+                Console.WriteLine($"[EMAIL SERVICE] ERROR AL ENVIAR CORREO: {ex.Message}");
                 Console.WriteLine($"[EMAIL SERVICE] Stack Trace: {ex.StackTrace}");
                 throw new InvalidOperationException($"Error al enviar correo: {ex.Message}", ex);
             }
@@ -87,7 +87,7 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.EmailSvc
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[EMAIL SERVICE] ❌ ERROR en notificación de completación: {ex.Message}");
+                Console.WriteLine($"[EMAIL SERVICE] ERROR en notificación de completación: {ex.Message}");
                 throw new InvalidOperationException("Error al notificar completación de trámite", ex);
             }
         }
@@ -110,7 +110,7 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.EmailSvc
                             <p style='background-color: #f5f5f5; padding: 10px; border-left: 4px solid #ff6b6b;'>
                                 {motivo}
                             </p>
-                            <p>Por favor, revisa los detalles y contacta con nosotros si deseas presentar una apelación.</p>
+                            <p>Por favor, revisa los detalles y vuelve a presentar tu solicitud de trámite.</p>
                             <hr>
                             <p><small>Este correo fue enviado por {correoFuncionario}</small></p>
                             <p><small>Sistema MiTrámite © 2025</small></p>
@@ -121,7 +121,7 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.EmailSvc
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[EMAIL SERVICE] ❌ ERROR en notificación de rechazo: {ex.Message}");
+                Console.WriteLine($"[EMAIL SERVICE] ERROR en notificación de rechazo: {ex.Message}");
                 throw new InvalidOperationException("Error al notificar rechazo de trámite", ex);
             }
         }
@@ -277,7 +277,7 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.EmailSvc
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[EMAIL SERVICE] ❌ ERROR en correo de bienvenida: {ex.Message}");
+                Console.WriteLine($"[EMAIL SERVICE] ERROR en correo de bienvenida: {ex.Message}");
                 throw new InvalidOperationException("Error al enviar correo de bienvenida", ex);
             }
         }

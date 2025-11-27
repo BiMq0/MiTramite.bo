@@ -169,6 +169,7 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep
                     return false;
 
                 tramite.IdEstadoTramite = (int)TramiteEstados.Rechazado;
+                tramite.MotivoRechazo = motivo;
                 _context.SolicitudTramites.Update(tramite);
                 await _context.SaveChangesAsync(cancellationToken);
 
