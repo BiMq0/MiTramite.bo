@@ -2,6 +2,7 @@
 @using MiTramite_Shared.DTOs.SolicitudTramiteDTOs
 @using MiTramite_Domain.Constants
 @inject Services.ITramiteService TramiteService
+@inject Services.IFuncionarioService FuncionarioService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
@@ -27,8 +28,8 @@
     else
     {
         var tramitesPendientes = tramites
-            .Where(t => t.Estado == TramiteEstados.Pendiente.ToString() || t.Estado == TramiteEstados.EnProceso.ToString())
-            .ToList();
+        .Where(t => t.Estado == TramiteEstados.Pendiente.ToString() || t.Estado == TramiteEstados.EnProceso.ToString())
+        .ToList();
 
         @if (!tramitesPendientes.Any())
         {
@@ -62,9 +63,9 @@
                                 @foreach (var tramite in tramitesPendientes)
                                 {
                                     <tr>
-                                        <td><strong>#TRX-@tramite.IdSolicitudTramite</strong></td>
+                                        <td><strong># @tramite.IdSolicitudTramite</strong></td>
                                         <td>@tramite.NombreTipoTramite</td>
-                                        <td>@tramite.NombreRentista</td>
+                                        <td>@tramite.NombreCompletoRentista</td>
                                         <td>@tramite.FechaSolicitud.ToShortDateString()</td>
                                         <td>@tramite.FechaEstimadaEntrega.ToShortDateString()</td>
                                         <td>
@@ -73,7 +74,8 @@
                                             </span>
                                         </td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-primary" @onclick="() => RevisarTramite(tramite.IdSolicitudTramite)">
+                                            <button class="btn btn-sm btn-outline-primary"
+                                                @onclick="() => RevisarTramite(tramite.IdSolicitudTramite)">
                                                 <i class="bi bi-eye me-1"></i>Revisar
                                             </button>
                                         </td>
@@ -86,8 +88,8 @@
             </div>
         }
     }
-                    
-            </div>
+
+</div>
 
 <style>
     .table th {
@@ -110,12 +112,22 @@
 
 @code {
     private List<SolicitudTramiteRegistroDTO>? tramites;
-    private long idFuncionario = 1; // TODO: Obtener del estado de autenticación
+    [Parameter]
+    public long idFuncionario { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            var funcionarioActual = await FuncionarioService.ObtenerFuncionarioActualAsync();
+            if (funcionarioActual == null)
+            {
+                NavigationManager.NavigateTo("/login");
+                tramites = new List<SolicitudTramiteRegistroDTO>();
+                return;
+            }
+
+            idFuncionario = funcionarioActual.IdFuncionario;
             tramites = await TramiteService.ObtenerTramitesPorFuncionarioAsync(idFuncionario);
         }
         catch (Exception ex)

@@ -1,6 +1,8 @@
 @using MiTramite_Shared.DTOs.FuncionarioDTOs
 @using WAMiTramiteGestion.Handlers
 @inject NavigationManager NavigationManager
+@inject Services.IFuncionarioService FuncionarioService
+@rendermode InteractiveServer
 
 @if (mostrarNavMenu)
 {
@@ -17,13 +19,11 @@
                     </div>
                 }
             }
-            <NavLink href="/login">
-                <div class="nav-item px-3 mt-5 pt-4 border-top">
-                    <button class="btn btn-outline-light w-100">
-                        <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
-                    </button>
-                </div>
-            </NavLink>
+            <div class="nav-item px-3 mt-5 pt-4 border-top">
+                <button class="btn btn-outline-light w-100" @onclick="CerrarSesionAsync">
+                    <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+                </button>
+            </div>
         </nav>
     </div>
 }
@@ -88,5 +88,11 @@ new MenuOpcion{ Label="Historial de Trámites", Ruta="/funcionario/historial-tra
 };
 
         opcionesMenu = todasLasOpciones.Where(o => o.Ruta.Contains(rol.ToLower())).ToList();
+    }
+
+    private async Task CerrarSesionAsync()
+    {
+        await FuncionarioService.CerrarSesionAsync();
+        NavigationManager.NavigateTo("/login", true);
     }
 }

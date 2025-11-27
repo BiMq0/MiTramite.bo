@@ -29,66 +29,85 @@
     }
     else
     {
-        <div class="row">
-            <div class="col-lg-6 mb-4">
-                <div class="card border-0 shadow-sm">
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
                     <div class="card-header bg-light border-bottom py-3">
                         <h5 class="fw-bold text-primary mb-0">
                             <i class="bi bi-info-circle me-2"></i>Información del Trámite
                         </h5>
                     </div>
                     <div class="card-body">
-                        <div class="row mb-3">
+                        <div class="row gy-3">
                             <div class="col-sm-6">
-                                <label class="text-muted small">ID Trámite</label>
-                                <p class="fw-bold">#TRX-@tramite.IdSolicitudTramite</p>
+                                <p class="text-uppercase text-muted small mb-1">ID Trámite</p>
+                                <p class="fs-5 fw-semibold mb-0"># @tramite.IdSolicitudTramite</p>
                             </div>
                             <div class="col-sm-6">
-                                <label class="text-muted small">Tipo de Trámite</label>
-                                <p class="fw-bold">@tramite.NombreTipoTramite</p>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-6">
-                                <label class="text-muted small">Fecha Solicitud</label>
-                                <p class="fw-bold">@tramite.FechaSolicitud.ToShortDateString()</p>
+                                <p class="text-uppercase text-muted small mb-1">Tipo de Trámite</p>
+                                <p class="fw-semibold mb-0">@tramite.NombreTipoTramite</p>
                             </div>
                             <div class="col-sm-6">
-                                <label class="text-muted small">Fecha Estimada</label>
-                                <p class="fw-bold">@tramite.FechaEstimadaEntrega.ToShortDateString()</p>
+                                <p class="text-uppercase text-muted small mb-1">Fecha de Solicitud</p>
+                                <p class="fw-semibold mb-0">@tramite.FechaSolicitud.ToShortDateString()</p>
                             </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="text-muted small">Estado</label>
-                            <div>
-                                <span class="badge @GetEstadoBadgeClass(tramite.Estado)" style="font-size: 0.9rem; padding: 0.5rem 0.75rem;">
+                            <div class="col-sm-6">
+                                <p class="text-uppercase text-muted small mb-1">Fecha Estimada de Entrega</p>
+                                <p class="fw-semibold mb-0">@tramite.FechaEstimadaEntrega.ToShortDateString()</p>
+                            </div>
+                            <div class="col-12">
+                                <p class="text-uppercase text-muted small mb-2">Estado</p>
+                                <span class="badge fw-semibold rounded-pill" style="@GetEstadoBadgeStyle(tramite.Estado)">
                                     @tramite.Estado
                                 </span>
                             </div>
                         </div>
+
+                        @if (!string.IsNullOrWhiteSpace(tramite.MotivoRechazo))
+                        {
+                            <div
+                                class="alert alert-danger border-0 rounded-3 shadow-sm d-flex align-items-start gap-3 mt-4 mb-0">
+                                <i class="bi bi-exclamation-octagon-fill fs-4"></i>
+                                <div>
+                                    <p class="text-uppercase text-muted small mb-1">Motivo del Rechazo</p>
+                                    <p class="fw-semibold mb-0">@tramite.MotivoRechazo</p>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-6 mb-4">
-                <div class="card border-0 shadow-sm">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
                     <div class="card-header bg-light border-bottom py-3">
                         <h5 class="fw-bold text-primary mb-0">
                             <i class="bi bi-person me-2"></i>Información del Rentista
                         </h5>
                     </div>
                     <div class="card-body">
-                        <div class="mb-3">
-                            <label class="text-muted small">Nombre Completo</label>
-                            <p class="fw-bold">@tramite.NombreRentista</p>
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary"
+                                style="width: 54px; height: 54px;">
+                                <i class="bi bi-person-fill fs-4"></i>
+                            </div>
+                            <div>
+                                <p class="text-uppercase text-muted small mb-1">Nombre Completo</p>
+                                <p class="fw-semibold mb-0">@tramite.NombreCompletoRentista</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary"
+                                style="width: 54px; height: 54px;">
+                                <i class="bi bi-envelope-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-uppercase text-muted small mb-1">Correo</p>
+                                <a href="mailto:@tramite.CorreoRentista" class="fw-semibold">@tramite.CorreoRentista</a>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="text-muted small">Funcionario Asignado</label>
-                            <p class="fw-bold">@tramite.NombreFuncionarioAsignado</p>
-                        </div>
+                        <hr class="my-4" />
                     </div>
                 </div>
             </div>
@@ -127,10 +146,25 @@
         NavigationManager.NavigateTo("/funcionario/historial-tramites");
     }
 
-    private string GetEstadoBadgeClass(string estado)
+    private const string EstadoFallbackHex = "#6C757D";
+
+    private string GetEstadoBadgeStyle(string estado)
     {
-        if (estado == TramiteEstados.Completado.ToString()) return "bg-success";
-        if (estado == TramiteEstados.Rechazado.ToString()) return "bg-danger";
-        return "bg-secondary";
+        var hex = GetEstadoHex(estado);
+        return $"background-color: {hex}; color: #fff; font-size: 0.9rem; padding: 0.5rem 0.75rem;";
+    }
+
+    private string GetEstadoHex(string estado)
+    {
+        if (!string.IsNullOrWhiteSpace(estado))
+        {
+            var normalized = estado.Replace(" ", string.Empty);
+            if (Enum.TryParse<TramiteEstados>(normalized, true, out var parsed))
+            {
+                return TramiteEstadosHex.HexFor(parsed);
+            }
+        }
+
+        return EstadoFallbackHex;
     }
 }

@@ -2,6 +2,7 @@
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @inject Handlers.LoginStateService LoginStateService
+@inject Services.IFuncionarioService FuncionarioService
 @implements IDisposable
 
 <Header />
@@ -67,13 +68,20 @@
 @code {
     private string? rolActual = null;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         LoginStateService.OnLoginSuccess += OnLoginSuccess;
 
         if (LoginStateService.EstaAutenticado && LoginStateService.UsuarioActual != null)
         {
             rolActual = LoginStateService.UsuarioActual.Rol;
+            return;
+        }
+
+        var funcionarioActual = await FuncionarioService.ObtenerFuncionarioActualAsync();
+        if (funcionarioActual != null)
+        {
+            rolActual = funcionarioActual.Rol;
         }
     }
 

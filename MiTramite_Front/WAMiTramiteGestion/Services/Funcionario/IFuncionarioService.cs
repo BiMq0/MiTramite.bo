@@ -10,7 +10,8 @@ namespace WAMiTramiteGestion.Services
     {
         FuncionarioAccesosDTO? FuncionarioActual { get; set; }
         Task<FuncionarioAccesosDTO> IniciarSesion(FuncionarioLoginDTO funcionarioLoginDTO);
-        void CerrarSesion();
+        Task<FuncionarioAccesosDTO?> ObtenerFuncionarioActualAsync();
+        Task CerrarSesionAsync();
 
         #region Métodos de Gerente
         Task<List<FuncionarioRegistroDTO>> ObtenerTodosLosFuncionarios();

@@ -1,3 +1,8 @@
+@inject Services.IFuncionarioService FuncionarioService
+@inject Handlers.LoginStateService LoginStateService
+@using MiTramite_Shared.DTOs.FuncionarioDTOs
+@implements IDisposable
+
 <header class="w-100" style="top: 0; z-index: 1030;">
     <nav class="navbar navbar-expand-lg shadow-sm w-100"
         style="background: linear-gradient(180deg, #1a365d 0%, #2c5282 100%);">
@@ -16,6 +21,36 @@
                     </div>
                 </div>
             </a>
+
+            @if (funcionarioActual != null)
+            {
+                <div class="d-flex align-items-center text-light">
+                    <span class="fw-semibold">@funcionarioActual.Nombre</span>
+                    <small class="d-block text-light-50 ms-3">| @funcionarioActual.Rol</small>
+                    <i class="bi bi-person-circle fs-4 me-2"></i>
+                </div>
+            }
         </div>
     </nav>
 </header>
+
+@code {
+    private FuncionarioAccesosDTO? funcionarioActual;
+
+    protected override async Task OnInitializedAsync()
+    {
+        LoginStateService.OnLoginSuccess += OnLogin;
+        funcionarioActual = await FuncionarioService.ObtenerFuncionarioActualAsync();
+    }
+
+    private async void OnLogin(FuncionarioAccesosDTO funcionario)
+    {
+        funcionarioActual = funcionario;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        LoginStateService.OnLoginSuccess -= OnLogin;
+    }
+}

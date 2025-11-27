@@ -9,9 +9,9 @@ namespace WAMiTramiteGestion.Services.VerificationService
     public class TokenVerificationService : ITokenVerificationService
     {
         private readonly HttpClient _httpClient;
-        public TokenVerificationService(HttpClient httpClient)
+        public TokenVerificationService(IHttpClientFactory httpClient)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClient.CreateClient("ApiClient");
         }
         public async Task<bool> TokenExistsOrIsValidAsync()
         {

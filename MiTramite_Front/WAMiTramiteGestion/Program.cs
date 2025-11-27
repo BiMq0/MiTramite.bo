@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using WAMiTramiteGestion.Components;
 using WAMiTramiteGestion.Handlers;
 
@@ -24,6 +25,7 @@ builder.Services.AddRazorComponents()
 
 // Registrar servicios
 builder.Services.AddSingleton<LoginStateService>();
+builder.Services.AddScoped<ProtectedLocalStorage>();
 builder.Services.AddScopedServices();
 
 var app = builder.Build();

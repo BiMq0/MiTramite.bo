@@ -41,7 +41,7 @@
                         <div class="row mb-3">
                             <div class="col-sm-6">
                                 <label class="text-muted small">ID Trámite</label>
-                                <p class="fw-bold">#TRX-@tramite.IdSolicitudTramite</p>
+                                <p class="fw-bold"># @tramite.IdSolicitudTramite</p>
                             </div>
                             <div class="col-sm-6">
                                 <label class="text-muted small">Tipo de Trámite</label>
@@ -63,7 +63,8 @@
                         <div class="mb-3">
                             <label class="text-muted small">Estado</label>
                             <div>
-                                <span class="badge @GetEstadoBadgeClass(tramite.Estado)" style="font-size: 0.9rem; padding: 0.5rem 0.75rem;">
+                                <span class="badge @GetEstadoBadgeClass(tramite.Estado)"
+                                    style="font-size: 0.9rem; padding: 0.5rem 0.75rem;">
                                     @tramite.Estado
                                 </span>
                             </div>
@@ -82,12 +83,12 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <label class="text-muted small">Nombre Completo</label>
-                            <p class="fw-bold">@tramite.NombreRentista</p>
+                            <p class="fw-bold">@tramite.NombreCompletoRentista</p>
                         </div>
 
                         <div class="mb-3">
                             <label class="text-muted small">Funcionario Asignado</label>
-                            <p class="fw-bold">@tramite.NombreFuncionarioAsignado</p>
+                            <p class="fw-bold">@tramite.NombreCompletoFuncionarioAsignado</p>
                         </div>
                     </div>
                 </div>
@@ -151,7 +152,8 @@
                     }
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CerrarModalRechazar" disabled="@procesando">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" @onclick="CerrarModalRechazar"
+                        disabled="@procesando">Cancelar</button>
                     <button type="button" class="btn btn-danger" @onclick="RechazarTramiteConMotivo" disabled="@procesando">
                         @(procesando ? "Procesando..." : "Confirmar Rechazo")
                     </button>
@@ -178,7 +180,7 @@
         try
         {
             tramite = await TramiteService.ObtenerTramitePorIdAsync(IdSolicitudTramite);
-            
+
             if (tramite == null)
             {
                 mensajeError = "No se pudo cargar el trámite.";
@@ -206,7 +208,7 @@
             StateHasChanged();
 
             var resultado = await TramiteService.CompletarTramiteAsync(IdSolicitudTramite);
-            
+
             if (resultado)
             {
                 mensajeExito = "Trámite aprobado exitosamente. Redirigiendo...";
@@ -260,7 +262,7 @@
             StateHasChanged();
 
             var resultado = await TramiteService.RechazarTramiteAsync(IdSolicitudTramite, motivoRechazo);
-            
+
             if (resultado)
             {
                 CerrarModalRechazar();

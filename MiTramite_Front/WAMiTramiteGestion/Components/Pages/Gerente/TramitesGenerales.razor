@@ -2,6 +2,7 @@
 @using MiTramite_Shared.DTOs.SolicitudTramiteDTOs
 @using MiTramite_Domain.Constants
 @inject Services.ITramiteService TramiteService
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 <PageTitle>Trámites Generales</PageTitle>
@@ -113,6 +114,7 @@
                                 <th style="width: 13%">Fecha Solicitud</th>
                                 <th style="width: 13%">Fecha Estimada</th>
                                 <th style="width: 12%">Estado</th>
+                                <th style="width: 12%">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -121,14 +123,19 @@
                                 <tr>
                                     <td><strong>#@tramite.IdSolicitudTramite</strong></td>
                                     <td>@tramite.NombreTipoTramite</td>
-                                    <td>@tramite.NombreRentista</td>
-                                    <td>@tramite.NombreFuncionarioAsignado</td>
+                                    <td>@tramite.NombreCompletoRentista</td>
+                                    <td>@tramite.NombreCompletoFuncionarioAsignado</td>
                                     <td>@tramite.FechaSolicitud.ToShortDateString()</td>
                                     <td>@tramite.FechaEstimadaEntrega.ToShortDateString()</td>
                                     <td>
                                         <span class="badge @GetEstadoBadgeClass(tramite.Estado)">
                                             @tramite.Estado
                                         </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn-secondary btn btn-sm" title="Ver Detalles"
+                                            @onclick="() => VerDetalles(tramite.IdSolicitudTramite)"><i
+                                                class="bi bi-eye "></i></button>
                                     </td>
                                 </tr>
                             }
@@ -163,5 +170,10 @@
         if (estado == TramiteEstados.Completado.ToString()) return "bg-success";
         if (estado == TramiteEstados.Rechazado.ToString()) return "bg-danger";
         return "bg-secondary";
+    }
+
+    private void VerDetalles(long idSolicitudTramite)
+    {
+        NavigationManager.NavigateTo($"/gerente/gestion-tramites/{idSolicitudTramite}");
     }
 }

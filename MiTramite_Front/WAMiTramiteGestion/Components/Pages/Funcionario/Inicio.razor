@@ -1,135 +1,152 @@
 ﻿@page "/funcionario/inicio"
-@using MiTramite_Shared.DTOs.FuncionarioDTOs
+@using MiTramite_Shared.DTOs.SolicitudTramiteDTOs
+@using MiTramite_Domain.Constants
 @inject Services.ITramiteService TramiteService
+@inject Services.IFuncionarioService FuncionarioService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 <div class="container-fluid px-4" style="max-height: calc(100vh - 120px); overflow-y: auto;">
     <div class="mb-4 mt-3">
         <h2 class="fw-bold text-primary mb-1">
             <i class="bi bi-speedometer2 me-2"></i>Dashboard
         </h2>
-        <p class="text-muted">Resumen de tus trámites y actividades</p>
+        <p class="text-muted">Resumen actualizado de tus trámites</p>
     </div>
 
-    #region Datos de Ejemplo
-    <!-- Cards de resumen -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm bg-gradient-primary text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="card-text opacity-75 mb-0">Pendientes</p>
-                            <h3 class="fw-bold mb-0">5</h3>
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-3 text-muted">Cargando tu panel...</p>
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle me-2"></i>@errorMessage
+        </div>
+    }
+    else
+    {
+        <div class="row g-4 mb-4">
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm bg-gradient-primary text-white summary-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <p class="text-uppercase small opacity-75 mb-1">Pendientes</p>
+                                <h3 class="fw-bold mb-0 text-white">@totalPendientes</h3>
+                            </div>
+                            <i class="bi bi-hourglass-split fs-3 opacity-50"></i>
                         </div>
-                        <i class="bi bi-clock-history fs-4 opacity-50"></i>
+                        <small>En espera de tu revisión</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm bg-gradient-info text-white summary-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <p class="text-uppercase small opacity-75 mb-1">En Proceso</p>
+                                <h3 class="fw-bold mb-0">@totalEnProceso</h3>
+                            </div>
+                            <i class="bi bi-arrow-repeat fs-3 opacity-50"></i>
+                        </div>
+                        <small>Actualmente en gestión</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm bg-gradient-danger text-white summary-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <p class="text-uppercase small opacity-75 mb-1">Urgentes</p>
+                                <h3 class="fw-bold mb-0">@totalUrgentes</h3>
+                            </div>
+                            <i class="bi bi-exclamation-triangle fs-3 opacity-50"></i>
+                        </div>
+                        <small>Próximos a vencer</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm bg-gradient-success text-white summary-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <p class="text-uppercase small opacity-75 mb-1">Procesados</p>
+                                <h3 class="fw-bold mb-0">@totalProcesados</h3>
+                            </div>
+                            <i class="bi bi-check2-circle fs-3 opacity-50"></i>
+                        </div>
+                        <small>Completados o rechazados</small>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm bg-gradient-success text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="card-text opacity-75 mb-0">Completados</p>
-                            <h3 class="fw-bold mb-0">28</h3>
-                        </div>
-                        <i class="bi bi-check-circle fs-4 opacity-50"></i>
-                    </div>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light border-bottom py-3">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="fw-bold text-primary mb-0">
+                        <i class="bi bi-list-task me-2"></i>Últimos Trámites
+                    </h5>
+                    <a href="/funcionario/tramites-pendientes" class="btn btn-sm btn-outline-primary">
+                        Ver todos
+                    </a>
                 </div>
             </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm bg-gradient-danger text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="card-text opacity-75 mb-0">Urgentes</p>
-                            <h3 class="fw-bold mb-0">2</h3>
+            <div class="card-body p-0">
+                @if (!ultimosTramites.Any())
+                {
+                    <div class="p-4">
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle me-2"></i>No hay trámites registrados aún.
                         </div>
-                        <i class="bi bi-exclamation-triangle fs-4 opacity-50"></i>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm bg-gradient-warning text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="card-text opacity-75 mb-0">Total Procesados</p>
-                            <h3 class="fw-bold mb-0">45</h3>
-                        </div>
-                        <i class="bi bi-file-earmark-text fs-4 opacity-50"></i>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 12%">ID Trámite</th>
+                                    <th style="width: 20%">Tipo</th>
+                                    <th style="width: 24%">Rentista</th>
+                                    <th style="width: 16%">Fecha Solicitud</th>
+                                    <th style="width: 16%">Fecha Estimada</th>
+                                    <th style="width: 12%">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var tramite in ultimosTramites)
+                                {
+                                    <tr>
+                                        <td><strong># @tramite.IdSolicitudTramite</strong></td>
+                                        <td>@tramite.NombreTipoTramite</td>
+                                        <td>@tramite.NombreCompletoRentista</td>
+                                        <td>@tramite.FechaSolicitud.ToString("dd/MM/yyyy")</td>
+                                        <td>@tramite.FechaEstimadaEntrega.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            <span class="badge rounded-pill" style="@GetEstadoBadgeStyle(tramite.Estado)">
+                                                @tramite.Estado
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
-                </div>
+                }
             </div>
         </div>
-    </div>
-
-    <!-- Últimos Trámites -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-light border-bottom py-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="fw-bold text-primary mb-0">
-                    <i class="bi bi-list-task me-2"></i>Últimos Trámites
-                </h5>
-                <a href="/funcionario/tramites-pendientes" class="btn btn-sm btn-outline-primary">
-                    Ver todos
-                </a>
-            </div>
-        </div>
-        <div class="card-body p-0">
-            <!-- Datos de ejemplo -->
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>ID Trámite</th>
-                            <th>Tipo</th>
-                            <th>Rentista</th>
-                            <th>Fecha</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>#TRX-2025-001</strong></td>
-                            <td>Renta Dignidad</td>
-                            <td>Juan Carlos Pérez</td>
-                            <td>23/11/2025</td>
-                            <td><span class="badge bg-warning text-dark">Pendiente</span></td>
-                            <td><a href="/funcionario/tramites-pendientes/revisar/1"
-                                    class="btn btn-sm btn-outline-primary">Ver</a></td>
-                        </tr>
-                        <tr>
-                            <td><strong>#TRX-2025-002</strong></td>
-                            <td>Afiliación</td>
-                            <td>María López García</td>
-                            <td>22/11/2025</td>
-                            <td><span class="badge bg-success">Completado</span></td>
-                            <td><a href="/funcionario/historial-tramites/detalles/2"
-                                    class="btn btn-sm btn-outline-secondary">Ver</a></td>
-                        </tr>
-                        <tr>
-                            <td><strong>#TRX-2025-003</strong></td>
-                            <td>Actualización de Datos</td>
-                            <td>Pedro Rodríguez</td>
-                            <td>21/11/2025</td>
-                            <td><span class="badge bg-success">Completado</span></td>
-                            <td><a href="/funcionario/historial-tramites/detalles/3"
-                                    class="btn btn-sm btn-outline-secondary">Ver</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    #endregion
+    }
 </div>
 
 <style>
@@ -138,39 +155,141 @@
     }
 
     .bg-gradient-success {
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        background: linear-gradient(135deg, #1d976c 0%, #93f9b9 100%);
     }
 
     .bg-gradient-danger {
-        background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
+        background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
     }
 
     .bg-gradient-warning {
         background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
     }
 
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+    }
+
     .card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    .summary-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    .table th {
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
     }
 </style>
 
 @code {
-    // TODO: Cargar datos en OnInitializedAsync
-    // protected override async Task OnInitializedAsync()
-    // {
-    // try
-    // {
-    // // var resumen = await TramiteService.ObtenerResumenDashboard();
-    // // Asignar datos a variables de presentación
-    // }
-    // catch (Exception ex)
-    // {
-    // // Manejar error
-    // }
-    // }
+    private List<SolicitudTramiteRegistroDTO> tramites = new();
+    private List<SolicitudTramiteRegistroDTO> ultimosTramites = new();
+    private bool isLoading = true;
+    private string? errorMessage;
+    private int totalPendientes;
+    private int totalEnProceso;
+    private int totalCompletados;
+    private int totalRechazados;
+    private int totalUrgentes;
+    private int totalProcesados;
+    private const string EstadoFallbackHex = "#6C757D";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var funcionarioActual = await FuncionarioService.ObtenerFuncionarioActualAsync();
+            if (funcionarioActual == null)
+            {
+                errorMessage = "Debes iniciar sesión para visualizar tu dashboard.";
+                NavigationManager.NavigateTo("/login");
+                return;
+            }
+
+            var idFuncionario = funcionarioActual.IdFuncionario;
+            var tramitesAsignados = await TramiteService.ObtenerTramitesPorFuncionarioAsync(idFuncionario);
+            tramites = tramitesAsignados ?? new List<SolicitudTramiteRegistroDTO>();
+            CalcularMetricas();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Ocurrió un error al cargar la información del dashboard.";
+            Console.WriteLine($"Error dashboard funcionario: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void CalcularMetricas()
+    {
+        totalPendientes = ContarPorEstado(TramiteEstados.Pendiente);
+        totalEnProceso = ContarPorEstado(TramiteEstados.EnProceso);
+        totalCompletados = ContarPorEstado(TramiteEstados.Completado);
+        totalRechazados = ContarPorEstado(TramiteEstados.Rechazado);
+        totalUrgentes = tramites.Count(EsUrgente);
+        totalProcesados = totalCompletados + totalRechazados;
+
+        ultimosTramites = tramites
+        .OrderByDescending(t => t.FechaSolicitud)
+        .Take(5)
+        .ToList();
+    }
+
+    private int ContarPorEstado(TramiteEstados estado)
+    => tramites.Count(t => CoincideEstado(t.Estado, estado));
+
+    private bool CoincideEstado(string estadoTexto, TramiteEstados estado)
+    {
+        if (string.IsNullOrWhiteSpace(estadoTexto))
+        {
+            return false;
+        }
+
+        var normalizado = estadoTexto.Replace(" ", string.Empty);
+        return Enum.TryParse<TramiteEstados>(normalizado, true, out var parsed) && parsed == estado;
+    }
+
+    private bool EsUrgente(SolicitudTramiteRegistroDTO tramite)
+    {
+        var estaProcesado = CoincideEstado(tramite.Estado, TramiteEstados.Completado)
+        || CoincideEstado(tramite.Estado, TramiteEstados.Rechazado);
+
+        if (estaProcesado)
+        {
+            return false;
+        }
+
+        return tramite.FechaEstimadaEntrega.Date <= DateTime.Today.AddDays(2);
+    }
+
+    private string GetEstadoBadgeStyle(string estado)
+    {
+        var hex = GetEstadoHex(estado);
+        return $"background-color: {hex}; color: #fff; font-size: 0.85rem; padding: 0.35rem 0.85rem;";
+    }
+
+    private string GetEstadoHex(string estado)
+    {
+        if (!string.IsNullOrWhiteSpace(estado))
+        {
+            var normalized = estado.Replace(" ", string.Empty);
+            if (Enum.TryParse<TramiteEstados>(normalized, true, out var parsed))
+            {
+                return TramiteEstadosHex.HexFor(parsed);
+            }
+        }
+
+        return EstadoFallbackHex;
+    }
 }

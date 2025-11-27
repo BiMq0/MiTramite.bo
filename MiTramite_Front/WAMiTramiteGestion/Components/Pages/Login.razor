@@ -4,7 +4,6 @@
 @inject Services.IFuncionarioService FuncionarioService
 @inject NavigationManager NavigationManager
 @inject Services.VerificationService.ITokenVerificationService TokenVerificationService
-@inject Handlers.LoginStateService LoginStateService
 @rendermode InteractiveServer
 
 
@@ -256,7 +255,8 @@
     {
         if (await TokenVerificationService.TokenExistsOrIsValidAsync())
         {
-            var rol = FuncionarioService.FuncionarioActual?.Rol;
+            var funcionarioActual = await FuncionarioService.ObtenerFuncionarioActualAsync();
+            var rol = funcionarioActual?.Rol;
             if (!string.IsNullOrEmpty(rol))
             {
                 RedireccionarPorRol(rol);
@@ -278,7 +278,6 @@
 
             if (resultado != null)
             {
-                LoginStateService.NotifyLoginSuccess(resultado);
                 RedireccionarPorRol(resultado.Rol!);
             }
             else

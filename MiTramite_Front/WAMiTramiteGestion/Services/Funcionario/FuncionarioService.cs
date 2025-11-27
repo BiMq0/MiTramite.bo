@@ -1,7 +1,7 @@
 using MiTramite_Shared.Endpoints;
 using MiTramite_Shared.DTOs.FuncionarioDTOs;
-using System.Net;
-using System.Text.Json;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using WAMiTramiteGestion.Handlers;
 
 namespace WAMiTramiteGestion.Services
 {
@@ -9,10 +9,18 @@ namespace WAMiTramiteGestion.Services
     {
         public FuncionarioAccesosDTO? FuncionarioActual { get; set; }
         private readonly HttpClient _httpClient;
+        private readonly ProtectedLocalStorage _protectedLocalStorage;
+        private readonly LoginStateService _loginStateService;
+        private const string FuncionarioStorageKey = "funcionario-actual";
 
-        public FuncionarioService(IHttpClientFactory httpClientFactory)
+        public FuncionarioService(
+            IHttpClientFactory httpClientFactory,
+            ProtectedLocalStorage protectedLocalStorage,
+            LoginStateService loginStateService)
         {
             _httpClient = httpClientFactory.CreateClient("ApiClient");
+            _protectedLocalStorage = protectedLocalStorage;
+            _loginStateService = loginStateService;
         }
 
         public async Task<FuncionarioAccesosDTO> IniciarSesion(FuncionarioLoginDTO funcionarioLoginDTO)
@@ -26,6 +34,8 @@ namespace WAMiTramiteGestion.Services
                 if (funcionario != null)
                 {
                     FuncionarioActual = funcionario;
+                    await PersistFuncionarioAsync(funcionario);
+                    EnsureLoginState();
                     return FuncionarioActual;
                 }
 
@@ -39,6 +49,31 @@ namespace WAMiTramiteGestion.Services
             {
                 throw new Exception("Error de conexión al servidor. Por favor, intente nuevamente más tarde.", httpEx);
             }
+        }
+
+        public async Task<FuncionarioAccesosDTO?> ObtenerFuncionarioActualAsync()
+        {
+            if (FuncionarioActual != null)
+            {
+                EnsureLoginState();
+                return FuncionarioActual;
+            }
+
+            try
+            {
+                var storedResult = await _protectedLocalStorage.GetAsync<FuncionarioAccesosDTO>(FuncionarioStorageKey);
+                if (storedResult.Success && storedResult.Value != null)
+                {
+                    FuncionarioActual = storedResult.Value;
+                    EnsureLoginState();
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"ProtectedLocalStorage no disponible: {ex.Message}");
+            }
+
+            return FuncionarioActual;
         }
 
         #region Métodos de Gerente
@@ -79,9 +114,40 @@ namespace WAMiTramiteGestion.Services
 
 
         #endregion
-        public void CerrarSesion()
+
+        public async Task CerrarSesionAsync()
         {
             FuncionarioActual = null;
+            try
+            {
+                await _protectedLocalStorage.DeleteAsync(FuncionarioStorageKey);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"No se pudo limpiar la sesión local: {ex.Message}");
+            }
+
+            _loginStateService.NotifyLogout();
+        }
+
+        private async Task PersistFuncionarioAsync(FuncionarioAccesosDTO funcionario)
+        {
+            try
+            {
+                await _protectedLocalStorage.SetAsync(FuncionarioStorageKey, funcionario);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"No se pudo persistir el funcionario: {ex.Message}");
+            }
+        }
+
+        private void EnsureLoginState()
+        {
+            if (FuncionarioActual != null && !_loginStateService.EstaAutenticado)
+            {
+                _loginStateService.NotifyLoginSuccess(FuncionarioActual);
+            }
         }
     }
 }

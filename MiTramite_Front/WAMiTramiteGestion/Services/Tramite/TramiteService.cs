@@ -72,8 +72,7 @@ namespace WAMiTramiteGestion.Services
             {
                 var url = $"{SolicitudTramiteEndpoints.BASE}{SolicitudTramiteEndpoints.RECHAZAR_TRAMITE}";
                 url = url.Replace("{idTramite}", idSolicitudTramite.ToString());
-                url += $"?motivo={Uri.EscapeDataString(motivo)}";
-                var response = await _httpClient.PostAsync(url, null);
+                var response = await _httpClient.PostAsJsonAsync(url, motivo);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
