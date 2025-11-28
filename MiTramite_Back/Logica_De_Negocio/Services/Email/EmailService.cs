@@ -6,6 +6,7 @@ using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using MiTramite_Domain.Constants;
 using MiTramite_Domain.Entities;
 using MiTramite_Shared.DTOs.SolicitudTramiteDTOs;
 
@@ -291,20 +292,12 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.EmailSvc
                 Console.WriteLine($"[EMAIL SERVICE] Preparando notificación de incumplimiento para funcionario...");
                 Console.WriteLine($"[EMAIL SERVICE] Funcionario: {correoFuncionarioInfractor}");
 
-                // ============================================
-                // DATOS QUE NECESITAS COMPLETAR AQUÍ:
-                // ============================================
-                // 1. ID del trámite → incumplimiento.???
-                // 2. Fecha actual del incumplimiento → DateTime.Now
-                // 3. Estado del trámite → incumplimiento.??? (ejemplo: "En Proceso", "Pendiente", etc.)
-                // 4. Tipo de trámite → incumplimiento.??? (ejemplo: "Registro Civil", "Licencia de Conducir", etc.)
-                // 5. Nombre completo del rentista → incumplimiento.??? (ejemplo: "Juan Pérez López")
-                // ============================================
 
-                var idTramite = incumplimiento.IdSolicitudTramite; // COMPLETA con la propiedad correcta
-                var estadoTramite = "Estado del Trámite"; // COMPLETA: incumplimiento.EstadoTramite?.Nombre o similar
-                var tipoTramite = "Tipo de Trámite"; // COMPLETA: incumplimiento.TipoTramite?.Nombre o similar
-                var nombreRentista = "Nombre del Rentista"; // COMPLETA: incumplimiento.Rentista?.NombreCompleto o similar
+                var idTramite = incumplimiento.IdSolicitudTramite;
+                var tipoTramite = incumplimiento.TipoTramite?.Nombre ?? "No disponible";
+                var nombreRentista = incumplimiento.Rentista != null ?
+                    $"{incumplimiento.Rentista.Nombres} {incumplimiento.Rentista.ApellidoPaterno} {incumplimiento.Rentista.ApellidoMaterno ?? string.Empty}".Trim() :
+                    "No disponible";
 
                 string asunto = "⚠️ Notificación de Incumplimiento Registrado - Acción Requerida";
                 string cuerpo = $@"
@@ -445,10 +438,6 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.EmailSvc
                                             <span class=""info-value"">{DateTime.Now:dd/MM/yyyy HH:mm}</span>
                                         </div>
                                         <div class=""info-row"">
-                                            <span class=""info-label"">Estado del Trámite:</span>
-                                            <span class=""info-value"">{estadoTramite}</span>
-                                        </div>
-                                        <div class=""info-row"">
                                             <span class=""info-label"">Tipo de Trámite:</span>
                                             <span class=""info-value"">{tipoTramite}</span>
                                         </div>
@@ -518,13 +507,21 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.EmailSvc
             {
                 Console.WriteLine($"[EMAIL SERVICE] Preparando notificación de reasignación de trámite...");
                 Console.WriteLine($"[EMAIL SERVICE] Nuevo funcionario: {correoFuncionarioNuevo}");
-                var datosTramite = new SolicitudTramiteRegistroDTO(tramite);
-                var idTramite = datosTramite.IdSolicitudTramite;
-                var tipoTramite = datosTramite.NombreTipoTramite ?? "No disponible";
-                var estadoActual = datosTramite.Estado ?? "No disponible";
-                var nombreRentista = datosTramite.NombreCompletoRentista ?? "No disponible";
-                var correoRentista = datosTramite.CorreoRentista ?? "No disponible";
-                var fechaCreacion = datosTramite.FechaSolicitud.ToString("dd/MM/yyyy HH:mm");
+                var idTramite = tramite.IdSolicitudTramite;
+                var tipoTramite = tramite.TipoTramite?.Nombre ?? "No disponible";
+                var estadoActual = Enum.GetName(typeof(TramiteEstados), tramite.IdEstadoTramite) ?? "No disponible";
+                var nombreRentista = tramite.Rentista != null ?
+                    $"{tramite.Rentista.Nombres} {tramite.Rentista.ApellidoPaterno} {tramite.Rentista.ApellidoMaterno ?? string.Empty}".Trim() :
+                    "No disponible";
+                var correoRentista = tramite.Rentista?.Correo ?? "No disponible";
+
+                var fechaSolicitud = tramite.FechaSolicitud;
+                if (fechaSolicitud.Kind == DateTimeKind.Unspecified)
+                {
+                    fechaSolicitud = DateTime.SpecifyKind(fechaSolicitud, DateTimeKind.Utc);
+                }
+
+                var fechaCreacion = fechaSolicitud.ToString("dd/MM/yyyy HH:mm");
 
                 string asunto = "Nuevo Trámite Asignado por Reasignación - Acción Requerida";
                 string cuerpo = $@"

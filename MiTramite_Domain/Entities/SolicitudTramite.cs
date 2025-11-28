@@ -14,10 +14,9 @@ namespace MiTramite_Domain.Entities
         public long IdRentista { get; set; }
         public long IdFuncionario { get; set; }
         public DateTime FechaSolicitud { get; set; }
-        public DateTime FechaEstimadaEntrega => FechaSolicitud.AddDays(TipoTramite.DiasDuracionEstimada);
-
-        // Esto solo en pruebas locales
-        // public DateTime FechaEstimadaEntrega => FechaSolicitud.AddMinutes(1);
+        // Cambiar esto solo en pruebas locales
+        // public DateTime FechaEstimadaEntrega => FechaSolicitud.AddDays(TipoTramite.DiasDuracionEstimada);
+        public DateTime FechaEstimadaEntrega => FechaSolicitud.AddSeconds(10);
         public int IdEstadoTramite { get; set; }
         public bool Reasignado { get; set; }
 

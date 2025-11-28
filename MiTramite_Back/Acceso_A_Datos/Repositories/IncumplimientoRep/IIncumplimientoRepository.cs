@@ -8,6 +8,6 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.IncumplimientoRep
 {
     public interface IIncumplimientoRepository
     {
-        Task<bool> RegistrarIncumplimiento(SolicitudTramite tramite);
+        Task<bool> RegistrarIncumplimiento(SolicitudTramite tramite, long idFuncionarioReasignado);
     }
 }

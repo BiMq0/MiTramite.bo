@@ -34,22 +34,13 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.FuncionarioRep
                 throw new KeyNotFoundException("Funcionario no encontrado.");
             }
 
-            Console.WriteLine($"[FUNCIONARIO REPO] Intentando verificar contraseña para funcionario: {funcionarioLogin.CodigoFuncionario}");
-            Console.WriteLine($"[FUNCIONARIO REPO] Contraseña ingresada: '{funcionarioLogin.Password}'");
-            Console.WriteLine($"[FUNCIONARIO REPO] Hash almacenado en BD: '{funcionario.PasswordHash}'");
-            Console.WriteLine($"[FUNCIONARIO REPO] Longitud de contraseña ingresada: {funcionarioLogin.Password?.Length}");
-            Console.WriteLine($"[FUNCIONARIO REPO] Longitud de hash: {funcionario.PasswordHash?.Length}");
-
             bool passwordValida = BCrypt.Net.BCrypt.Verify(funcionarioLogin.Password, funcionario.PasswordHash);
-            Console.WriteLine($"[FUNCIONARIO REPO] ¿Contraseña válida?: {passwordValida}");
 
             if (!passwordValida)
             {
-                Console.WriteLine($"[FUNCIONARIO REPO] ❌ ERROR: Contraseña incorrecta para {funcionarioLogin.CodigoFuncionario}");
                 throw new UnauthorizedAccessException("Correo o contraseña incorrecta.");
             }
 
-            Console.WriteLine($"[FUNCIONARIO REPO] ✅ Contraseña verificada correctamente");
             var funcionarioToReturn = new FuncionarioAccesosDTO(funcionario);
             return funcionarioToReturn;
         }
@@ -81,7 +72,7 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.FuncionarioRep
                 Nombres = funcionarioCreate.Nombres!,
                 ApellidoPaterno = funcionarioCreate.ApellidoPaterno!,
                 ApellidoMaterno = funcionarioCreate.ApellidoMaterno!,
-                FechaNacimiento = funcionarioCreate.FechaNacimiento,
+                FechaNacimiento = NormalizarFechaUtc(funcionarioCreate.FechaNacimiento),
                 Telefono = funcionarioCreate.Telefono!,
                 Correo = funcionarioCreate.Correo!,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(funcionarioCreate.Password!),
@@ -104,13 +95,34 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.FuncionarioRep
             funcionarioExistente.Nombres = funcionarioEdit.Nombres!;
             funcionarioExistente.ApellidoPaterno = funcionarioEdit.ApellidoPaterno!;
             funcionarioExistente.ApellidoMaterno = funcionarioEdit.ApellidoMaterno!;
-            funcionarioExistente.FechaNacimiento = funcionarioEdit.FechaNacimiento;
+            funcionarioExistente.FechaNacimiento = NormalizarFechaUtc(funcionarioEdit.FechaNacimiento);
             funcionarioExistente.Telefono = funcionarioEdit.Telefono!;
             funcionarioExistente.Correo = funcionarioEdit.Correo!;
             funcionarioExistente.PasswordHash = BCrypt.Net.BCrypt.HashPassword(funcionarioEdit.Password!);
 
             _context.Funcionarios.Update(funcionarioExistente);
             return await _context.SaveChangesAsync(cancellationToken) > 0;
+        }
+        private static DateTime NormalizarFechaUtc(DateTime? fecha)
+        {
+            if (!fecha.HasValue)
+            {
+                return DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
+            }
+
+            var valor = fecha.Value;
+
+            if (valor.Kind == DateTimeKind.Unspecified)
+            {
+                return DateTime.SpecifyKind(valor, DateTimeKind.Utc);
+            }
+
+            if (valor.Kind == DateTimeKind.Local)
+            {
+                return valor.ToUniversalTime();
+            }
+
+            return valor;
         }
     }
 }

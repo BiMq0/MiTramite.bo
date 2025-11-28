@@ -28,7 +28,8 @@
     else
     {
         var tramitesPendientes = tramites
-        .Where(t => t.Estado == TramiteEstados.Pendiente.ToString() || t.Estado == TramiteEstados.EnProceso.ToString())
+        .Where(t => t.Estado == TramiteEstados.Pendiente.ToString() || t.Estado == TramiteEstados.EnProceso.ToString() ||
+        t.Estado == TramiteEstados.Urgente.ToString())
         .ToList();
 
         @if (!tramitesPendientes.Any())
@@ -145,6 +146,7 @@
     private string GetEstadoBadgeClass(string estado)
     {
         if (estado == TramiteEstados.Pendiente.ToString()) return "bg-warning text-dark";
+        if (estado == TramiteEstados.Urgente.ToString()) return "bg-black text-white";
         if (estado == TramiteEstados.EnProceso.ToString()) return "bg-info text-dark";
         return "bg-secondary";
     }

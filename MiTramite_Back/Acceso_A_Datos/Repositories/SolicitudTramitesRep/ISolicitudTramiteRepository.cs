@@ -19,6 +19,7 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep
         Task<List<SolicitudTramiteRegistroDTO>> ObtenerTodosLosTramitesAsync(CancellationToken cancellationToken = default);
         Task<List<SolicitudTramite>> ObtenerTramitesParaBackgroundServiceAsync(CancellationToken cancellationToken = default);
         Task<Funcionario?> ObtenerFuncionarioConMayorDisponibilidadAsync(CancellationToken cancellationToken = default);
+        Task<Funcionario?> ObtenerFuncionarioConMayorDisponibilidadParaReasignacionAsync(long idFuncionario, CancellationToken cancellationToken = default);
         Task<bool> ActualizarTramitePorIncumplimiento(SolicitudTramite tramite);
     }
 }

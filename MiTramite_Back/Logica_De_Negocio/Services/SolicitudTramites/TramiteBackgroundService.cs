@@ -39,30 +39,34 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramites
 
                 foreach (var tramite in tramites)
                 {
-                    if (tramite.FechaEstimadaEntrega <= DateTime.Now)
+                    var ahoraUtc = DateTime.UtcNow;
+
+                    if (tramite.FechaEstimadaEntrega <= ahoraUtc)
                     {
                         // Registrar incumplimiento
-                        var incumplimiento = await incumplimientoRepository.RegistrarIncumplimiento(tramite);
 
                         // Reasignar funcionario
-                        var funcionarioNuevo = await tramiteRepository.ObtenerFuncionarioConMayorDisponibilidadAsync(stoppingToken);
+                        var funcionarioNuevo = await tramiteRepository.ObtenerFuncionarioConMayorDisponibilidadParaReasignacionAsync(tramite.IdFuncionario, stoppingToken);
                         if (funcionarioNuevo == null)
                         {
                             _logger.LogWarning("No hay funcionarios disponibles para reasignar el trámite {TramiteId}", tramite.IdSolicitudTramite);
                             return;
                         }
 
+                        await incumplimientoRepository.RegistrarIncumplimiento(tramite, funcionarioNuevo.IdFuncionario);
 
-                        await emailService.EnviarCorreoNotificacionFuncionarioInfractor(tramite.Funcionario.Correo, tramite);
 
-                        // Notificaciones en tiempo real (SignalR)
+                        await emailService.EnviarCorreoNotificacionFuncionarioInfractor(tramite.Funcionario!.Correo, tramite);
+
+                        // Notificaciones en tiempo real signalR
                         await hubContext.Clients.All.SendAsync("NotificacionIncumplimiento", new
                         {
+                            Tipo = 1,
                             Mensaje = $"El funcionario {tramite.Funcionario!.Nombres} {tramite.Funcionario.ApellidoPaterno} {tramite.Funcionario.ApellidoMaterno ?? ""} incumplió el trámite {tramite.IdSolicitudTramite}"
                         });
 
                         tramite.IdFuncionario = funcionarioNuevo.IdFuncionario;
-                        tramite.FechaSolicitud = DateTime.Now;
+                        tramite.FechaSolicitud = ahoraUtc;
                         tramite.IdEstadoTramite = (int)TramiteEstados.Urgente;
 
                         await tramiteRepository.ActualizarTramitePorIncumplimiento(tramite);
@@ -72,6 +76,7 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramites
 
                         await hubContext.Clients.All.SendAsync("NotificacionReasignacion", new
                         {
+                            Tipo = 2,
                             Mensaje = $"El trámite {tramite.IdSolicitudTramite} fue reasignado al funcionario {funcionarioNuevo.Nombres} {funcionarioNuevo.ApellidoPaterno} {funcionarioNuevo.ApellidoMaterno ?? ""}."
                         });
                     }

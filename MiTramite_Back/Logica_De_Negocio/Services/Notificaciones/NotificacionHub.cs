@@ -8,12 +8,12 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.Notificaciones
 {
     public class NotificacionesHub : Hub
     {
-        public async Task EnviarNotificacionIncumplimiento(string mensaje)
+        public async Task EnviarNotificacionIncumplimiento(object mensaje)
         {
             await Clients.All.SendAsync("NotificacionIncumplimiento", mensaje);
         }
 
-        public async Task EnviarNotificacionReasignacion(string mensaje)
+        public async Task EnviarNotificacionReasignacion(object mensaje)
         {
             await Clients.All.SendAsync("NotificacionReasignacion", mensaje);
         }

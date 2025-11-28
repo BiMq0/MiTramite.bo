@@ -10,6 +10,8 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
+using MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramites;
+using MiTramite_Back.Logica_De_Negocio.Services.Notificaciones;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "MiTramite API", Description = "Documentacion de API para MiTramite", Version = "v1" }); });
 
 
+builder.Services.AddSignalR();
+builder.Services.AddHostedService<TramiteBackgroundService>();
 
 //Database
 builder.Services.AddDbContext<MiTramiteDbContext>(options =>
@@ -107,6 +111,7 @@ app.MapGet("/api/verify", async () => Results.Ok("Token disponible y válido")).
 {
    AuthenticationSchemes = "Bearer"
 });
+app.MapHub<NotificacionesHub>("/notificacionesHub");
 
 
 app.MapPost("/api/logout", (HttpContext context) =>

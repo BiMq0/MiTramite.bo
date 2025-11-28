@@ -7,6 +7,7 @@ using MiTramite_Shared.Endpoints;
 using MiTramite_Shared.DTOs.SolicitudTramiteDTOs;
 using MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramitesSvc;
 using Microsoft.AspNetCore.Mvc;
+using MiTramite_Back.Logica_De_Negocio.Services.Notificaciones;
 
 
 namespace MiTramite_Back.Logica_De_Negocio.AccessMaps

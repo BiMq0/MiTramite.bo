@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using WAMiTramiteGestion.Components;
 using WAMiTramiteGestion.Handlers;
+using WAMiTramiteGestion.Services.Notificaciones;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,7 @@ builder.Services.AddHttpClient("ApiClient", client =>
         CookieContainer = new CookieContainer()
     };
 });
-
+builder.Services.AddScoped<INotificacionService, NotificacionService>();
 // Blazor híbrido
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()

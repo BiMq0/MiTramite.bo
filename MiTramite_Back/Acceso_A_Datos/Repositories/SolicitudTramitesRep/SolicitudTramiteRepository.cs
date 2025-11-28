@@ -254,7 +254,7 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep
                     .Include(st => st.TipoTramite)
                     .Include(st => st.Funcionario)
                     .Include(st => st.Rentista)
-                    .Where(st => st.IdEstadoTramite == (int)TramiteEstados.Pendiente)
+                    .Where(st => st.IdEstadoTramite == (int)TramiteEstados.Pendiente || st.IdEstadoTramite == (int)TramiteEstados.Urgente || st.IdEstadoTramite == (int)TramiteEstados.EnProceso)
                     .ToListAsync(cancellationToken);
 
                 return tramites;
@@ -279,6 +279,15 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep
                 .OrderBy(f => f.PesoDisponibilidad ?? int.MaxValue)
                 .FirstOrDefaultAsync(cancellationToken);
         }
+
+        public async Task<Funcionario?> ObtenerFuncionarioConMayorDisponibilidadParaReasignacionAsync(long idFuncionario, CancellationToken cancellationToken)
+        {
+            return await _context.Funcionarios
+                .Where(f => f.IdRol == 1 && f.IdFuncionario != idFuncionario) // Por defecto a los funcionarios porque ellos realizan los tramites
+                .OrderBy(f => f.PesoDisponibilidad ?? int.MaxValue)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
         public async Task<bool> ActualizarTramitePorIncumplimiento(SolicitudTramite tramite)
         {
             try

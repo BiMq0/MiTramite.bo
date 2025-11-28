@@ -1,0 +1,104 @@
+@using WAMiTramiteGestion.Services.Notificaciones
+@using System.Text.Json
+@implements IDisposable
+@inject INotificacionService NotificacionService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999; top: 1rem !important;">
+    @foreach (var toast in _toasts)
+    {
+        <div class="toast show align-items-center @toast.CssClass border-0 mb-2 shadow" role="alert" aria-live="assertive"
+            aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center">
+                    <i class="@toast.IconClass fs-4 me-3"></i>
+                    <div>
+                        <strong class="d-block">@toast.Title</strong>
+                        <span>@toast.Message</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" @onclick="() => RemoveToast(toast)"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private readonly List<ToastModel> _toasts = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("ToastMessage: Inicializando...");
+        NotificacionService.OnIncumplimiento += HandleIncumplimiento;
+        NotificacionService.OnReasignacion += HandleReasignacion;
+
+        try
+        {
+            await NotificacionService.IniciarConexionAsync();
+            Console.WriteLine("ToastMessage: Conexión iniciada correctamente.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ToastMessage: Error conexión SignalR: {ex.Message}");
+        }
+    }
+
+    private void HandleIncumplimiento(object data)
+    {
+        Console.WriteLine("ToastMessage: Evento Incumplimiento recibido.");
+        var mensaje = ExtractMessage(data);
+        ShowToast("¡Incumplimiento Detectado!", mensaje, "bg-danger text-white", "bi bi-exclamation-triangle-fill");
+    }
+
+    private void HandleReasignacion(object data)
+    {
+        Console.WriteLine("ToastMessage: Evento Reasignacion recibido.");
+        var mensaje = ExtractMessage(data);
+        ShowToast("Nuevo Trámite Asignado", mensaje, "bg-warning text-dark", "bi bi-arrow-repeat");
+    }
+
+    private string ExtractMessage(object data)
+    {
+        if (data is JsonElement element)
+        {
+            if (element.TryGetProperty("Mensaje", out var prop) || element.TryGetProperty("mensaje", out prop))
+            {
+                return prop.GetString() ?? string.Empty;
+            }
+        }
+        return data?.ToString() ?? "Notificación recibida";
+    }
+
+    private void ShowToast(string title, string message, string cssClass, string iconClass)
+    {
+        var toast = new ToastModel(Guid.NewGuid(), title, message, cssClass, iconClass);
+
+        InvokeAsync(() =>
+        {
+            _toasts.Add(toast);
+            StateHasChanged();
+        });
+
+        _ = Task.Delay(5000).ContinueWith(_ => RemoveToast(toast));
+    }
+
+    private void RemoveToast(ToastModel toast)
+    {
+        InvokeAsync(() =>
+        {
+            if (_toasts.Remove(toast))
+            {
+                StateHasChanged();
+            }
+        });
+    }
+
+    public void Dispose()
+    {
+        NotificacionService.OnIncumplimiento -= HandleIncumplimiento;
+        NotificacionService.OnReasignacion -= HandleReasignacion;
+    }
+
+    private record ToastModel(Guid Id, string Title, string Message, string CssClass, string IconClass);
+}
