@@ -56,7 +56,7 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramites
                         await incumplimientoRepository.RegistrarIncumplimiento(tramite, funcionarioNuevo.IdFuncionario);
 
 
-                        await emailService.EnviarCorreoNotificacionFuncionarioInfractor(tramite.Funcionario!.Correo, tramite);
+                        // await emailService.EnviarCorreoNotificacionFuncionarioInfractor(tramite.Funcionario!.Correo, tramite);
 
                         // Notificaciones en tiempo real signalR
                         await hubContext.Clients.All.SendAsync("NotificacionIncumplimiento", new
@@ -71,7 +71,7 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramites
 
                         await tramiteRepository.ActualizarTramitePorIncumplimiento(tramite);
 
-                        await emailService.EnviarCorreoReasignacionFuncionarioNuevo(funcionarioNuevo.Correo, tramite);
+                        // await emailService.EnviarCorreoReasignacionFuncionarioNuevo(funcionarioNuevo.Correo, tramite);
 
 
                         await hubContext.Clients.All.SendAsync("NotificacionReasignacion", new
