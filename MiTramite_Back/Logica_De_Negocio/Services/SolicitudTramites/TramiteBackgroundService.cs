@@ -6,9 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 using MiTramite_Back.Acceso_A_Datos.Repositories.IncumplimientoRep;
 using MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep;
 using MiTramite_Back.Logica_De_Negocio.Services.EmailSvc;
-using MiTramite_Back.Logica_De_Negocio.Services.FuncionarioSvc;
 using MiTramite_Back.Logica_De_Negocio.Services.Notificaciones;
-using MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramitesSvc;
 using MiTramite_Domain.Constants;
 
 namespace MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramites
@@ -41,9 +39,9 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramites
                 {
                     var ahoraUtc = DateTime.UtcNow;
 
-                    if (tramite.FechaEstimadaEntrega <= ahoraUtc)
+                    if (tramite.FechaEstimadaEntrega <= ahoraUtc
+                        && (tramite.IdEstadoTramite == (int)TramiteEstados.Pendiente || tramite.IdEstadoTramite == (int)TramiteEstados.EnProceso))
                     {
-                        // Registrar incumplimiento
 
                         // Reasignar funcionario
                         var funcionarioNuevo = await tramiteRepository.ObtenerFuncionarioConMayorDisponibilidadParaReasignacionAsync(tramite.IdFuncionario, stoppingToken);
@@ -58,7 +56,6 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramites
 
                         // await emailService.EnviarCorreoNotificacionFuncionarioInfractor(tramite.Funcionario!.Correo, tramite);
 
-                        // Notificaciones en tiempo real signalR
                         await hubContext.Clients.All.SendAsync("NotificacionIncumplimiento", new
                         {
                             Tipo = 1,
@@ -68,6 +65,7 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramites
                         tramite.IdFuncionario = funcionarioNuevo.IdFuncionario;
                         tramite.FechaSolicitud = ahoraUtc;
                         tramite.IdEstadoTramite = (int)TramiteEstados.Urgente;
+                        tramite.Reasignado = true;
 
                         await tramiteRepository.ActualizarTramitePorIncumplimiento(tramite);
 
