@@ -16,25 +16,61 @@
         <p class="text-muted">Consulta todos los trámites que has procesado</p>
     </div>
 
+    <!-- Filtros -->
+    <div class="card border-0 shadow-sm mb-4 bg-light">
+        <div class="card-body py-3">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small text-muted mb-1">Buscar Rentista</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i
+                                class="bi bi-search text-muted"></i></span>
+                        <input type="text" class="form-control border-start-0 ps-0" placeholder="Nombre del rentista..."
+                            @bind="busquedaRentista" @bind:event="oninput" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted mb-1">Estado</label>
+                    <select class="form-select" @bind="estadoSeleccionado">
+                        <option value="">Todos los estados</option>
+                        <option value="@TramiteEstados.Completado">Completado</option>
+                        <option value="@TramiteEstados.Rechazado">Rechazado</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-muted mb-1">Fecha Desde</label>
+                    <input type="date" class="form-control" @bind="fechaInicio" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-muted mb-1">Fecha Hasta</label>
+                    <input type="date" class="form-control" @bind="fechaFin" />
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary w-100" @onclick="LimpiarFiltros">
+                        <i class="bi bi-x-circle me-1"></i>Limpiar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @if (tramites == null)
     {
         <div class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
-                <span class="visualmente-hidden">Cargando...</span>
+                <span class="visually-hidden">Cargando...</span>
             </div>
             <p class="mt-3 text-muted">Cargando historial...</p>
         </div>
     }
     else
     {
-        var tramitesHistorial = tramites
-        .Where(t => t.Estado == TramiteEstados.Completado.ToString() || t.Estado == TramiteEstados.Rechazado.ToString())
-        .ToList();
+        var tramitesFiltrados = GetTramitesFiltrados();
 
-        @if (!tramitesHistorial.Any())
+        @if (!tramitesFiltrados.Any())
         {
             <div class="alert alert-info">
-                <i class="bi bi-info-circle me-2"></i>No hay trámites en el historial.
+                <i class="bi bi-info-circle me-2"></i>No se encontraron trámites en el historial con los filtros seleccionados.
             </div>
         }
         else
@@ -42,7 +78,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-light border-bottom py-3">
                     <h5 class="fw-bold text-primary mb-0">
-                        <i class="bi bi-clock-history me-2"></i>Listado de Trámites Completados (@tramitesHistorial.Count)
+                        <i class="bi bi-clock-history me-2"></i>Listado de Trámites Completados (@tramitesFiltrados.Count)
                     </h5>
                 </div>
                 <div class="card-body p-0">
@@ -60,7 +96,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var tramite in tramitesHistorial)
+                                @foreach (var tramite in tramitesFiltrados)
                                 {
                                     <tr>
                                         <td><strong>@tramite.IdSolicitudTramite</strong></td>
@@ -94,6 +130,12 @@
     private List<SolicitudTramiteRegistroDTO>? tramites;
     private long idFuncionario = 1;
 
+    // Filtros
+    private string busquedaRentista = "";
+    private DateTime? fechaInicio;
+    private DateTime? fechaFin;
+    private string estadoSeleccionado = "";
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -114,6 +156,49 @@
             Console.WriteLine($"Error: {ex.Message}");
             tramites = new List<SolicitudTramiteRegistroDTO>();
         }
+    }
+
+    private List<SolicitudTramiteRegistroDTO> GetTramitesFiltrados()
+    {
+        if (tramites == null) return new List<SolicitudTramiteRegistroDTO>();
+
+        // Filtro base: Completado o Rechazado
+        var query = tramites.Where(t =>
+        t.Estado == TramiteEstados.Completado.ToString() ||
+        t.Estado == TramiteEstados.Rechazado.ToString());
+
+        // Filtro por nombre de rentista
+        if (!string.IsNullOrWhiteSpace(busquedaRentista))
+        {
+            query = query.Where(t => t.NombreCompletoRentista.Contains(busquedaRentista, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Filtro por estado seleccionado
+        if (!string.IsNullOrEmpty(estadoSeleccionado))
+        {
+            query = query.Where(t => t.Estado == estadoSeleccionado);
+        }
+
+        // Filtro por rango de fechas
+        if (fechaInicio.HasValue)
+        {
+            query = query.Where(t => t.FechaSolicitud.Date >= fechaInicio.Value.Date);
+        }
+
+        if (fechaFin.HasValue)
+        {
+            query = query.Where(t => t.FechaSolicitud.Date <= fechaFin.Value.Date);
+        }
+
+        return query.ToList();
+    }
+
+    private void LimpiarFiltros()
+    {
+        busquedaRentista = "";
+        fechaInicio = null;
+        fechaFin = null;
+        estadoSeleccionado = "";
     }
 
     private void VerDetalle(long idTramite)
