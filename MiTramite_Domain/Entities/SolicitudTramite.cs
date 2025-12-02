@@ -16,7 +16,7 @@ namespace MiTramite_Domain.Entities
         public DateTime FechaSolicitud { get; set; }
         // Cambiar esto solo en pruebas locales
         // public DateTime FechaEstimadaEntrega => FechaSolicitud.AddDays(TipoTramite.DiasDuracionEstimada);
-        public DateTime FechaEstimadaEntrega => FechaSolicitud.AddSeconds(10);
+        public DateTime FechaEstimadaEntrega => FechaSolicitud.AddMinutes(TipoTramite.DiasDuracionEstimada);
         public int IdEstadoTramite { get; set; }
         public bool Reasignado { get; set; }
 
