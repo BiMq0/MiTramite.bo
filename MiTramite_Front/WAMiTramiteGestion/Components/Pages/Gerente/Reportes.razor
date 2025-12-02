@@ -1,18 +1,20 @@
 @page "/gerente/reportes"
 @using MiTramite_Front.WAMiTramiteGestion.Services.Reporte
+@using MiTramite_Front.WAMiTramiteGestion.Services.Pdf
 @using MiTramite_Shared.DTOs.Reportes
 @inject IJSRuntime JSRuntime
 @inject IReporteService ReporteService
+@inject IPdfService PdfService
 @rendermode InteractiveServer
 
-<div class="container-fluid px-4 animate-fadein">
+<div class="container-fluid px-4 animate-fadein overflow-auto" style="max-height: calc(100vh - 120px);">
     <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
         <div>
-            <h2 class="fw-bold text-primary mb-1">📊 Reportes Generales</h2>
+            <h2 class="fw-bold text-primary mb-1"><i class="bi bi-bar-chart-fill me-2"></i>Reportes Generales</h2>
             <p class="text-muted mb-0">Análisis estadístico del sistema</p>
         </div>
-        <button class="btn btn-outline-primary" @onclick="ImprimirReporte">
-            <i class="bi bi-printer me-2"></i>Descargar PDF / Imprimir
+        <button class="btn btn-outline-primary" @onclick="DescargarReporte">
+            <i class="bi bi-file-earmark-pdf me-2"></i>Descargar Informe PDF
         </button>
     </div>
 
@@ -28,7 +30,8 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button class="btn btn-primary w-100" @onclick="LoadData">
+                    <button class="btn btn-primary w-100" @onclick="LoadData"
+                        style="background-color: #003366; border-color: #003366;">
                         <i class="bi bi-filter me-1"></i>Aplicar
                     </button>
                 </div>
@@ -37,11 +40,11 @@
     </div>
 
     <div class="row g-4 mb-4">
-        <!-- Chart 1: Trámites por Mes -->
         <div class="col-md-6">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-bottom-0 pt-4 px-4">
-                    <h5 class="fw-bold text-secondary mb-0">Trámites Realizados (Por Mes)</h5>
+                    <h5 class="fw-bold text-secondary mb-0" style="color: #003366 !important;">Trámites Realizados (Por
+                        Mes)</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="chartTramites"></canvas>
@@ -49,11 +52,11 @@
             </div>
         </div>
 
-        <!-- Chart 2: Rentistas por Edad -->
         <div class="col-md-6">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-bottom-0 pt-4 px-4">
-                    <h5 class="fw-bold text-secondary mb-0">Rentistas Registrados por Rango de Edad</h5>
+                    <h5 class="fw-bold text-secondary mb-0" style="color: #003366 !important;">Rentistas Registrados por
+                        Rango de Edad</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="chartRentistas"></canvas>
@@ -65,7 +68,7 @@
         <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-bottom-0 pt-4 px-4">
-                    <h5 class="fw-bold text-secondary mb-0">Estado de Trámites</h5>
+                    <h5 class="fw-bold text-secondary mb-0" style="color: #003366 !important;">Estado de Trámites</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="chartEstados"></canvas>
@@ -73,11 +76,11 @@
             </div>
         </div>
 
-        <!-- Chart 4: Incumplimientos -->
         <div class="col-md-8">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-bottom-0 pt-4 px-4">
-                    <h5 class="fw-bold text-secondary mb-0">Incumplimientos por Funcionario (Top 5)</h5>
+                    <h5 class="fw-bold text-secondary mb-0" style="color: #003366 !important;">Incumplimientos por
+                        Funcionario (Top 5)</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="chartIncumplimientos"></canvas>
@@ -92,6 +95,18 @@
     let chartRentistasInstance = null;
     let chartEstadosInstance = null;
     let chartIncumplimientosInstance = null;
+
+    window.downloadFileFromStream = async (fileName, contentStreamReference) => {
+        const arrayBuffer = await contentStreamReference.arrayBuffer();
+        const blob = new Blob([arrayBuffer]);
+        const url = URL.createObjectURL(blob);
+        const anchorElement = document.createElement('a');
+        anchorElement.href = url;
+        anchorElement.download = fileName ?? '';
+        anchorElement.click();
+        anchorElement.remove();
+        URL.revokeObjectURL(url);
+    }
 
     window.renderCharts = (tramitesData, rentistasData, estadosData, incumplimientosData) => {
         // Destroy existing charts if they exist
@@ -111,10 +126,10 @@
                 datasets: [{
                     label: 'Trámites Completados',
                     data: tramitesValues,
-                    borderColor: '#0d6efd',
+                    borderColor: '#003366',
                     tension: 0.1,
                     fill: true,
-                    backgroundColor: 'rgba(13, 110, 253, 0.1)'
+                    backgroundColor: 'rgba(0, 51, 102, 0.1)'
                 }]
             },
             options: { responsive: true }
@@ -131,13 +146,12 @@
                 datasets: [{
                     label: 'Cantidad de Rentistas',
                     data: rentistasValues,
-                    backgroundColor: '#198754'
+                    backgroundColor: '#0056b3'
                 }]
             },
             options: { responsive: true }
         });
 
-        // Chart 3: Estados
         const estadosLabels = estadosData.map(d => d.estado);
         const estadosValues = estadosData.map(d => d.cantidad);
 
@@ -147,15 +161,15 @@
                 labels: estadosLabels,
                 datasets: [{
                     data: estadosValues,
-                    backgroundColor: ['#198754', '#dc3545', '#ffc107', '#0dcaf0', '#6c757d']
+                    backgroundColor: ['#003366', '#004080', '#0056b3', '#337ab7', '#6699cc']
                 }]
             },
             options: { responsive: true }
         });
 
         // Chart 4: Incumplimientos
-        const incLabels = incumplimientosData.map(d => d.funcionarioNombre);
-        const incValues = incumplimientosData.map(d => d.cantidadIncumplimientos);
+        const incLabels = incumplimientosData.map(d => d.nombreFuncionario);
+        const incValues = incumplimientosData.map(d => d.cantidad);
 
         chartIncumplimientosInstance = new Chart(document.getElementById('chartIncumplimientos'), {
             type: 'bar',
@@ -164,7 +178,7 @@
                 datasets: [{
                     label: 'Incumplimientos',
                     data: incValues,
-                    backgroundColor: '#dc3545'
+                    backgroundColor: '#003366' // Gestora Dark Blue
                 }]
             },
             options: {
@@ -200,8 +214,13 @@
         }
     }
 
-    private async Task ImprimirReporte()
+    private async Task DescargarReporte()
     {
-        await JSRuntime.InvokeVoidAsync("print");
+        if (dashboardData == null) return;
+
+        var pdfBytes = PdfService.GenerateReport(dashboardData, selectedYear);
+        using var stream = new MemoryStream(pdfBytes);
+        using var streamRef = new DotNetStreamReference(stream);
+        await JSRuntime.InvokeVoidAsync("downloadFileFromStream", $"Reporte_Gestion_{selectedYear}.pdf", streamRef);
     }
 }

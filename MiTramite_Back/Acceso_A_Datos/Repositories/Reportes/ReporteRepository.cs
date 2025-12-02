@@ -79,10 +79,11 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.Reportes
         {
             return await _context.Incumplimientos
                 .Include(i => i.Funcionario)
-                .GroupBy(i => i.Funcionario!.Nombres + " " + i.Funcionario.ApellidoPaterno)
+                .GroupBy(i => new { i.Funcionario!.Nombres, i.Funcionario.ApellidoPaterno, i.Funcionario.Correo })
                 .Select(g => new ReporteIncumplimientosFuncionarioDTO
                 {
-                    NombreFuncionario = g.Key,
+                    NombreFuncionario = g.Key.Nombres + " " + g.Key.ApellidoPaterno,
+                    CorreoFuncionario = g.Key.Correo,
                     Cantidad = g.Count()
                 })
                 .OrderByDescending(x => x.Cantidad)

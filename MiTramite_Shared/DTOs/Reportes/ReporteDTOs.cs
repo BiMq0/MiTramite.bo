@@ -24,6 +24,7 @@ namespace MiTramite_Shared.DTOs.Reportes
     public class ReporteIncumplimientosFuncionarioDTO
     {
         public string NombreFuncionario { get; set; } = string.Empty;
+        public string CorreoFuncionario { get; set; } = string.Empty;
         public int Cantidad { get; set; }
     }
 
