@@ -5,71 +5,156 @@
 @inject NavigationManager Navigation
 @inject ISolicitudTramiteService SolicitudTramiteService
 
-<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12">
-            <button class="btn btn-outline-primary btn-sm mb-3" @onclick="Volver">
-                <i class="bi bi-arrow-left me-1"></i>
-                Volver
-            </button>
+<div class="container py-2">
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            <!-- Header / Navigation -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <button class="btn btn-secondary" @onclick="Volver">
+                    <i class="bi bi-arrow-left me-2"></i>Volver a mis trámites
+                </button>
+                <span class="text-muted font-monospace">ID: #@IdSolicitud</span>
+            </div>
 
-            @if (solicitud != null)
-            {
-                <div class="card">
-                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="bi bi-file-earmark-text me-2"></i>
-                            @solicitud.NombreTipoTramite
-                        </h5>
-                        <span class="badge @GetEstadoBadgeClass(solicitud.Estado)">
-                            @solicitud.Estado
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <h6 class="text-muted mb-3">Detalles de la Solicitud</h6>
-                                <dl class="row">
-                                    <dt class="col-sm-4">ID Solicitud</dt>
-                                    <dd class="col-sm-8">@solicitud.IdSolicitudTramite</dd>
-
-                                    <dt class="col-sm-4">Fecha</dt>
-                                    <dd class="col-sm-8">@solicitud.FechaSolicitud.ToString("dd/MM/yyyy HH:mm")</dd>
-
-                                    <dt class="col-sm-4">Funcionario</dt>
-                                    <dd class="col-sm-8">@(string.IsNullOrEmpty(solicitud.NombreCompletoFuncionarioAsignado)
-                                                                            ?
-                                                                            "Pendiente de asignación" : solicitud.NombreCompletoFuncionarioAsignado)</dd>
-
-                                    <dt class="col-sm-4">Reasignado</dt>
-                                    <dd class="col-sm-8">@solicitud.Reassigned</dd>
-                                </dl>
-                            </div>
-                        </div>
-
-                        @if (solicitud.Estado == "Completado" || solicitud.Estado == "Aprobado")
-                        {
-                            <div class="alert alert-success">
-                                <i class="bi bi-check-circle-fill me-2"></i>
-                                Este trámite ha sido completado exitosamente.
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
-            else if (cargando)
+            @if (cargando)
             {
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Cargando...</span>
                     </div>
+                    <p class="mt-2 text-muted">Cargando detalles del trámite...</p>
+                </div>
+            }
+            else if (solicitud != null)
+            {
+                <!-- Main Status Card -->
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap">
+                            <div>
+                                <h2 class="h3 mb-1 fw-bold text-primary">@solicitud.NombreTipoTramite</h2>
+                                <p class="text-muted mb-0">Solicitado el @solicitud.FechaSolicitud.ToString("dd 'de' MMMM,                         yyyy")</p>
+                            </div>
+                            <div class="mt-2 mt-md-0">
+                                <span class="badge rounded-pill px-3 py-2 fs-6 @GetEstadoBadgeClass(solicitud.Estado)">
+                                    @solicitud.Estado
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Progress / Status Message -->
+                        <div class="mt-4 p-3 bg-light rounded-3 border">
+                            @if (solicitud.Estado == "Rechazado")
+                            {
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-x-circle-fill text-danger fs-3 me-3"></i>
+                                    <div>
+                                        <h5 class="text-danger fw-bold mb-1">Trámite Rechazado</h5>
+                                        <p class="mb-0"><strong>Motivo:</strong> @(string.IsNullOrEmpty(solicitud.MotivoRechazo)
+                                                                                ? "No especificado" : solicitud.MotivoRechazo)</p>
+                                    </div>
+                                </div>
+                            }
+                            else if (solicitud.Estado == "Completado" || solicitud.Estado == "Aprobado")
+                            {
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success fs-3 me-3"></i>
+                                    <div>
+                                        <h5 class="text-success fw-bold mb-1">¡Enhorabuena!</h5>
+                                        <p class="mb-0">Su trámite ha sido finalizado exitosamente.</p>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-info-circle-fill text-primary fs-3 me-3"></i>
+                                    <div>
+                                        <h5 class="text-primary fw-bold mb-1">En Seguimiento</h5>
+                                        <p class="mb-0">Su trámite está siendo procesado. La fecha estimada de entrega es el
+                                            <strong>@solicitud.FechaEstimadaEntrega.ToString("dd/MM/yyyy")</strong>.
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Details Column -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm h-100 border-0">
+                            <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                                <h5 class="card-title fw-bold mb-0"><i
+                                        class="bi bi-person-lines-fill me-2 text-secondary"></i>Información del Solicitante
+                                </h5>
+                            </div>
+                            <div class="card-body px-4 pb-4">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item px-0 border-0 mb-3">
+                                        <small class="text-muted d-block text-uppercase"
+                                            style="font-size: 0.75rem; letter-spacing: 0.5px;">Nombre Completo</small>
+                                        <span class="fw-medium fs-5">@solicitud.NombreCompletoRentista</span>
+                                    </li>
+                                    <li class="list-group-item px-0 border-0">
+                                        <small class="text-muted d-block text-uppercase"
+                                            style="font-size: 0.75rem; letter-spacing: 0.5px;">Correo Electrónico</small>
+                                        <span class="fw-medium">@solicitud.CorreoRentista</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Official Column -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm h-100 border-0">
+                            <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                                <h5 class="card-title fw-bold mb-0"><i
+                                        class="bi bi-building me-2 text-secondary"></i>Gestión del Trámite</h5>
+                            </div>
+                            <div class="card-body px-4 pb-4">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item px-0 border-0 mb-3">
+                                        <small class="text-muted d-block text-uppercase"
+                                            style="font-size: 0.75rem; letter-spacing: 0.5px;">Funcionario Asignado</small>
+                                        @if (!string.IsNullOrEmpty(solicitud.NombreCompletoFuncionarioAsignado))
+                                        {
+                                            <span class="fw-medium fs-5">@solicitud.NombreCompletoFuncionarioAsignado</span>
+                                            <div class="text-muted mt-1"><i
+                                                    class="bi bi-envelope me-1"></i>@solicitud.CorreoFuncionarioAsignado</div>
+                                        }
+                                        else
+                                        {
+                                            <span class="fst-italic text-muted">Pendiente de asignación</span>
+                                        }
+                                    </li>
+                                    <li class="list-group-item px-0 border-0 mb-3">
+                                        <small class="text-muted d-block text-uppercase"
+                                            style="font-size: 0.75rem; letter-spacing: 0.5px;">Fecha Estimada de
+                                            Entrega</small>
+                                        <span
+                                            class="fw-medium fs-5">@solicitud.FechaEstimadaEntrega.ToString("dd/MM/yyyy")</span>
+                                    </li>
+                                    <li class="list-group-item px-0 border-0">
+                                        <small class="text-muted d-block text-uppercase"
+                                            style="font-size: 0.75rem; letter-spacing: 0.5px;">Reasignado</small>
+                                        <span class="fw-medium">@solicitud.Reassigned</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             }
             else
             {
-                <div class="alert alert-danger">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    No se pudo cargar la información del trámite.
+                <div class="alert alert-danger shadow-sm" role="alert">
+                    <h4 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>Error</h4>
+                    <p>No se pudo cargar la información del trámite. Por favor, intente nuevamente más tarde.</p>
+                    <hr>
+                    <p class="mb-0">Si el problema persiste, contacte a soporte.</p>
                 </div>
             }
         </div>
@@ -101,7 +186,7 @@
 
     private void Volver()
     {
-        Navigation.NavigateTo("/mis-tramites");
+        Navigation.NavigateTo($"/mis-tramites/{RentistaStateStore.Current.IdRentista}");
     }
 
     private string GetEstadoBadgeClass(string estado)
@@ -113,6 +198,7 @@
             "Pendiente" => "bg-warning text-dark",
             "En Revisión" => "bg-info text-dark",
             "En Proceso" => "bg-primary",
+            "Urgente" => "bg-primary", // Mismo estilo que En Proceso
             "Rechazado" => "bg-danger",
             _ => "bg-secondary"
         };
