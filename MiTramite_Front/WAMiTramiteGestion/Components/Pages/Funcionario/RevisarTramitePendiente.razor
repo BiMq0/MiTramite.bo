@@ -1,8 +1,10 @@
 @page "/funcionario/tramites-pendientes/revisar/{IdSolicitudTramite:long}"
 @using MiTramite_Shared.DTOs.SolicitudTramiteDTOs
+@using MiTramite_Shared.DTOs.ArchivoDTOs
 @using MiTramite_Domain.Constants
 @inject Services.ITramiteService TramiteService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 <PageTitle>Revisar Trámite Pendiente</PageTitle>
@@ -95,6 +97,38 @@
             </div>
         </div>
 
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light border-bottom py-3">
+                <h5 class="fw-bold text-primary mb-0">
+                    <i class="bi bi-file-earmark-text me-2"></i>Documentos Adjuntos
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (tramite.Archivos != null && tramite.Archivos.Any())
+                {
+                    <div class="list-group">
+                        @foreach (var archivo in tramite.Archivos)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-file-earmark me-2"></i>
+                                    <span>@archivo.Nombre</span>
+                                    <span class="text-muted small ms-2">(@(archivo.Peso / 1024) KB)</span>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary" @onclick="() => DescargarArchivo(archivo)">
+                                    <i class="bi bi-download me-1"></i>Descargar
+                                </button>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No hay documentos adjuntos.</p>
+                }
+            </div>
+        </div>
+
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-light border-bottom py-3">
                 <h5 class="fw-bold text-primary mb-0">
@@ -143,6 +177,31 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
+                        <label class="form-label">Seleccione los archivos erróneos (se eliminarán):</label>
+                        @if (tramite?.Archivos != null && tramite.Archivos.Any())
+                        {
+                            <div class="list-group mb-2" style="max-height: 200px; overflow-y: auto;">
+                                @foreach (var archivo in tramite.Archivos)
+                                {
+                                    <div class="list-group-item py-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="@archivo.IdArchivo" 
+                                                id="archivo_@archivo.IdArchivo" 
+                                                @onchange="(e) => ToggleArchivoRechazo(archivo, e)">
+                                            <label class="form-check-label" for="archivo_@archivo.IdArchivo">
+                                                @archivo.Nombre
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted small">No hay archivos para seleccionar.</p>
+                        }
+                    </div>
+                    <div class="mb-3">
                         <label for="motivoRechazo" class="form-label">Motivo del Rechazo</label>
                         <textarea id="motivoRechazo" class="form-control" @bind="motivoRechazo" rows="4"></textarea>
                     </div>
@@ -180,6 +239,7 @@
     private string errorModal = string.Empty;
     private bool procesando = false;
     private string accionParaRealizar = string.Empty;
+    private List<long> archivosSeleccionadosParaRechazo = new List<long>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -244,6 +304,7 @@
         mostrarModalRechazo = true;
         motivoRechazo = string.Empty;
         errorModal = string.Empty;
+        archivosSeleccionadosParaRechazo.Clear();
     }
 
     private void CerrarModalRechazar()
@@ -251,6 +312,42 @@
         mostrarModalRechazo = false;
         motivoRechazo = string.Empty;
         errorModal = string.Empty;
+        archivosSeleccionadosParaRechazo.Clear();
+    }
+
+    private void ToggleArchivoRechazo(ArchivoRegistroDTO archivo, ChangeEventArgs e)
+    {
+        if (e.Value is bool isChecked && isChecked)
+        {
+            if (!archivosSeleccionadosParaRechazo.Contains(archivo.IdArchivo))
+            {
+                archivosSeleccionadosParaRechazo.Add(archivo.IdArchivo);
+            }
+        }
+        else
+        {
+            archivosSeleccionadosParaRechazo.Remove(archivo.IdArchivo);
+        }
+    }
+
+    private async Task DescargarArchivo(ArchivoRegistroDTO archivo)
+    {
+        try
+        {
+            var fileName = archivo.Nombre;
+            var fileContent = Convert.ToBase64String(archivo.Contenido);
+            var extension = System.IO.Path.GetExtension(fileName).ToLower();
+            var contentType = "application/octet-stream";
+            if (extension == ".pdf") contentType = "application/pdf";
+            else if (extension == ".jpg" || extension == ".jpeg") contentType = "image/jpeg";
+            else if (extension == ".png") contentType = "image/png";
+            
+            await JSRuntime.InvokeVoidAsync("downloadFileGeneric", fileName, contentType, fileContent);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error downloading file: {ex.Message}");
+        }
     }
 
     private async Task RechazarTramiteConMotivo()
@@ -270,7 +367,11 @@
             var rechazoDto = new RechazoTramiteDTO
             {
                 Motivo = motivoRechazo,
-                AccionParaRealizar = accionParaRealizar
+                AccionParaRealizar = accionParaRealizar,
+                ArchivosErroneos = archivosSeleccionadosParaRechazo.Select(id => {
+                    var archivo = tramite!.Archivos.First(a => a.IdArchivo == id);
+                    return new ArchivoRechazadoDTO { IdArchivo = id, Nombre = archivo.Nombre };
+                }).ToList()
             };  
 
             var resultado = await TramiteService.RechazarTramiteAsync(IdSolicitudTramite, rechazoDto);

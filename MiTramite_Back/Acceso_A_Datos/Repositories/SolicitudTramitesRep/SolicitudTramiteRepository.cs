@@ -8,6 +8,7 @@ using MiTramite_Back.Acceso_A_Datos.Context;
 using MiTramite_Domain.Constants;
 using MiTramite_Domain.Entities;
 using MiTramite_Shared.DTOs.SolicitudTramiteDTOs;
+using MiTramite_Shared.DTOs.ArchivoDTOs;
 
 namespace MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep
 {
@@ -125,7 +126,19 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep
                 if (tramite == null)
                     return null;
 
-                return new SolicitudTramiteRegistroDTO(tramite);
+                var dto = new SolicitudTramiteRegistroDTO(tramite);
+
+                var archivos = await _context.Archivos
+                    .Where(a => a.IdRentista == tramite.IdRentista &&
+                                _context.ArchivosRequeridosTramites
+                                    .Where(art => art.IdTipoTramite == tramite.IdTipoTramite)
+                                    .Select(art => art.IdTipoArchivo)
+                                    .Contains(a.IdTipoArchivo))
+                    .ToListAsync(cancellationToken);
+
+                dto.Archivos = archivos.Select(a => new ArchivoRegistroDTO(a)).ToList();
+
+                return dto;
             }
             catch (Exception ex)
             {
@@ -155,7 +168,7 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep
             }
         }
 
-        public async Task<bool> RechazarTramiteAsync(long idSolicitudTramite, string motivo, CancellationToken cancellationToken = default)
+        public async Task<bool> RechazarTramiteAsync(long idSolicitudTramite, string motivo, List<long> archivosIdsToDelete, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -168,6 +181,19 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep
                 tramite.IdEstadoTramite = (int)TramiteEstados.Rechazado;
                 tramite.MotivoRechazo = motivo;
                 _context.SolicitudTramites.Update(tramite);
+
+                if (archivosIdsToDelete != null && archivosIdsToDelete.Any())
+                {
+                    var archivos = await _context.Archivos
+                        .Where(a => archivosIdsToDelete.Contains(a.IdArchivo))
+                        .ToListAsync(cancellationToken);
+
+                    if (archivos.Any())
+                    {
+                        _context.Archivos.RemoveRange(archivos);
+                    }
+                }
+
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return true;

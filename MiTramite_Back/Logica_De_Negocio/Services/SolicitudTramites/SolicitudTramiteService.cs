@@ -96,24 +96,13 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramitesSvc
         {
             try
             {
-                var resultado = await _repository.RechazarTramiteAsync(idSolicitudTramite, rechazoDto.Motivo, cancellationToken);
+                var archivosIds = rechazoDto.ArchivosErroneos?.Select(a => a.IdArchivo).ToList() ?? new List<long>();
+
+                var resultado = await _repository.RechazarTramiteAsync(idSolicitudTramite, rechazoDto.Motivo, archivosIds, cancellationToken);
 
                 if (resultado)
                 {
                     var correos = await _repository.ObtenerCorreosTramiteAsync(idSolicitudTramite, cancellationToken);
-                    
-                    // Eliminar archivos erróneos
-                    if (rechazoDto.ArchivosErroneos != null && rechazoDto.ArchivosErroneos.Any() && correos.HasValue)
-                    {
-                        var tramite = await _repository.ObtenerTramitePorIdAsync(idSolicitudTramite, cancellationToken);
-                        if (tramite != null)
-                        {
-                            foreach (var archivo in rechazoDto.ArchivosErroneos)
-                            {
-                                await _archivoService.EliminarDocumentoAsync(tramite.IdRentista, archivo.IdArchivo, cancellationToken);
-                            }
-                        }
-                    }
 
                     if (correos.HasValue)
                     {

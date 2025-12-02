@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MiTramite_Domain.Entities;
 using MiTramite_Domain.Constants;
+using MiTramite_Shared.DTOs.ArchivoDTOs;
 
 namespace MiTramite_Shared.DTOs.SolicitudTramiteDTOs
 {
@@ -22,6 +23,7 @@ namespace MiTramite_Shared.DTOs.SolicitudTramiteDTOs
         public string MotivoRechazo { get; set; } = "";
         public string Estado { get; set; }
         public string Reassigned { get; set; }
+        public List<ArchivoRegistroDTO> Archivos { get; set; } = new List<ArchivoRegistroDTO>();
 
         public SolicitudTramiteRegistroDTO(SolicitudTramite solicitudTramite)
         {

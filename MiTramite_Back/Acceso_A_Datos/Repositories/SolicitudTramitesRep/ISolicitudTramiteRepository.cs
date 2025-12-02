@@ -13,7 +13,7 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.SolicitudTramitesRep
         Task<List<SolicitudTramiteRegistroDTO>> ObtenerTramitesPorRentistaAsync(long idRentista, CancellationToken cancellationToken = default);
         Task<SolicitudTramiteRegistroDTO?> ObtenerTramitePorIdAsync(long idSolicitudTramite, CancellationToken cancellationToken = default);
         Task<bool> CompletarTramiteAsync(long idSolicitudTramite, CancellationToken cancellationToken = default);
-        Task<bool> RechazarTramiteAsync(long idSolicitudTramite, string motivo, CancellationToken cancellationToken = default);
+        Task<bool> RechazarTramiteAsync(long idSolicitudTramite, string motivo, List<long> archivosIdsToDelete, CancellationToken cancellationToken = default);
         Task<(string CorreoRentista, string CorreoFuncionario, string NombreRentista, string NombreFuncionario, string NombreTramite)?> ObtenerCorreosTramiteAsync(long idSolicitudTramite, CancellationToken cancellationToken = default);
         Task<List<SolicitudTramiteRegistroDTO>> ObtenerTramitesPorFuncionarioAsync(long idFuncionario, CancellationToken cancellationToken = default);
         Task<List<SolicitudTramiteRegistroDTO>> ObtenerTodosLosTramitesAsync(CancellationToken cancellationToken = default);
