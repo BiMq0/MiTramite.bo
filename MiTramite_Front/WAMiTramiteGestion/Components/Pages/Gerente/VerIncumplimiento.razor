@@ -1,0 +1,138 @@
+@page "/gerente/incumplimientos/{idSolicitud:long}"
+@using MiTramite_Shared.DTOs.Incumplimiento
+@using WAMiTramiteGestion.Services.Incumplimiento
+@inject IIncumplimientoService IncumplimientoService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<div class="container-fluid py-2">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <button class="btn btn-outline-secondary" @onclick="Volver">
+                    <i class="bi bi-arrow-left me-2"></i>Volver a la lista
+                </button>
+                <span class="text-muted font-monospace">ID Trámite: #@IdSolicitud</span>
+            </div>
+
+            @if (cargando)
+            {
+                <div class="text-center py-2">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Cargando detalles del incumplimiento...</p>
+                </div>
+            }
+            else if (detalle != null)
+            {
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-danger text-white py-3">
+                        <h4 class="mb-0 text-white"><i class="bi bi-exclamation-octagon-fill me-2"></i>Detalle de
+                            Incumplimiento</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5 class="text-secondary mb-3">Información del Trámite</h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item px-0">
+                                        <small class="text-muted d-block">Tipo de Trámite</small>
+                                        <span class="fw-bold">@detalle.NombreTipoTramite</span>
+                                    </li>
+                                    <li class="list-group-item px-0">
+                                        <small class="text-muted d-block">Fecha de Solicitud</small>
+                                        <span>@detalle.FechaSolicitudTramite.ToString("dd/MM/yyyy HH:mm")</span>
+                                    </li>
+                                    <li class="list-group-item px-0">
+                                        <small class="text-muted d-block">Fecha Estimada de Entrega</small>
+                                        <span>@detalle.FechaEstimadaEntrega.ToString("dd/MM/yyyy")</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="text-secondary mb-3">Información del Rentista</h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item px-0">
+                                        <small class="text-muted d-block">Nombre Completo</small>
+                                        <span class="fw-bold">@detalle.NombreRentista</span>
+                                    </li>
+                                    <li class="list-group-item px-0">
+                                        <small class="text-muted d-block">Correo Electrónico</small>
+                                        <span>@detalle.CorreoRentista</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <h5 class="text-secondary mb-4">Detalles de la Reasignación</h5>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded bg-light h-100">
+                                    <h6 class="text-danger fw-bold mb-3"><i class="bi bi-person-x-fill me-2"></i>Funcionario
+                                        Incumplido</h6>
+                                    <p class="mb-1 fw-bold">@detalle.NombreFuncionarioOriginal</p>
+                                    <p class="text-muted small mb-0">@detalle.CorreoFuncionarioOriginal</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded bg-light h-100">
+                                    <h6 class="text-success fw-bold mb-3"><i
+                                            class="bi bi-person-check-fill me-2"></i>Funcionario Reasignado</h6>
+                                    <p class="mb-1 fw-bold">@detalle.NombreFuncionarioReasignado</p>
+                                    <p class="text-muted small mb-0">@detalle.CorreoFuncionarioReasignado</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning mt-4 d-flex align-items-center" role="alert">
+                            <i class="bi bi-calendar-event-fill fs-4 me-3"></i>
+                            <div>
+                                <strong>Fecha de Reasignación Automática:</strong>
+                                <div class="mb-0">@detalle.FechaIncumplimiento.ToString("dd/MM/yyyy HH:mm:ss")</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger shadow-sm">
+                    <i class="bi bi-x-circle-fill me-2"></i>No se pudo cargar la información del incumplimiento.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public long IdSolicitud { get; set; }
+
+    private IncumplimientoDetalleDTO? detalle;
+    private bool cargando = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            detalle = await IncumplimientoService.ObtenerPorIdTramiteAsync(IdSolicitud);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            cargando = false;
+        }
+    }
+
+    private void Volver()
+    {
+        NavigationManager.NavigateTo("/gerente/incumplimientos");
+    }
+}

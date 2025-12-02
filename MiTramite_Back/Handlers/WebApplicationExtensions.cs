@@ -25,6 +25,8 @@ namespace MiTramite_Back.Handlers
                 TipoArchivoMapper.Map(app);
                 TipoTramiteMapper.Map(app);
                 SolicitusTramiteMapper.Map(app);
+                IncumplimientoMapper.Map(app);
+                ReporteMapper.Map(app);
             }
         }
     }
