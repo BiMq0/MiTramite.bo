@@ -15,6 +15,8 @@ namespace MiTramite_Shared.DTOs.SolicitudTramiteDTOs
         public string NombreCompletoFuncionarioAsignado { get; set; }
         public string CorreoRentista { get; set; }
         public string CorreoFuncionarioAsignado { get; set; }
+        public long IdRentista { get; set; }
+        public long IdTipoTramite { get; set; }
         public DateTime FechaSolicitud { get; set; }
         public DateTime FechaEstimadaEntrega { get; set; }
         public string MotivoRechazo { get; set; } = "";
@@ -26,6 +28,8 @@ namespace MiTramite_Shared.DTOs.SolicitudTramiteDTOs
 
             IdSolicitudTramite = solicitudTramite.IdSolicitudTramite;
             NombreTipoTramite = solicitudTramite.TipoTramite.Nombre;
+            IdRentista = solicitudTramite.Rentista!.IdRentista;
+            IdTipoTramite = solicitudTramite.TipoTramite.IdTipoTramite;
             NombreCompletoRentista = $"{solicitudTramite.Rentista!.Nombres} {solicitudTramite.Rentista!.ApellidoPaterno} {solicitudTramite.Rentista!.ApellidoMaterno ?? ""}";
             NombreCompletoFuncionarioAsignado = $"{solicitudTramite.Funcionario!.Nombres} {solicitudTramite.Funcionario!.ApellidoPaterno} {solicitudTramite.Funcionario!.ApellidoMaterno ?? ""}";
             FechaSolicitud = solicitudTramite.FechaSolicitud;

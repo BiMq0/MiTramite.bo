@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using MiTramite_Domain.Constants;
 
 namespace MiTramite_Domain.Entities

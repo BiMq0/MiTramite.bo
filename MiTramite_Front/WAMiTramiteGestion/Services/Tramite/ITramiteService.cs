@@ -27,7 +27,7 @@ namespace WAMiTramiteGestion.Services
         /// <summary>
         /// Rechaza un trámite con un motivo especificado
         /// </summary>
-        Task<bool> RechazarTramiteAsync(long idSolicitudTramite, string motivo);
+        Task<bool> RechazarTramiteAsync(long idSolicitudTramite, RechazoTramiteDTO rechazoDto);
 
         #endregion
 

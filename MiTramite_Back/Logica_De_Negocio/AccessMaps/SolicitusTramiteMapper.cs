@@ -94,14 +94,14 @@ namespace MiTramite_Back.Logica_De_Negocio.AccessMaps
             }).WithName("CompletarTramite");
 
             // RECHAZAR TRAMITE
-            solicitudTramite.MapPost(SolicitudTramiteEndpoints.RECHAZAR_TRAMITE, async (long idTramite, [FromBody] string motivo, ISolicitudTramiteService service) =>
+            solicitudTramite.MapPost(SolicitudTramiteEndpoints.RECHAZAR_TRAMITE, async (long idTramite, [FromBody] RechazoTramiteDTO rechazoDto, ISolicitudTramiteService service) =>
             {
                 try
                 {
-                    if (string.IsNullOrWhiteSpace(motivo))
+                    if (string.IsNullOrWhiteSpace(rechazoDto.Motivo))
                         return Results.BadRequest(new { error = "El motivo del rechazo es requerido" });
 
-                    var resultado = await service.RechazarTramiteAsync(idTramite, motivo);
+                    var resultado = await service.RechazarTramiteAsync(idTramite, rechazoDto);
                     return resultado
                         ? Results.Ok(new { message = "Trámite rechazado exitosamente" })
                         : Results.NotFound(new { error = "Trámite no encontrado" });

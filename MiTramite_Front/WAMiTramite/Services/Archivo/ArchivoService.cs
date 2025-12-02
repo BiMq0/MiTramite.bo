@@ -66,4 +66,25 @@ public class ArchivoService : IArchivoService
             return false;
         }
     }
+
+    public async Task<List<MiTramite_Shared.DTOs.ArchivosRequeridosTramite.ArchivosRequeridosTramiteDTO>> ObtenerArchivosRequeridos(int idTipoTramite)
+    {
+        string url = ArchivoEndpoints.BASE + ArchivoEndpoints.OBTENER_ARCHIVOS_REQUERIDOS.Replace("{idTipoTramite}", idTipoTramite.ToString());
+        Console.WriteLine("URL: " + _client.BaseAddress + url);
+        try
+        {
+            var resultado = await _client.GetAsync(url);
+            if (resultado.IsSuccessStatusCode)
+            {
+                var datos = await resultado.Content.ReadFromJsonAsync<List<MiTramite_Shared.DTOs.ArchivosRequeridosTramite.ArchivosRequeridosTramiteDTO>>();
+                return datos ?? new List<MiTramite_Shared.DTOs.ArchivosRequeridosTramite.ArchivosRequeridosTramiteDTO>();
+            }
+            return new List<MiTramite_Shared.DTOs.ArchivosRequeridosTramite.ArchivosRequeridosTramiteDTO>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            return new List<MiTramite_Shared.DTOs.ArchivosRequeridosTramite.ArchivosRequeridosTramiteDTO>();
+        }
+    }
 }

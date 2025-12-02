@@ -63,6 +63,19 @@ namespace MiTramite_Back.AccessMaps
                     return Results.Problem(detail: ex.Message, statusCode: 500);
                 }
             }).WithName("EliminarDocumento");
+
+            archivos.MapGet(ArchivoEndpoints.OBTENER_ARCHIVOS_REQUERIDOS, async (int idTipoTramite, IArchivoService service) =>
+            {
+                try
+                {
+                    var requeridos = await service.ObtenerArchivosRequeridosAsync(idTipoTramite);
+                    return Results.Ok(requeridos);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(detail: ex.Message, statusCode: 500);
+                }
+            }).WithName("ObtenerArchivosRequeridos");
         }
     }
 }

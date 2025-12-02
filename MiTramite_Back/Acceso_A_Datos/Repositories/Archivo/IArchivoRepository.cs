@@ -11,5 +11,6 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.ArchivoRep
         Task<bool> SubirDocumentoAsync(int idRentista, int idTipoArchivo, string nombreArchivo, byte[] contenido, CancellationToken cancellationToken = default);
         Task<bool> EliminarDocumentoAsync(int idRentista, long idDocumento, CancellationToken cancellationToken = default);
         Task<bool> ExisteDocumentoAsync(int idRentista, int idTipoArchivo, CancellationToken cancellationToken = default);
+        Task<List<MiTramite_Shared.DTOs.ArchivosRequeridosTramite.ArchivosRequeridosTramiteDTO>> ObtenerArchivosRequeridosAsync(int idTipoTramite, CancellationToken cancellationToken = default);
     }
 }

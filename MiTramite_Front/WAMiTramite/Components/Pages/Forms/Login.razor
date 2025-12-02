@@ -54,22 +54,6 @@
                             <ValidationMessage For="@(() => loginModel.Password)" class="text-danger small" />
                         </div>
 
-                        <div class="row mb-4">
-                            <div class="col-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="rememberMe" @bind="rememberMe">
-                                    <label class="form-check-label" for="rememberMe">
-                                        <small>Recordarme</small>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-6 text-end">
-                                <a href="#" class="small text-primary text-decoration-none">
-                                    ¿Olvidaste tu contraseña?
-                                </a>
-                            </div>
-                        </div>
-
                         @if (!string.IsNullOrEmpty(errorMessage))
                         {
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">

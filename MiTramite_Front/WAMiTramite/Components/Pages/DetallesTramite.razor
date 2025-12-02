@@ -5,10 +5,12 @@
 @using MiTramite_Shared.DTOs.TipoTramiteDTOs
 @using MiTramite_Shared.DTOs.SolicitudTramiteDTOs
 @using MiTramite_Shared.DTOs.ArchivoDTOs
+@using MiTramite_Shared.DTOs.ArchivosRequeridosTramite
 @inject NavigationManager Navigation
 @inject IRentistaService RentistaService
 @inject ITipoTramiteService TipoTramiteService
 @inject ISolicitudTramiteService SolicitudTramiteService
+@inject IArchivoService ArchivoService
 
 <div class="container-fluid">
     <div class="row mb-4">
@@ -51,45 +53,43 @@
                             Por favor, sube los documentos requeridos para este trámite.
                         </div>
 
-                        <div class="card mb-3">
-                            <div class="card-body p-3">
-                                <div class="row align-items-center">
-                                    <div class="col-md-8">
-                                        <div class="d-flex align-items-center">
-                                            <i class="bi bi-file-pdf text-danger fs-5 me-2"></i>
-                                            <div>
-                                                <div class="fw-semibold">Documentos de Respaldo</div>
-                                                <small class="text-muted">Máximo: 5 MB | Formato: PDF</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <InputFile OnChange="CargarArchivo" class="form-control form-control-sm"
-                                            accept=".pdf" />
-                                    </div>
+                        @if (cargandoArchivos)
+                        {
+                            <div class="text-center my-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando archivos...</span>
                                 </div>
                             </div>
-                        </div>
-
-                        @if (archivosSubidos.Any())
+                        }
+                        else
                         {
-                            <div class="mt-3">
-                                <h6>Archivos seleccionados:</h6>
-                                <ul class="list-group">
-                                    @foreach (var archivo in archivosSubidos)
+                            @if (archivosFaltantes.Any())
+                            {
+                                <div class="mb-4">
+                                    <h6 class="text-danger mb-3">
+                                        <i class="bi bi-exclamation-circle me-2"></i>
+                                        Documentos Faltantes
+                                    </h6>
+                                    @foreach (var archivoFaltante in archivosFaltantes)
                                     {
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            @archivo.Nombre
-                                            <span class="badge bg-primary rounded-pill">@FormatFileSize(archivo.Peso)</span>
-                                        </li>
+                                        <DocumentoFaltante TipoArchivo="archivoFaltante" 
+                                                          IdRentista="IdRentista" 
+                                                          OnArchivoSubido="CargarArchivos" />
                                     }
-                                </ul>
-                            </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-success mb-4">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    Todos los documentos requeridos han sido subidos.
+                                </div>
+                            }
                         }
 
                         <div class="mt-4">
                             <button class="btn btn-primary" @onclick="EnviarDocumentos"
-                                disabled="@(!archivosSubidos.Any())">
+                                disabled="@(archivosFaltantes.Any() || cargandoArchivos)">
                                 <i class="bi bi-cloud-upload me-2"></i>
                                 Enviar Solicitud
                             </button>
@@ -113,7 +113,6 @@
     </div>
 </div>
 
-<!-- Modals -->
 <ConfirmModal Visible="@mostrarConfirmacion" Title="Confirmar envío"
     Message="¿Está seguro que desea enviar la solicitud? Una vez enviada no podrá modificarla." ConfirmText="Enviar"
     CancelText="Cancelar" OnConfirm="ConfirmarEnvio" OnCancel="CancelarEnvio" />
@@ -129,7 +128,11 @@
     public int IdTipoTramite { get; set; }
 
     private TipoTramiteDTO? tramite;
-    private List<ArchivoNuevoDTO> archivosSubidos = new();
+    private List<ArchivosRequeridosTramiteDTO> archivosRequeridos = new();
+    private List<ArchivoRegistroDTO> archivosRentista = new();
+    private List<ArchivosRequeridosTramiteDTO> archivosFaltantes = new();
+    private bool cargandoArchivos = true;
+    
     private bool mostrarConfirmacion = false;
     private bool mostrarResultado = false;
     private bool operacionExitosa = false;
@@ -140,6 +143,7 @@
         try
         {
             tramite = await TipoTramiteService.ObtenerTramitePorId(IdTipoTramite);
+            await CargarArchivos();
         }
         catch (Exception ex)
         {
@@ -147,62 +151,26 @@
         }
     }
 
-    private async Task CargarArchivo(InputFileChangeEventArgs e)
+    private async Task CargarArchivos()
     {
-        var file = e.File;
-        if (file != null)
+        cargandoArchivos = true;
+        try
         {
-            if (file.ContentType != "application/pdf")
-            {
-                mensajeResultado = "Solo se permiten archivos PDF.";
-                operacionExitosa = false;
-                mostrarResultado = true;
-                return;
-            }
+            archivosRequeridos = await ArchivoService.ObtenerArchivosRequeridos(IdTipoTramite);
+            archivosRentista = await ArchivoService.ObtenerArchivosDelRentista(IdRentista);
 
-            const long maxSize = 5 * 1024 * 1024;
-            if (file.Size > maxSize)
-            {
-                mensajeResultado = "El archivo no puede superar 5 MB.";
-                operacionExitosa = false;
-                mostrarResultado = true;
-                return;
-            }
-
-            try
-            {
-                using var stream = new MemoryStream();
-                await file.OpenReadStream(maxSize).CopyToAsync(stream);
-
-                var nuevoArchivo = new ArchivoNuevoDTO
-                {
-                    IdRentista = IdRentista,
-                    Nombre = file.Name,
-                    Peso = (int)(file.Size / 1024.0 / 1024.0),
-                    Contenido = stream.ToArray()
-                };
-
-                archivosSubidos.Add(nuevoArchivo);
-            }
-            catch (Exception ex)
-            {
-                mensajeResultado = $"Error al leer el archivo: {ex.Message}";
-                operacionExitosa = false;
-                mostrarResultado = true;
-            }
+            archivosFaltantes = archivosRequeridos
+                .Where(req => !archivosRentista.Any(exist => exist.IdTipoArchivo == req.IdTipoArchivo))
+                .ToList();
         }
-    }
-
-    private string FormatFileSize(double bytes)
-    {
-        string[] sizes = { "B", "KB", "MB", "GB", "TB" };
-        int order = 0;
-        while (bytes >= 1024 && order < sizes.Length - 1)
+        catch (Exception ex)
         {
-            order++;
-            bytes = bytes / 1024;
+            Console.WriteLine($"Error cargando archivos: {ex.Message}");
         }
-        return $"{bytes:0.##} {sizes[order]}";
+        finally
+        {
+            cargandoArchivos = false;
+        }
     }
 
     private void EnviarDocumentos()

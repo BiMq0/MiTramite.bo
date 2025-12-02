@@ -102,5 +102,29 @@ namespace MiTramite_Back.Acceso_A_Datos.Repositories.ArchivoRep
                 throw new InvalidOperationException("Error al verificar existencia del documento", ex);
             }
         }
+
+        public async Task<List<MiTramite_Shared.DTOs.ArchivosRequeridosTramite.ArchivosRequeridosTramiteDTO>> ObtenerArchivosRequeridosAsync(int idTipoTramite, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var archivosRequeridos = await _context.ArchivosRequeridosTramites
+                    .Include(art => art.TipoArchivo)
+                    .Where(art => art.IdTipoTramite == idTipoTramite)
+                    .Select(art => new MiTramite_Shared.DTOs.ArchivosRequeridosTramite.ArchivosRequeridosTramiteDTO
+                    {
+                        IdTipoArchivo = art.IdTipoArchivo,
+                        Nombre = art.TipoArchivo.Nombre,
+                        Extension = art.TipoArchivo.Extension,
+                        PesoMaximoMB = art.TipoArchivo.PesoMaximoMB
+                    })
+                    .ToListAsync(cancellationToken);
+
+                return archivosRequeridos;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error al obtener archivos requeridos", ex);
+            }
+        }
     }
 }

@@ -16,11 +16,11 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.ArchivoSvc
             _repository = repository;
         }
 
-        public async Task<List<ArchivoRegistroDTO>> ObtenerDocumentosRentistaAsync(int idRentista, CancellationToken cancellationToken = default)
+        public async Task<List<ArchivoRegistroDTO>> ObtenerDocumentosRentistaAsync(long idRentista, CancellationToken cancellationToken = default)
         {
             try
             {
-                return await _repository.ObtenerDocumentosRentistaAsync(idRentista, cancellationToken);
+                return await _repository.ObtenerDocumentosRentistaAsync((int)idRentista, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -28,43 +28,51 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.ArchivoSvc
             }
         }
 
-        public async Task<bool> SubirDocumentoAsync(int idRentista, int idTipoArchivo, string nombreArchivo, byte[] contenido, CancellationToken cancellationToken = default)
+        public async Task<bool> SubirDocumentoAsync(long idRentista, int idTipoArchivo, string nombreArchivo, byte[] contenido, CancellationToken cancellationToken = default)
         {
             try
             {
-                var existe = await ExisteDocumentoAsync(idRentista, idTipoArchivo, cancellationToken);
-                if (existe)
-                    throw new InvalidOperationException($"Ya existe un documento de este tipo para el rentista");
-
-                return await _repository.SubirDocumentoAsync(idRentista, idTipoArchivo, nombreArchivo, contenido, cancellationToken);
+                return await _repository.SubirDocumentoAsync((int)idRentista, idTipoArchivo, nombreArchivo, contenido, cancellationToken);
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Error al subir el documento", ex);
+                throw new InvalidOperationException("Error al subir documento", ex);
             }
         }
 
-        public async Task<bool> EliminarDocumentoAsync(int idRentista, long idDocumento, CancellationToken cancellationToken = default)
+        public async Task<bool> EliminarDocumentoAsync(long idRentista, long idDocumento, CancellationToken cancellationToken = default)
         {
             try
             {
-                return await _repository.EliminarDocumentoAsync(idRentista, idDocumento, cancellationToken);
+                return await _repository.EliminarDocumentoAsync((int)idRentista, idDocumento, cancellationToken);
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Error al eliminar el documento", ex);
+                throw new InvalidOperationException("Error al eliminar documento", ex);
             }
         }
 
-        public async Task<bool> ExisteDocumentoAsync(int idRentista, int idTipoArchivo, CancellationToken cancellationToken = default)
+        public async Task<bool> ExisteDocumentoAsync(long idRentista, int idTipoArchivo, CancellationToken cancellationToken = default)
         {
             try
             {
-                return await _repository.ExisteDocumentoAsync(idRentista, idTipoArchivo, cancellationToken);
+                return await _repository.ExisteDocumentoAsync((int)idRentista, idTipoArchivo, cancellationToken);
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException("Error al verificar existencia del documento", ex);
+            }
+        }
+
+        public async Task<List<MiTramite_Shared.DTOs.ArchivosRequeridosTramite.ArchivosRequeridosTramiteDTO>> ObtenerArchivosRequeridosAsync(int idTipoTramite, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await _repository.ObtenerArchivosRequeridosAsync(idTipoTramite, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error al obtener archivos requeridos", ex);
             }
         }
     }

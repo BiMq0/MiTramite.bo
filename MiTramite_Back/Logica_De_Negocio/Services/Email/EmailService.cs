@@ -95,12 +95,33 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.EmailSvc
             }
         }
 
-        public async Task<bool> NotificarRechazoTramiteAsync(string correoRentista, string nombreRentista, string nombreTramite, string motivo, string correoFuncionario, CancellationToken cancellationToken = default)
+        public async Task<bool> NotificarRechazoTramiteAsync(string correoRentista, string nombreRentista, string nombreTramite, string motivo, string correoFuncionario, string accionParaRealizar = "", List<string>? archivosErroneos = null, CancellationToken cancellationToken = default)
         {
             try
             {
                 Console.WriteLine($"[EMAIL SERVICE] Preparando notificación de rechazo de trámite...");
                 Console.WriteLine($"[EMAIL SERVICE] Trámite: {nombreTramite} | Rentista: {nombreRentista} ({correoRentista}) | Motivo: {motivo}");
+
+                string listaArchivosHtml = "";
+                if (archivosErroneos != null && archivosErroneos.Any())
+                {
+                    listaArchivosHtml = $@"
+                        <h3>Archivos erróneos o incompletos:</h3>
+                        <ul style='background-color: #fff1f0; padding: 15px; border: 1px solid #ffa39e; border-radius: 4px; list-style-type: none;'>
+                            {string.Join("", archivosErroneos.Select(a => $"<li style='color: #cf1322; margin-bottom: 5px;'>• {a}</li>"))}
+                        </ul>
+                        <p style='color: #cf1322; font-size: 0.9em;'>Nota: Estos archivos han sido eliminados de la plataforma. Por favor, súbalos nuevamente.</p>";
+                }
+
+                string accionHtml = "";
+                if (!string.IsNullOrWhiteSpace(accionParaRealizar))
+                {
+                    accionHtml = $@"
+                        <h3>Acción recomendada:</h3>
+                        <p style='background-color: #e6f7ff; padding: 10px; border-left: 4px solid #1890ff; color: #0050b3;'>
+                            {accionParaRealizar}
+                        </p>";
+                }
 
                 string asunto = $"Tu trámite '{nombreTramite}' ha sido rechazado";
                 string cuerpo = $@"
@@ -113,7 +134,8 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.EmailSvc
                             <p style='background-color: #f5f5f5; padding: 10px; border-left: 4px solid #ff6b6b;'>
                                 {motivo}
                             </p>
-                            <p>Por favor, revisa los detalles y vuelve a presentar tu solicitud de trámite.</p>
+                            {accionHtml}
+                            {listaArchivosHtml}
                             <hr>
                             <p><small>Este correo fue enviado por {correoFuncionario}</small></p>
                             <p><small>Sistema MiTrámite © 2025</small></p>

@@ -95,7 +95,14 @@
                                             <td>
                                                 <span class="badge @GetEstadoBadgeClass(tramite.Estado)">
                                                     <i class="bi @GetEstadoIcon(tramite.Estado) me-1"></i>
-                                                    @tramite.Estado
+                                                    @if (tramite.Estado == "Urgente")
+                                                    {
+                                                        <span>En Proceso</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        @tramite.Estado
+                                                    }
                                                 </span>
                                             </td>
                                             <td>
@@ -118,24 +125,6 @@
                                                         title="Ver detalles">
                                                         <i class="bi bi-eye"></i>
                                                     </button>
-                                                    @if (tramite.Estado == "Completado")
-                                                    {
-                                                        <button class="btn btn-sm text-white"
-                                                            style="background: linear-gradient(135deg, #38a169, #48bb78); border: none;"
-                                                            @onclick="@(() => DescargarResultado(tramite.IdSolicitudTramite))"
-                                                            title="Descargar resultado">
-                                                            <i class="bi bi-download"></i>
-                                                        </button>
-                                                    }
-                                                    @if (tramite.Estado == "Pendiente" || tramite.Estado == "En Revisión")
-                                                    {
-                                                        <button class="btn btn-sm text-white"
-                                                            style="background: linear-gradient(135deg, #d69e2e, #f6e05e); border: none;"
-                                                            @onclick="@(() => CompletarDocumentos(tramite.IdSolicitudTramite))"
-                                                            title="Completar documentos">
-                                                            <i class="bi bi-file-earmark-arrow-up"></i>
-                                                        </button>
-                                                    }
                                                 </div>
                                             </td>
                                         </tr>
@@ -229,7 +218,7 @@
             "Pendiente" => "badge-warning",
             "En Revisión" => "badge-info",
             "Rechazado" => "badge-danger",
-            _ => "bg-secondary"
+            _ => "badge-primary"
         };
     }
 
@@ -242,7 +231,7 @@
             "Pendiente" => "bi-exclamation-triangle-fill",
             "En Revisión" => "bi-eye-fill",
             "Rechazado" => "bi-x-circle-fill",
-            _ => "bi-question-circle-fill"
+            _ => "bi-exclamation-triangle-fill"
         };
     }
 

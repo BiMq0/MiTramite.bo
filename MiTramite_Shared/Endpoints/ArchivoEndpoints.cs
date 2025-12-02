@@ -12,5 +12,6 @@ namespace MiTramite_Shared.Endpoints
         public const string OBTENER_DOCUMENTOS_POR_RENTISTA = "/obtener-documentos-por-rentista/{idRentista}";
         public const string SUBIR_DOCUMENTO = "/subir-documento/{idRentista}";
         public const string ELIMINAR_DOCUMENTO = "/eliminar-documento/{idDocumento}";
+        public const string OBTENER_ARCHIVOS_REQUERIDOS = "/requeridos/{idTipoTramite}";
     }
 }

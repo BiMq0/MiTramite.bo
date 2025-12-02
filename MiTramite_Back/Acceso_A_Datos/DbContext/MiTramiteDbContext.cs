@@ -63,7 +63,7 @@ namespace MiTramite_Back.Acceso_A_Datos.Context
 
             modelBuilder.Entity<Archivo>()
                 .HasOne(a => a.Rentista)
-                .WithMany()
+                .WithMany(r => r.Archivos)
                 .HasForeignKey(a => a.IdRentista)
                 .OnDelete(DeleteBehavior.Restrict);
 

@@ -146,6 +146,11 @@
                         <label for="motivoRechazo" class="form-label">Motivo del Rechazo</label>
                         <textarea id="motivoRechazo" class="form-control" @bind="motivoRechazo" rows="4"></textarea>
                     </div>
+                    <select id="accionParaRealizar" class="form-select" @bind="accionParaRealizar">
+                        <option value="">Seleccione una acción</option>
+                        <option value="Resubir documentos y realizar trámite nuevamente">Resubir documentos y realizar trámite nuevamente</option>
+                        <option value="Apersonarse a las oficinas de la gestora">Apersonarse a las oficinas de la gestora</option>
+                    </select>
                     @if (!string.IsNullOrEmpty(errorModal))
                     {
                         <div class="alert alert-danger">@errorModal</div>
@@ -174,6 +179,7 @@
     private string mensajeExito = string.Empty;
     private string errorModal = string.Empty;
     private bool procesando = false;
+    private string accionParaRealizar = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -259,9 +265,15 @@
         {
             procesando = true;
             errorModal = string.Empty;
-            StateHasChanged();
+            StateHasChanged();   
 
-            var resultado = await TramiteService.RechazarTramiteAsync(IdSolicitudTramite, motivoRechazo);
+            var rechazoDto = new RechazoTramiteDTO
+            {
+                Motivo = motivoRechazo,
+                AccionParaRealizar = accionParaRealizar
+            };  
+
+            var resultado = await TramiteService.RechazarTramiteAsync(IdSolicitudTramite, rechazoDto);
 
             if (resultado)
             {

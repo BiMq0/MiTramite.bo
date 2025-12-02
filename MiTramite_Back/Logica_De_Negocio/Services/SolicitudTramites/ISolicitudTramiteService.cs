@@ -13,7 +13,7 @@ namespace MiTramite_Back.Logica_De_Negocio.Services.SolicitudTramitesSvc
         Task<List<SolicitudTramiteRegistroDTO>> ObtenerTramitesPorRentistaAsync(long idRentista, CancellationToken cancellationToken = default);
         Task<SolicitudTramiteRegistroDTO?> ObtenerTramitePorIdAsync(long idSolicitudTramite, CancellationToken cancellationToken = default);
         Task<bool> CompletarTramiteAsync(long idSolicitudTramite, CancellationToken cancellationToken = default);
-        Task<bool> RechazarTramiteAsync(long idSolicitudTramite, string motivo, CancellationToken cancellationToken = default);
+        Task<bool> RechazarTramiteAsync(long idSolicitudTramite, RechazoTramiteDTO rechazoDto, CancellationToken cancellationToken = default);
 
         // Nuevos métodos
         Task<List<SolicitudTramiteRegistroDTO>> ObtenerTramitesPorFuncionarioAsync(long idFuncionario, CancellationToken cancellationToken = default);

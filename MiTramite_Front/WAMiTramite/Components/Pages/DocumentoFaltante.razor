@@ -1,0 +1,179 @@
+@using MiTramite_Shared.DTOs.ArchivosRequeridosTramite
+@using MiTramite_Shared.DTOs.ArchivoDTOs
+@using WAMiTramite.Services
+@inject IArchivoService ArchivoService
+
+<div class="card mb-3 border-warning">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+                <h6 class="card-title text-black mb-1">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>@TipoArchivo.Nombre
+                </h6>
+                <small class="text-muted">
+                    Formato: @TipoArchivo.Extension | Tamaño máximo: @TipoArchivo.PesoMaximoMB MB
+                </small>
+            </div>
+        </div>
+
+        @if (!archivoSeleccionado)
+        {
+            <div class="mb-3">
+                <InputFile OnChange="SeleccionarArchivo" class="form-control" accept="@TipoArchivo.Extension" />
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info mb-3">
+                <i class="bi bi-file-earmark-check me-2"></i>
+                <strong>@nombreArchivoSeleccionado</strong> (@FormatFileSize(pesoArchivo))
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary btn-sm" @onclick="SubirArchivo" disabled="@subiendo">
+                    @if (subiendo)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                        <span>Subiendo...</span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-cloud-upload me-2"></i>
+                        <span>Subir Documento</span>
+                    }
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" @onclick="CancelarSeleccion" disabled="@subiendo">
+                    Cancelar
+                </button>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(mensajeError))
+        {
+            <div class="alert alert-danger mt-3 mb-0">
+                <i class="bi bi-exclamation-circle me-2"></i>@mensajeError
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ArchivosRequeridosTramiteDTO TipoArchivo { get; set; } = null!;
+
+    [Parameter]
+    public long IdRentista { get; set; }
+
+    [Parameter]
+    public EventCallback OnArchivoSubido { get; set; }
+
+    private bool archivoSeleccionado = false;
+    private bool subiendo = false;
+    private string nombreArchivoSeleccionado = string.Empty;
+    private string mensajeError = string.Empty;
+    private byte[] contenidoArchivo = Array.Empty<byte>();
+    private long pesoArchivo = 0;
+
+    private async Task SeleccionarArchivo(InputFileChangeEventArgs e)
+    {
+        mensajeError = string.Empty;
+        var archivo = e.File;
+
+        if (archivo == null) return;
+
+        // Validar extensión
+        if (!archivo.Name.EndsWith(TipoArchivo.Extension, StringComparison.OrdinalIgnoreCase))
+        {
+            mensajeError = $"El archivo debe tener la extensión {TipoArchivo.Extension}";
+            return;
+        }
+
+        // Validar tamaño
+        long maxBytes = TipoArchivo.PesoMaximoMB * 1024 * 1024;
+        if (archivo.Size > maxBytes)
+        {
+            mensajeError = $"El archivo excede el tamaño máximo de {TipoArchivo.PesoMaximoMB} MB";
+            return;
+        }
+
+        try
+        {
+            using var stream = archivo.OpenReadStream(maxBytes);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            contenidoArchivo = ms.ToArray();
+            pesoArchivo = archivo.Size;
+            nombreArchivoSeleccionado = archivo.Name;
+            archivoSeleccionado = true;
+        }
+        catch (Exception ex)
+        {
+            mensajeError = $"Error al leer el archivo: {ex.Message}";
+        }
+    }
+
+    private void CancelarSeleccion()
+    {
+        archivoSeleccionado = false;
+        nombreArchivoSeleccionado = string.Empty;
+        contenidoArchivo = Array.Empty<byte>();
+        pesoArchivo = 0;
+        mensajeError = string.Empty;
+    }
+
+    private async Task SubirArchivo()
+    {
+        if (!archivoSeleccionado || contenidoArchivo.Length == 0) return;
+
+        subiendo = true;
+        mensajeError = string.Empty;
+        StateHasChanged();
+
+        try
+        {
+            var archivoNuevo = new ArchivoNuevoDTO
+            {
+                IdRentista = IdRentista,
+                IdTipoArchivo = TipoArchivo.IdTipoArchivo,
+                Nombre = nombreArchivoSeleccionado,
+                Peso = (int)pesoArchivo,
+                Contenido = contenidoArchivo
+            };
+
+            var resultado = await ArchivoService.SubirArchivo(archivoNuevo);
+
+            if (resultado)
+            {
+                CancelarSeleccion();
+                
+                await OnArchivoSubido.InvokeAsync();
+            }
+            else
+            {
+                mensajeError = "Error al subir el archivo. Por favor, intente nuevamente.";
+            }
+        }
+        catch (Exception ex)
+        {
+            mensajeError = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            subiendo = false;
+            StateHasChanged();
+        }
+    }
+
+    private string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+}

@@ -66,13 +66,13 @@ namespace WAMiTramiteGestion.Services
             }
         }
 
-        public async Task<bool> RechazarTramiteAsync(long idSolicitudTramite, string motivo)
+        public async Task<bool> RechazarTramiteAsync(long idSolicitudTramite, RechazoTramiteDTO rechazoDto)
         {
             try
             {
                 var url = $"{SolicitudTramiteEndpoints.BASE}{SolicitudTramiteEndpoints.RECHAZAR_TRAMITE}";
                 url = url.Replace("{idTramite}", idSolicitudTramite.ToString());
-                var response = await _httpClient.PostAsJsonAsync(url, motivo);
+                var response = await _httpClient.PostAsJsonAsync(url, rechazoDto);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)

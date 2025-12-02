@@ -7,7 +7,7 @@ namespace MiTramite_Shared.DTOs.ArchivoDTOs
 {
     public class ArchivoNuevoDTO
     {
-        public int IdRentista { get; set; }
+        public long IdRentista { get; set; }
         public int IdTipoArchivo { get; set; }
         public string Nombre { get; set; }
         public byte[] Contenido { get; set; }
