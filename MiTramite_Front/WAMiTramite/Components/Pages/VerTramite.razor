@@ -33,11 +33,18 @@
                         <div class="d-flex justify-content-between align-items-start flex-wrap">
                             <div>
                                 <h2 class="h3 mb-1 fw-bold text-primary">@solicitud.NombreTipoTramite</h2>
-                                <p class="text-muted mb-0">Solicitado el @solicitud.FechaSolicitud.ToString("dd 'de' MMMM,                         yyyy")</p>
+                                <p class="text-muted mb-0">Solicitado el @solicitud.FechaSolicitud.ToString("dd 'de' MMMM,                              yyyy")</p>
                             </div>
                             <div class="mt-2 mt-md-0">
                                 <span class="badge rounded-pill px-3 py-2 fs-6 @GetEstadoBadgeClass(solicitud.Estado)">
-                                    @solicitud.Estado
+                                    @if (solicitud.Estado == "Urgente")
+                                    {
+                                        <span><i class="bi bi-exclamation-triangle-fill me-2"></i>En Proceso</span>
+                                    }
+                                    else
+                                    {
+                                        @solicitud.Estado
+                                    }
                                 </span>
                             </div>
                         </div>
